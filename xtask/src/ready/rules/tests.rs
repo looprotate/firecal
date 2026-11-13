@@ -91,10 +91,13 @@ fn a_private_key_block_is_flagged() {
 
 #[test]
 fn a_todo_needs_an_issue_number() {
-    assert_eq!(problems(&added("README.md", &["TODO fix later"])).len(), 1);
-    assert_eq!(problems(&added("README.md", &["FIXME"])).len(), 1);
     assert_eq!(
-        problems(&added("README.md", &["TODO(#12) fix later"])),
+        problems(&added("crates/a/src/b.rs", &["TODO fix later"])).len(),
+        1
+    );
+    assert_eq!(problems(&added("crates/a/src/b.rs", &["FIXME"])).len(), 1);
+    assert_eq!(
+        problems(&added("crates/a/src/b.rs", &["TODO(#12) fix later"])),
         none()
     );
 }
