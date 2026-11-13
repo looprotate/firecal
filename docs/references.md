@@ -22,3 +22,13 @@ Add a line when you use anything from outside the team: data, a library, a metho
 
 - Quantile mapping: how VIIRS counts are mapped to MODIS-equivalent counts. Add the paper or text we follow
   when Cube chooses it.
+
+## Sources checked for the FIRMS facts
+
+- FIRMS Archive Download (coverage dates, request form, standard versus NRT):
+  https://firms2.modaps.eosdis.nasa.gov/download/
+- FIRMS active fire data attributes (MODIS and VIIRS columns, confidence, type, day or night):
+  https://earthdata.nasa.gov/data/tools/firms/active-fire-data-attributes-modis-viirs
+- MODIS C6 and C6.1 Active Fire User's Guide (MODIS confidence, fields):
+  https://earthdata.nasa.gov/s3fs-public/2023-09/MODIS_C6_C6.1_Fire_User_Guide_1.0.pdf
+- NASA LANCE, NRT versus standard products: https://lance.modaps.eosdis.nasa.gov/data/difference.php
