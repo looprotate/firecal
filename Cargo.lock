@@ -31,6 +31,9 @@ version = "0.1.0"
 [[package]]
 name = "firecal-types"
 version = "0.1.0"
+dependencies = [
+ "firecal-testkit",
+]
 
 [[package]]
 name = "firecal-wasm"

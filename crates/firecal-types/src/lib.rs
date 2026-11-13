@@ -6,12 +6,22 @@
 #![forbid(unsafe_code)]
 #![deny(clippy::print_stdout, clippy::print_stderr)]
 
+mod aggregate;
+mod bytes;
 mod cell;
 mod error;
 mod month;
 mod satellite;
+mod tile;
 
+pub use aggregate::{
+    AGGREGATE_MAGIC, AggregateRecord, AggregateView, aggregate_len, write_aggregate,
+};
 pub use cell::{CellIndex, GRID_COLUMNS, GRID_ROWS};
 pub use error::Error;
 pub use month::{BASE_YEAR, FIRST_FIRMS_MONTH, MonthIndex};
 pub use satellite::Satellite;
+pub use tile::{
+    Plane, TILE_CELLS, TILE_COLUMNS, TILE_MAGIC, TILE_ROWS, TILE_SIDE, TileId, TileView, tile_len,
+    write_tile,
+};

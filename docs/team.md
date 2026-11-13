@@ -48,8 +48,9 @@ firecal-types ◄── firecal-ingest ──► data/aggregates/*.fca
 
 Signatures are intentions; the real ones live in the code, and the code wins.
 
-- `firecal-types`: `Satellite`, `MonthIndex`, `CellIndex`, `Error` exist; `Area`, `Plane`, `Series` and the
-  tile and aggregate readers and writers on byte slices come next.
+- `firecal-types`: `Satellite`, `MonthIndex`, `CellIndex`, `Error`, the `.fca` aggregate (`AggregateRecord`,
+  `write_aggregate`, `AggregateView`) and the tile (`Plane`, `TileId`, `write_tile`, `TileView`) exist, as byte-slice
+  readers and writers; `Area` and `Series` come next.
 - `firecal-ingest`: `parse_record(&[u8]) -> Result<Hotspot, ParseError>`, `Aggregator` (add hotspot, write
   `.fca` bytes). A binary walks `data/` and runs it in parallel.
 - `firecal-harmonize`: `fit(&Aggregates, &Aggregates) -> Calibration`, `apply(&Calibration, &Aggregates) -> Tile`.
