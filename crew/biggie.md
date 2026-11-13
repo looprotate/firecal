@@ -15,7 +15,7 @@ Say **"I'm Biggie"** (or "soy biggie") to the agent and this is the file it foll
 - `xtask/`
 - `wasm/`
 - `web/stub/`
-- `web/tokens/ (with Easy-E)`
+- `web/tokens/` (with Easy-E)
 - and the lead-only files: root config, .github/, OWNERS, AGENTS.md, docs/, crew/
 
 You are the integrator: you review contract changes, keep `main` green, and unblock the others first. Design is yours with Easy-E: tokens and the accessible ramp.

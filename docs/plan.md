@@ -11,11 +11,10 @@ The critical path is **getting the data**, not code. Start it first.
 2. Download the FIRMS archive for MODIS (Terra+Aqua, C6.1) and VIIRS (S-NPP, NOAA-20, NOAA-21) into `data/`,
    which is in `.gitignore`. Start with **one region** (say, South America) so the full pipeline can run
    tonight; the world comes after. Check disk space first.
-3. The lead scaffolds the Cargo workspace (`firecal-types`, `-ingest`, `-harmonize`, `-query`, `-wasm`, `xtask`),
-   pins the toolchain in `rust-toolchain.toml`, publishes `firecal-types` from `docs/data-format.md`, and
-   pushes. Nobody codes against a contract that does not exist yet.
-   Before anyone else codes, the lead also creates what `docs/engineering.md` lists under "What the lead
-   creates first": lints, `firecal-testkit`, `xtask guard`, `OWNERS`, CI on macOS, Windows and Linux.
+3. **Done:** the Cargo workspace, the toolchain pin, the lints, `firecal-testkit`, `xtask` (`check`, `guard`,
+   `worktree`, `pr-lint`, `build-wasm`), `OWNERS`, CI on macOS, Windows and Linux, the issues and the crew
+   files. **Open:** the tile and aggregate formats in `firecal-types`, `xtask parity`, `CODEOWNERS`.
+   Nobody codes against a contract that does not exist yet.
 4. Everyone reads `AGENTS.md` and installs their agent (Claude Code or Codex) pointing at the repo.
 5. Everyone (macOS and Windows): install Rust with `rustup`, then `rustup target add wasm32-unknown-unknown`.
    Node is needed for the web app and for the parity test.

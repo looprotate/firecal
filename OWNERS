@@ -2,9 +2,9 @@
 # Format: `name: path path ...`. A path ending in `/` is a directory; anything else is one file.
 # `shared` is open to every branch. Change this file only through biggie.
 
-shared: requests/
+shared: requests/ docs/references.md
 
-biggie: Cargo.toml Cargo.lock rust-toolchain.toml rustfmt.toml clippy.toml .cargo/ .github/ .gitignore .gitattributes OWNERS AGENTS.md CLAUDE.md README.md docs/ crew/ xtask/ wasm/ web/stub/ web/tokens/ crates/firecal-types/ crates/firecal-query/ crates/firecal-wasm/ crates/firecal-testkit/
+biggie: Cargo.toml Cargo.lock rust-toolchain.toml rustfmt.toml clippy.toml .cargo/ .github/ .gitignore .gitattributes OWNERS AGENTS.md CLAUDE.md README.md LICENSE docs/ crew/ xtask/ wasm/ web/stub/ web/tokens/ crates/firecal-types/ crates/firecal-query/ crates/firecal-wasm/ crates/firecal-testkit/
 easy-e: web/app/ web/map/ web/tokens/ web/package.json web/package-lock.json web/tsconfig.json web/vite.config.ts web/index.html
 dre: crates/firecal-ingest/
 cube: crates/firecal-harmonize/

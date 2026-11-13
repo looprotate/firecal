@@ -143,9 +143,12 @@ The team cannot read Rust line by line, so **nothing is merged on trust**.
 - Brief every task with the five parts in `docs/style.md`: crate, contract, task, done-when, do-not-touch.
 - Agents verify their own work: build it, run the tests, run the app, look at the result. "It compiles" is
   not done. If something could not be run, the PR says so.
-- Small PRs, merged often. Rebase when older than two hours.
+- Small PRs, merged often, **squashed**: one pull request is one commit on `main`. Rebase when older than two hours.
 - Agents never change a contract they were not asked to. If a contract looks wrong, stop and tell a human.
-- Commits: title in the imperative, short; body says **why**. One idea per commit. No tool attribution lines.
+- **The pull request title and description are the commit.** Title: imperative, capitalized, at most 72
+  characters, no period. Description: the template, with **Why** saying the reason, not the change. No tool
+  attribution lines. `cargo xtask pr-lint` enforces it in CI. One idea per pull request.
+- Every external resource (data, code, text, images) is cited in `docs/references.md` when it is first used.
 
 ## Definition of done
 

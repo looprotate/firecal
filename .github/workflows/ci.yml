@@ -38,3 +38,17 @@ jobs:
         run: rustup show
       - name: Every file belongs to the branch's owner
         run: cargo xtask guard origin/${{ github.base_ref }}
+
+  pr-lint:
+    name: pr-lint
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install the pinned toolchain
+        run: rustup show
+      - name: The title and description become the commit
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: cargo xtask pr-lint

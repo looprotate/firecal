@@ -10,7 +10,7 @@ Say **"I'm Easy-E"** (or "soy easy-e") to the agent and this is the file it foll
 
 - `web/app/`
 - `web/map/`
-- `web/tokens/ (with Biggie)`
+- `web/tokens/` (with Biggie)
 - web/package.json, web/package-lock.json, web/tsconfig.json, web/vite.config.ts, web/index.html
 
 You own how the app is put together: the page, the map, the service worker, and the web dependencies. You decide the look with Biggie.

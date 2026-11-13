@@ -1,11 +1,13 @@
-**What:** one sentence
+**What:** <one sentence, imperative>
 
-**Issue:** closes #
+**Why:** <the reason, not the change: what was wrong or missing>
 
-**Contract:** untouched | changed (link the doc change)
+**Issue:** closes #<number>
 
-**Ran:** the exact commands and their results (`cargo xtask check`, `parity` if the core changed, the app)
+**Contract:** untouched
 
-**Not run:** anything that could not be run, and why
+**Ran:** <the exact commands and their results>
 
-**Evidence:** a number, a screenshot, or a diff of outputs
+**Not run:** none
+
+**Evidence:** <a number, a screenshot, or a diff of outputs>

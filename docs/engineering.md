@@ -236,9 +236,10 @@ Two agents in the same checkout overwrite each other and fight over `target/`. S
 
 - Branch name: `<owner>/<task>`, from the latest `main`. The task is small enough to merge the same day.
 - **Rebase** on `main` before opening the PR and again if `main` moved; never merge `main` into the branch.
-  Linear history. Squash is for the lead only.
+  Pull requests are **squash-merged**: one pull request is one commit on `main`, whose title is the PR title
+  and whose body is the PR description. Linear history, and every commit is revertable on its own.
 - `main` is protected: a PR needs green CI (`check --full` on macOS, Windows and Linux, which includes the wasm build, and `guard`; `parity` and
-  the web build join when they exist), one approving review from the owner of any directory it touches, and the five-heading description.
+  the web build join when they exist), one approving review from the owner of any directory it touches, and the template filled in (`pr-lint` checks the title and the What, Why, Ran and Evidence sections).
 - **Merge small and early.** A branch older than two hours is a risk; split it. A long-lived branch is the main
   way collisions happen.
 - If a rebase conflicts in a file you do not own, **stop**: you touched something you should not have. Undo it

@@ -100,7 +100,10 @@ The team cannot review Rust line by line, so **the tests are the review**.
 ## Git
 
 - A branch per task, named `<owner>/<task>`. Small PRs merged within hours. Rebase when older than two hours.
-- Commit title in the imperative and short; the body says **why**. One idea per commit. No tool attribution.
+- Pull requests are squashed, so **the PR title and description are the commit**: title imperative, capitalized, at
+  most 72 characters, no final period; the description follows the template and **Why** gives the reason, not
+  the change. One idea per pull request. No tool attribution. Your own commits inside the branch are scratch
+  and never reach `main`, but keep them honest.
 - Never commit data, keys, `target/`, `node_modules/`, `tiles/`.
 - A change to a contract (`firecal-types`, tile or aggregate format, `firecal.d.ts`) is its **own PR**, with the
   docs and every consumer updated, and the lead reviews it.
