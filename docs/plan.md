@@ -13,7 +13,7 @@ The critical path is **getting the data**, not code. Start it first.
    tonight; the world comes after. Check disk space first.
 3. **Done:** the Cargo workspace, the toolchain pin, the lints, `firecal-testkit`, `xtask` (`check`, `guard`,
    `worktree`, `pr-lint`, `build-wasm`), `OWNERS`, CI on macOS, Windows and Linux, the issues and the crew
-   files. **Open:** the tile and aggregate formats in `firecal-types`, `xtask parity`, `CODEOWNERS`.
+   files. **Open:** the tile and aggregate formats in `firecal-types`, `xtask parity`.
    Nobody codes against a contract that does not exist yet.
 4. Everyone reads `AGENTS.md` and installs their agent (Claude Code or Codex) pointing at the repo.
 5. Everyone (macOS and Windows): install Rust with `rustup`, then `rustup target add wasm32-unknown-unknown`.

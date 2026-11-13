@@ -206,8 +206,10 @@ after the data download, so the rules are mechanical.
 ### Ownership is a file, and the machine enforces it
 
 - `OWNERS` at the root maps each owner (the branch prefix) to the directories and files they may edit.
-- A `CODEOWNERS` file mirroring it is added once every person has a GitHub login; until then, review is by
-  convention and the guard is the enforcement.
+- **No human review is required to merge.** CI is the reviewer: it is stricter, faster and never tired, and
+  waiting for a person is the slowest thing in a two-day build. That is why the tests are the review, and why
+  `guard` and `pr-lint` are mechanical. A person may still comment, and anyone may ask for a second look on a
+  contract change, but nothing blocks on it.
 - `cargo xtask guard` fails if a branch's diff touches a file outside its owner's directories. CI runs it on
   every PR. An agent that "just needs to fix one thing" in another crate cannot.
 
@@ -238,8 +240,9 @@ Two agents in the same checkout overwrite each other and fight over `target/`. S
 - **Rebase** on `main` before opening the PR and again if `main` moved; never merge `main` into the branch.
   Pull requests are **squash-merged**: one pull request is one commit on `main`, whose title is the PR title
   and whose body is the PR description. Linear history, and every commit is revertable on its own.
-- `main` is protected: a PR needs green CI (`check --full` on macOS, Windows and Linux, which includes the wasm build, and `guard`; `parity` and
-  the web build join when they exist), one approving review from the owner of any directory it touches, and the template filled in (`pr-lint` checks the title and the What, Why, Ran and Evidence sections).
+- `main` is protected: a PR needs green CI (`check --full` on macOS, Windows and Linux, which includes the wasm build, `guard` and `pr-lint`; `parity` and
+  the web build join when they exist). There is no required approval: when CI is green the author merges their
+  own pull request, squashed.
 - **Merge small and early.** A branch older than two hours is a risk; split it. A long-lived branch is the main
   way collisions happen.
 - If a rebase conflicts in a file you do not own, **stop**: you touched something you should not have. Undo it
@@ -288,4 +291,4 @@ These make the rules above true instead of hoped for. They are on the Day 0 list
 3. `firecal-types` and `firecal-testkit`, with the round-trip tests.
 4. `cargo xtask check | guard | worktree | build-wasm` (done) and `parity` (open issue).
 5. `OWNERS`, `.github/workflows/ci.yml` on macOS, Windows and Linux, branch protection on `main`, the PR
-   template with the five headings. `CODEOWNERS` follows once every GitHub login is known.
+   template with the five headings. Nobody needs `CODEOWNERS`: ownership is enforced by `guard`, not by reviewers.
