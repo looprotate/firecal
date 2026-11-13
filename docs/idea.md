@@ -53,6 +53,7 @@ pins regions.
 - A hotspot is a thermal anomaly seen from orbit, not a measured fire or a burned area.
 - Harmonized counts are **MODIS-equivalent**. The calibration is validated only on the overlap years.
 - This is not a forecast. Analog years are history, not prediction.
+- The newest months come from near-real-time data and are labeled provisional: they are not yet science quality.
 - The effort proxy is a proxy.
 - Sigma adds cell errors as if independent, which is optimistic where neighbors share a bias. The app says
   "estimated" next to it.

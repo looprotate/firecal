@@ -8,9 +8,8 @@ The shared Rust types in `firecal-types` read and write these formats; nothing e
 - Equirectangular, **0.25° cells**: 1440 columns × 720 rows. Cell `(row, col)` covers latitude
   `90 - 0.25*(row+1) .. 90 - 0.25*row` and longitude `-180 + 0.25*col .. -180 + 0.25*(col+1)`.
   `CellIndex = row * 1440 + col`.
-- Time is **months**: `MonthIndex = (year - 2000) * 12 + (month - 1)`. The series starts at index 10
-  (2000-11, first Terra/MODIS month in FIRMS) and runs to the latest complete month. Verify the start against
-  the real archive before relying on it.
+- Time is **months**: `MonthIndex = (year - 2000) * 12 + (month - 1)`. The series starts at index 10 (2000-11,
+  where the FIRMS archive starts MODIS Collection 6.1) and runs to the latest month available.
 - Why 0.25°: coarse enough that VIIRS and MODIS counts per cell are comparable and files stay small; fine enough
   for a regional area. Open to change only before the first full pipeline run.
 
@@ -18,6 +17,18 @@ The shared Rust types in `firecal-types` read and write these formats; nothing e
 
 `Satellite` is an enum, stored as a `u8`: `0` Terra, `1` Aqua (MODIS); `2` S-NPP, `3` NOAA-20, `4` NOAA-21
 (VIIRS). Kept apart until harmonization.
+
+What the FIRMS archive page lists (checked 2026-11-13; see `docs/references.md`):
+
+| Product | Archive starts |
+|---|---|
+| MODIS Collection 6.1 (Terra and Aqua) | 1 November 2000 |
+| VIIRS S-NPP 375 m | 20 January 2012 |
+| VIIRS NOAA-20 375 m | 1 April 2018 |
+| VIIRS NOAA-21 375 m | 17 January 2024 |
+
+The overlap that harmonization is fitted on is therefore 2012 onward. When Aqua starts inside the MODIS
+collection is not confirmed: read it from the data.
 
 ## Aggregate file `.fca` (ingest → harmonize)
 
@@ -35,8 +46,25 @@ One file per satellite per month: `data/aggregates/<satellite>/<yyyymm>.fca`. Li
 Record: `cell: u32`, `count: u32` (detections kept), `frp_mw_sum: f32` (fire radiative power, megawatts),
 `day_count: u32` (how many of the `count` were daytime).
 
-Kept detections: **nominal and high confidence** for both sensors; low confidence is dropped. Day and night are
-both kept. Decision recorded here so it is not argued twice.
+### Reading the FIRMS CSV
+
+- **Read columns by header name, never by position.** The header row of the real file is the source of truth, and
+  MODIS and VIIRS differ. Expected, to confirm against the first real download: MODIS has `latitude`, `longitude`,
+  `brightness`, `scan`, `track`, `acq_date`, `acq_time`, `satellite`, `instrument`, `confidence`, `version`,
+  `bright_t31`, `frp`, `daynight` (and `type` in the standard product); VIIRS has `bright_ti4` and `bright_ti5`
+  in place of `brightness` and `bright_t31`.
+- **Confidence differs by sensor.** VIIRS 375 m is low, nominal or high, written `l`, `n`, `h` in the CSV (a
+  0, 1, 2 scale in raster products). MODIS is a number from 0 to 100; FIRMS groups it as low below 30, nominal 30
+  to 79 and high from 80 (confirm against the MODIS C6/C6.1 user guide).
+- **Kept detections:** nominal and high for both sensors; low is dropped. Day and night are both kept.
+- **Type:** keep presumed vegetation fire (`type` 0). Volcanoes (1) and offshore sources (3) are dropped. Other
+  static land sources (2, such as gas flares) are an open question for the team; the default is to drop them.
+- **Standard versus near real time.** Use the **standard** (science quality) product for every month it covers.
+  NRT is replaced by standard with about a five month lag, so the newest months can only come from NRT. The
+  tiles mark where NRT starts (`nrt_from_month` in `index.json`) and the app labels those months **provisional**.
+  Comparing a provisional month with a standard history carries a bias we have not measured: say so, and measure
+  it if time allows.
+- Decisions recorded here so they are not argued twice.
 
 ## Tiles (harmonize → browser)
 
