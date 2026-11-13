@@ -20,12 +20,15 @@ pub(crate) fn problems(diff: &str) -> Vec<String> {
             }
             tests_touched |= is_test_file(path);
         } else if let Some(added) = line.strip_prefix('+') {
+            if is_rules_source(path) {
+                continue;
+            }
             if holds_secret(added) {
                 found.push(format!(
                     "{path}: looks like a key or secret; keys come from the environment"
                 ));
             }
-            if is_unissued_todo(added) {
+            if !has_extension(path, "md") && is_unissued_todo(added) {
                 found.push(format!(
                     "{path}: TODO or FIXME without an issue number (`TODO(#12)`)"
                 ));
@@ -54,6 +57,11 @@ fn is_forbidden_path(path: &str) -> bool {
         || path.ends_with("/.env")
         || has_extension(path, "key")
         || has_extension(path, "pem")
+}
+
+/// The rules and their tests name the very markers they look for.
+fn is_rules_source(path: &str) -> bool {
+    path.starts_with("xtask/src/ready/")
 }
 
 fn has_extension(path: &str, extension: &str) -> bool {

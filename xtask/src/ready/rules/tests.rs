@@ -100,6 +100,23 @@ fn a_todo_needs_an_issue_number() {
 }
 
 #[test]
+fn markdown_may_talk_about_todos() {
+    assert_eq!(
+        problems(&added("docs/protocol.md", &["no TODO without an issue"])),
+        none()
+    );
+}
+
+#[test]
+fn the_rules_source_may_name_what_it_looks_for() {
+    let diff = added(
+        "xtask/src/ready/rules.rs",
+        &["FIRMS_MAP_KEY=abcd1234efgh5678", "TODO"],
+    );
+    assert_eq!(problems(&diff), none());
+}
+
+#[test]
 fn removed_lines_are_not_judged() {
     let diff = "+++ b/README.md\n-FIRMS_MAP_KEY=abcd1234efgh5678\n-TODO later\n";
     assert_eq!(problems(diff), none());
