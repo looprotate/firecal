@@ -255,6 +255,10 @@ Two agents in the same checkout overwrite each other and fight over `target/`. S
 
 ### The protocol every agent follows
 
+This is the short form. The long one, in order and with the verification steps, is `docs/protocol.md`; the gate
+before a push is `cargo xtask ready`.
+
+
 ```
 1. Read AGENTS.md, docs/engineering.md, docs/style.md and the contract you implement.
 2. git pull --rebase main; create your worktree and branch.

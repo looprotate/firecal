@@ -31,6 +31,8 @@ Eminem does not code: his work is in `pitch/`, and his crew file says how he wor
   which crate or package, and what each depends on. The machine-readable version is [`OWNERS`](OWNERS).
 - [`docs/engineering.md`](docs/engineering.md): **portable, high-quality, tested code and not stepping on each
   other.** Every agent reads it before its first change; it is stricter than the rest.
+- [`docs/protocol.md`](docs/protocol.md): **the order you work in and what must be verified before a push.**
+  `cargo xtask ready` is the gate; nothing is pushed without it.
 - [`docs/style.md`](docs/style.md): how code is written, tested and committed; how to brief an agent.
 - [`docs/data-format.md`](docs/data-format.md): the files and types the pieces share.
 - [`docs/plan.md`](docs/plan.md): the weekend, in order.
@@ -138,6 +140,8 @@ The team cannot read Rust line by line, so **nothing is merged on trust**.
 
 ## Working with agents (Claude Code and Codex)
 
+- **Verify before you push:** `cargo xtask hooks` once, `cargo xtask ready` before every push, never
+  `--no-verify`. The protocol is `docs/protocol.md`.
 - Both read this file. `CLAUDE.md` only points here. Do not fork instructions per tool.
 - **One agent, one directory, one branch** named `<owner>/<task>`. Two agents never edit the same files.
 - Brief every task with the five parts in `docs/style.md`: crate, contract, task, done-when, do-not-touch.

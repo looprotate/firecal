@@ -14,7 +14,7 @@ You own what the judges see and hear. No Rust or TypeScript for you: you write, 
 
 ## Start
 
-1. Read `AGENTS.md`, `docs/idea.md`, `docs/plan.md` and this file.
+1. Read `AGENTS.md`, `docs/idea.md`, `docs/plan.md`, section 6 of `docs/protocol.md` and this file.
 2. `git pull`.
 3. Find your work: `gh issue list --label owner:eminem --state open --json number,title,milestone`. Take the
    lowest milestone first, and inside it the lowest issue number.
