@@ -19,10 +19,7 @@ pub(crate) fn run(base: &str) -> Result<(), String> {
     let files: Vec<&str> = changed.lines().filter(|line| !line.is_empty()).collect();
     let foreign = foreign_files(&owners, &branch, &files)?;
     if foreign.is_empty() {
-        println!(
-            "guard: {} file(s), all owned by `{branch}`'s owner",
-            files.len()
-        );
+        println!("guard: {} file(s), all editable by `{branch}`", files.len());
         Ok(())
     } else {
         Err(format!(
