@@ -90,6 +90,9 @@ The team cannot review Rust line by line, so **the tests are the review**.
 - **Accessible:** the ramp is colorblind-safe and also readable in grayscale; every cell has a text value on
   focus or hover and a label for screen readers; contrast meets WCAG AA; nothing relies on color alone, so
   flagged anomalies also carry a mark.
+- **`web/package.json` defines `typecheck`, `test` and `build`.** `cargo xtask check` runs them (after `npm ci`)
+  as soon as `web/package.json` exists, and CI runs them on macOS, Windows and Linux. Use `"test": "node --test"`
+  or similar; a script that always passes is worse than none.
 - **Design tokens** (color, type, spacing) live in one CSS file owned by the design owner; code uses tokens,
   never literal colors.
 - Offline: a service worker caches the app shell and the tiles of pinned regions. It is tested with the

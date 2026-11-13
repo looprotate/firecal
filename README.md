@@ -6,8 +6,11 @@ how sure it is, works with no signal, and remembers which past year this one loo
 
 ## Start (everyone)
 
-1. Install [Rust via rustup](https://rustup.rs), [Node](https://nodejs.org) and the
+1. Install [Rust via rustup](https://rustup.rs), [Node](https://nodejs.org) (the version in `.nvmrc`) and the
    [GitHub CLI](https://cli.github.com); run `gh auth login`.
+   **On Windows** also install [Git for Windows](https://gitforwindows.org) (its `sh` runs the pre-push hook) and
+   the Visual Studio Build Tools with the "Desktop development with C++" workload, which Rust needs to link;
+   then `git config --global core.longpaths true`. Use PowerShell or Git Bash; every command below is the same.
 2. `git clone` this repo and open it with Claude Code or Codex.
 3. Check the machine: `cargo xtask check` (the pinned toolchain installs itself the first time), then
    `cargo xtask hooks` so a push always runs the verification first.
