@@ -6,11 +6,13 @@ The weekend as a sequence an agent can execute. Times are relative; adjust to th
 
 The critical path is **getting the data**, not code. Start it first.
 
-1. Someone creates a NASA Earthdata login and a FIRMS MAP_KEY. Save the key in 1Password and in
-   `~/.zshrc.local` as `FIRMS_MAP_KEY`; never in the repo.
-2. Download the FIRMS archive for MODIS (Terra+Aqua, C6.1) and VIIRS (S-NPP, NOAA-20, NOAA-21) into `data/`,
-   which is in `.gitignore`. Start with **one region** (say, South America) so the full pipeline can run
-   tonight; the world comes after. Check disk space first.
+1. Someone creates a NASA Earthdata login. The archive is requested at the FIRMS **Archive Download** page: pick
+   the sensor, the dates and the area, choose CSV and **standard** processing, and a link arrives by email. A
+   `MAP_KEY` is only for the FIRMS API (recent days), which we do not need for the archive; if one is ever used,
+   it goes in 1Password and `~/.zshrc.local` as `FIRMS_MAP_KEY`, never in the repo.
+2. Request MODIS (Terra and Aqua, C6.1) and VIIRS (S-NPP, NOAA-20, NOAA-21) into `data/`, which is in `.gitignore`.
+   The requests take time to be prepared, so **place them tonight**. Start with **one region** (say, South
+   America) so the full pipeline can run early; the world comes after. Check disk space first.
 3. **Done:** the Cargo workspace, the toolchain pin, the lints, `firecal-testkit`, `xtask` (`check`, `guard`,
    `worktree`, `pr-lint`, `build-wasm`), `OWNERS`, CI on macOS, Windows and Linux, the issues and the crew
    files. **Open:** the tile and aggregate formats in `firecal-types`, `xtask parity`.
