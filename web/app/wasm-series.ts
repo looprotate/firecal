@@ -1,4 +1,4 @@
-import type { AnalysisQuery, Firecal, TileFile } from '../../wasm/firecal.ts';
+import type { AnalysisQuery, Firecal, TileFile } from '../../wasm/load.ts';
 import type { Area, Series } from './series.ts';
 
 /** The months, baseline and season of a query, and the tiles the area touches. */

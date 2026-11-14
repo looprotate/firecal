@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { loadFirecal } from '../../wasm/firecal.ts';
+import { loadFirecal } from '../../wasm/load.ts';
 import { seriesForArea } from './wasm-series.ts';
 
 function fixtureTile() {

@@ -4,6 +4,7 @@ import '../tokens/tokens.css';
 import './style.css';
 import sample from '../stub/series.json';
 import { mountCalendar } from '../calendar/index.ts';
+import { loadFirecal } from '../../wasm/load.ts';
 import { createAreaMap } from '../map/map.ts';
 import {
   AREA_SELECTED_EVENT,
@@ -95,8 +96,8 @@ async function loadRuntime(status: HTMLOutputElement): Promise<void> {
   try {
     const response = await fetch('/firecal.wasm');
     if (!response.ok) throw new Error('Run `cargo xtask build-wasm` from the repository root first.');
-    await WebAssembly.instantiate(await response.arrayBuffer(), {});
-    status.textContent = 'Firecal core loaded · sample Series active';
+    await loadFirecal(await response.arrayBuffer());
+    status.textContent = 'Core loaded. The calendar shows the hand-made sample until a region is pinned.';
   } catch (error) {
     status.textContent = error instanceof Error ? error.message : 'The Firecal core could not be loaded.';
   }
