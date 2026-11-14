@@ -1,0 +1,82 @@
+:root {
+  font-family: var(--font-ui);
+  color: var(--text);
+  background: var(--bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+* { box-sizing: border-box; }
+
+body { margin: 0; min-width: 320px; min-height: 100vh; }
+
+button, input { font: inherit; }
+
+.topbar {
+  align-items: center;
+  border-bottom: var(--hairline) solid var(--line);
+  display: flex;
+  gap: 24px;
+  height: 64px;
+  padding: 0 32px;
+}
+
+.wordmark {
+  color: var(--text-strong);
+  font-size: var(--text-size-row);
+  font-weight: 750;
+  letter-spacing: 0.16em;
+  text-decoration: none;
+}
+
+.wordmark span { color: var(--ramp-3); font-size: 10px; margin-left: 5px; vertical-align: 2px; }
+.topbar-caption, .topbar-status, .eyebrow, .summary-label, .page-footer { font-size: var(--text-size-tiny); letter-spacing: 0.1em; }
+.topbar-caption, .page-footer { color: var(--text-secondary); }
+.topbar-status { align-items: center; color: var(--added); display: flex; gap: 8px; margin-left: auto; }
+.status-dot { background: var(--added); border-radius: 50%; height: 6px; width: 6px; }
+
+.workspace { margin: 0 auto; max-width: 1440px; padding: 44px 32px 24px; }
+.intro { align-items: end; display: flex; justify-content: space-between; margin-bottom: 32px; }
+.eyebrow { color: var(--text-secondary); margin: 0 0 10px; }
+h1, h2, p { margin-top: 0; }
+h1 { color: var(--text-strong); font-size: clamp(30px, 4vw, 48px); font-weight: 560; letter-spacing: -0.045em; line-height: 1.06; margin-bottom: 12px; }
+.intro-copy, .calendar-intro { color: var(--text-secondary); font-size: var(--text-size-row); margin-bottom: 0; }
+.series-summary { border-left: 1px solid var(--line); display: grid; gap: 5px; min-width: 210px; padding-left: 18px; }
+.summary-label { color: var(--text-secondary); }
+.series-summary strong { color: var(--text-strong); font-size: var(--text-size-input); font-weight: 550; }
+.series-summary span:last-child { color: var(--text-secondary); font-size: 12px; }
+
+.workspace-grid { display: grid; gap: 16px; grid-template-columns: minmax(320px, 0.8fr) minmax(480px, 1.2fr); }
+.map-card, .calendar-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-panel); min-width: 0; padding: 20px; }
+.card-heading { align-items: start; display: flex; justify-content: space-between; min-height: 54px; }
+.card-heading .eyebrow { margin-bottom: 5px; }
+h2 { color: var(--text-strong); font-size: var(--text-size-input); font-weight: 560; letter-spacing: -0.02em; margin-bottom: 0; }
+.map-bounds, .mode-chip { color: var(--text-secondary); font: 11px var(--font-code); }
+.mode-chip { background: var(--raised); border-radius: var(--radius-tag); color: var(--text); padding: 6px 8px; }
+.map-frame { background-color: var(--bg-deep); border-radius: var(--radius-row); height: min(55vh, 500px); min-height: 320px; overflow: hidden; position: relative; }
+.map-frame::after { border: 1px solid color-mix(in srgb, var(--text) 8%, transparent); border-radius: inherit; content: ''; inset: 0; pointer-events: none; position: absolute; }
+.maplibregl-canvas { outline: none; }
+.map-footer { color: var(--text-secondary); display: flex; font-size: var(--text-size-tiny); justify-content: space-between; padding-top: 12px; }
+.map-coordinates { color: var(--text); font-family: var(--font-code); }
+.calendar-intro { font-size: 12px; margin: 16px 0 18px; }
+.calendar-mount { min-height: 260px; }
+.runtime-status { border-top: 1px solid var(--line); color: var(--text-secondary); display: block; font-size: var(--text-size-tiny); margin-top: 14px; padding-top: 12px; }
+.page-footer { display: flex; justify-content: space-between; padding: 22px 2px 0; }
+
+@media (max-width: 850px) {
+  .topbar { padding: 0 20px; }
+  .topbar-caption { display: none; }
+  .workspace { padding: 32px 20px 20px; }
+  .workspace-grid { grid-template-columns: 1fr; }
+  .map-frame { height: 42vh; }
+}
+
+@media (max-width: 560px) {
+  .intro { align-items: start; flex-direction: column; gap: 22px; }
+  .series-summary { border-left: 0; border-top: 1px solid var(--line); padding: 12px 0 0; }
+  .map-card, .calendar-card { padding: 15px; }
+  .map-frame { min-height: 260px; }
+  .map-footer { align-items: start; flex-direction: column; gap: 6px; }
+  .page-footer { font-size: var(--text-size-tiny); }
+}
