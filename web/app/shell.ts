@@ -1,11 +1,6 @@
 import type { AreaBoundsText } from './area-input.ts';
 import type { Series } from './series.ts';
 
-/** A calendar view supplied by the calendar package at the integration point. */
-export interface CalendarRenderer {
-  mount(host: HTMLElement, series: Series): void;
-}
-
 export interface AppShell {
   mapHost: HTMLElement;
   calendarHost: HTMLElement;
@@ -88,11 +83,6 @@ export function renderShell(root: HTMLElement, series: Series): AppShell {
   const mapBounds = requiredElement(root, '#map-bounds');
   const mapCoordinates = requiredElement(root, '#map-coordinates');
   return { mapHost, calendarHost, runtimeStatus, areaForm, areaInputs, areaStatus, mapBounds, mapCoordinates };
-}
-
-/** Passes the validated Series and mount point to a calendar implementation. */
-export function mountCalendar(host: HTMLElement, series: Series, renderer: CalendarRenderer): void {
-  renderer.mount(host, series);
 }
 
 function requiredElement(root: HTMLElement, selector: string): HTMLElement {

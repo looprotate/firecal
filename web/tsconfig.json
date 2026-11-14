@@ -13,5 +13,5 @@
     "types": ["vite/client"],
     "lib": ["ES2022", "DOM", "DOM.Iterable"]
   },
-  "include": ["app/**/*.ts", "map/**/*.ts", "vite.config.ts"]
+  "include": ["app/**/*.ts", "calendar/**/*.ts", "map/**/*.ts", "vite.config.ts"]
 }

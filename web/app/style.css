@@ -70,12 +70,6 @@ h2 { color: var(--text-strong); font-size: var(--text-size-input); font-weight: 
 .area-form button:hover { background: var(--selection); }
 .calendar-intro { font-size: 12px; margin: 16px 0 18px; }
 .calendar-mount { min-height: 260px; }
-.calendar-preview-table { border-collapse: collapse; font-size: var(--text-size-tiny); text-align: left; width: 100%; }
-.calendar-preview-table caption { color: var(--text-secondary); padding: 0 0 10px; text-align: left; }
-.calendar-preview-table th, .calendar-preview-table td { border-bottom: 1px solid var(--line); padding: 7px 6px; }
-.calendar-preview-table thead { color: var(--text-secondary); }
-.calendar-preview-table td { color: var(--text-strong); font-family: var(--font-code); text-align: right; }
-.calendar-preview-table tbody th { color: var(--text); font-weight: 500; }
 .runtime-status { border-top: 1px solid var(--line); color: var(--text-secondary); display: block; font-size: var(--text-size-tiny); margin-top: 14px; padding-top: 12px; }
 .page-footer { display: flex; justify-content: space-between; padding: 22px 2px 0; }
 

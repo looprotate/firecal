@@ -1,37 +1,7 @@
+import type { AnalysisQuery, Firecal, TileFile } from '../../wasm/firecal.ts';
 import type { Area, Series } from './series.ts';
 
-interface TileFile {
-  row: number;
-  col: number;
-  bytes: Uint8Array;
-}
-
-interface AnalysisQuery {
-  south: number;
-  north: number;
-  west: number;
-  east: number;
-  firstMonth: number;
-  months: number;
-  plane: number;
-  tiles: TileFile[];
-  baselineFirst: number;
-  baselineLast: number;
-  seasonYear: number;
-  seasonMonths: number;
-}
-
-interface Firecal {
-  areaSeries(query: AnalysisQuery): { status: number; value: Float64Array; sigma: Float64Array };
-  comparison(query: AnalysisQuery): {
-    status: number;
-    median: Float64Array;
-    anomaly: Float64Array;
-    unusual: Uint8Array;
-  };
-  analogs(query: AnalysisQuery, count: number): { status: number; analogs: Series['analogs'] };
-}
-
+/** The months, baseline and season of a query, and the tiles the area touches. */
 export interface WasmHistoryOptions {
   firstMonth: number;
   months: number;
@@ -39,15 +9,14 @@ export interface WasmHistoryOptions {
   baselineLast: number;
   seasonYear: number;
   seasonMonths: number;
-    tiles: TileFile[];
+  tiles: TileFile[];
 }
 
-/** Runs the same history, comparison and analog queries for a newly selected rectangle. */
-export function seriesForArea(
-  firecal: Firecal,
-  area: Area,
-  options: WasmHistoryOptions,
-): Series {
+/** The most analog years the calendar asks the core for. */
+const ANALOG_LIMIT = 64;
+
+/** Runs the history, comparison and analog queries of the core for an area and returns one Series. */
+export function seriesForArea(firecal: Firecal, area: Area, options: WasmHistoryOptions): Series {
   const query: AnalysisQuery = {
     south: area.south,
     north: area.north,
@@ -66,14 +35,13 @@ export function seriesForArea(
   assertOk(values.status, 'area series');
   const comparison = firecal.comparison(query);
   assertOk(comparison.status, 'comparison');
-  const analogs = firecal.analogs(query, 64);
+  const analogs = firecal.analogs(query, ANALOG_LIMIT);
   assertOk(analogs.status, 'analogs');
 
   const median = Array.from({ length: 12 }, () => Number.NaN);
-  for (let at = 0; at < comparison.median.length; at += 1) {
-    const month = (options.firstMonth + at) % 12;
-    median[month] = comparison.median[at] ?? Number.NaN;
-  }
+  comparison.median.forEach((value, at) => {
+    median[(options.firstMonth + at) % 12] = value;
+  });
   return {
     area,
     plane: 'count',

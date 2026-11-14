@@ -3,7 +3,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import '../tokens/tokens.css';
 import './style.css';
 import sample from '../stub/series.json';
-import { previewCalendar } from './calendar-preview.ts';
+import { mountCalendar } from '../calendar/index.ts';
 import { createAreaMap } from '../map/map.ts';
 import {
   AREA_SELECTED_EVENT,
@@ -13,7 +13,7 @@ import {
   type AreaBoundsText,
 } from './area-input.ts';
 import { parseSeries } from './series.ts';
-import { mountCalendar, renderShell } from './shell.ts';
+import { renderShell } from './shell.ts';
 import type { Area } from './series.ts';
 
 const root = document.querySelector<HTMLDivElement>('#app');
@@ -27,6 +27,7 @@ const state: { area: Area; series: typeof series; bounds: AreaBoundsText; error:
   bounds: boundsFromArea(series.area),
   error: '',
 };
+const calendar = mountCalendar(shell.calendarHost, state.series);
 const map = createAreaMap(shell.mapHost, (area) => emitAreaSelected(root, area));
 map.once('load', () => {
   map.fitBounds([[state.area.west, state.area.south], [state.area.east, state.area.north]], { padding: 36, maxZoom: 8 });
@@ -69,7 +70,7 @@ function render(): void {
   shell.areaStatus.textContent = state.error;
   shell.mapBounds.textContent = `${state.area.west} / ${state.area.south} — ${state.area.east} / ${state.area.north}`;
   shell.mapCoordinates.textContent = `${state.area.west}° / ${state.area.south}°`;
-  mountCalendar(shell.calendarHost, state.series, previewCalendar);
+  calendar.update(state.series);
 }
 
 function readAreaBounds(inputs: Record<keyof AreaBoundsText, HTMLInputElement>): AreaBoundsText {
