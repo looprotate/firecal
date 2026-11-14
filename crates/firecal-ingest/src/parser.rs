@@ -97,7 +97,7 @@ impl CsvHeader {
     /// Parses one row using this file's header, retaining nominal/high detections.
     ///
     /// MODIS accepts Terra/T and Aqua/A; VIIRS accepts N/S-NPP, 1/N20/NOAA-20,
-    /// and 2/NOAA-21. Dates and required fields are validated before filtering.
+    /// and 2/N21/NOAA-21. Dates and required fields are validated before filtering.
     ///
     /// # Errors
     /// Returns [`ParseError::EmptyRecord`], [`ParseError::LowConfidence`] or
@@ -163,7 +163,7 @@ fn satellite(name: &str, instrument: &str) -> Result<Satellite, ParseError> {
         ("A" | "Aqua", "MODIS") => Ok(Satellite::Aqua),
         ("N" | "S-NPP" | "Suomi NPP", "VIIRS") => Ok(Satellite::SuomiNpp),
         ("1" | "N20" | "NOAA-20", "VIIRS") => Ok(Satellite::Noaa20),
-        ("2" | "NOAA-21", "VIIRS") => Ok(Satellite::Noaa21),
+        ("2" | "N21" | "NOAA-21", "VIIRS") => Ok(Satellite::Noaa21),
         _ => Err(ParseError::InvalidSatellite),
     }
 }

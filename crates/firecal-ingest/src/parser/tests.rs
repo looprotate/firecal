@@ -48,6 +48,7 @@ fn five_satellites_and_their_archive_aliases_are_supported() {
         ("N20", "VIIRS", "n", Satellite::Noaa20),
         ("2", "VIIRS", "n", Satellite::Noaa21),
         ("NOAA-21", "VIIRS", "h", Satellite::Noaa21),
+        ("N21", "VIIRS", "h", Satellite::Noaa21),
     ] {
         let row = format!("0,0,2024-01-01,{name},{instrument},{confidence},0,D,0");
         assert_eq!(parse(&row).unwrap().satellite, expected, "{row}");
