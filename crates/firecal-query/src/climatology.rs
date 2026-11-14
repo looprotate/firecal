@@ -20,8 +20,9 @@ impl Climatology {
     }
 }
 
-/// The climatology of `value`, a monthly series that starts at `first_month`, over the `baseline` years. An
-/// even number of years gives the mean of the two middle values; months outside the baseline are ignored.
+/// The climatology of `value`, a monthly series that starts at `first_month`, over the `baseline` years.
+///
+/// An even number of years gives the mean of the two middle values; months outside the baseline are ignored.
 ///
 /// # Errors
 /// [`QueryError::BaselineTooLong`] for more than 64 years of one calendar month, and [`QueryError::Types`]
@@ -60,7 +61,7 @@ fn middle_of(numbers: Option<&mut [f64]>) -> Option<f64> {
         Some(high)
     } else {
         let low = *numbers.get(upper - 1)?;
-        Some((low + high) / 2.0)
+        Some(low.midpoint(high))
     }
 }
 

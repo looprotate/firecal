@@ -26,15 +26,16 @@ pub fn compare_with_climatology(
     sigma: &[f64],
     out: ComparisonOut<'_>,
 ) -> Result<(), QueryError> {
+    let ComparisonOut { anomaly, unusual } = out;
     let months = value.len();
-    if sigma.len() != months || out.anomaly.len() != months || out.unusual.len() != months {
+    if sigma.len() != months || anomaly.len() != months || unusual.len() != months {
         return Err(QueryError::OutputLengthMismatch);
     }
     let rows = value
         .iter()
         .zip(sigma)
-        .zip(out.anomaly.iter_mut().zip(out.unusual.iter_mut()));
-    for (offset, ((number, spread), (anomaly, unusual))) in rows.enumerate() {
+        .zip(anomaly.iter_mut().zip(unusual.iter_mut()));
+    for (offset, ((number, spread), (anomaly_slot, unusual_slot))) in rows.enumerate() {
         let at = u16::try_from(offset)
             .ok()
             .and_then(|offset| first_month.index().checked_add(offset))
@@ -43,8 +44,8 @@ pub fn compare_with_climatology(
             .median(MonthIndex::from_index(at))
             .ok_or(QueryError::NoBaselineForMonth)?;
         let difference = number - median;
-        *anomaly = difference / median.max(1.0);
-        *unusual = difference.abs() > 2.0 * spread;
+        *anomaly_slot = difference / median.max(1.0);
+        *unusual_slot = difference.abs() > 2.0 * spread;
     }
     Ok(())
 }
