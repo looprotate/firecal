@@ -76,5 +76,6 @@ They also check byte reproducibility, duplicate/unknown months, unsupported
 positive VIIRS, u32 saturation, half rounding, the last polar/antimeridian cell,
 empty tiles, invalid dates, malformed files and protection of existing outputs.
 No real FIRMS accuracy, uncertainty coverage or full Uruguay tile coverage is
-claimed by this fixture. The regional-data run is deferred until complete-tile
-inputs or an explicit coverage-mask contract are available.
+claimed by this fixture. The subsequent real-data run uses 24 fully covered interior tiles from
+Dre's South America bounding-box release; see
+`south-america-validation.md` for the audit, exact counts and remaining limits.

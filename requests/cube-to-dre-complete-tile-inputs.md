@@ -20,3 +20,19 @@ regional records are extrapolated into unobserved parts of the tile.
 If only country coverage is intended, Biggie needs to define and approve an
 explicit coverage-mask contract and how unsupported query areas are rejected.
 Cube will not change FCT1, firecal-types, the query or the app unilaterally.
+
+## Resolved for the #31 regional writer run (2026-11-14)
+
+Dre supplied the South America bounding-box release:
+https://github.com/looprotate/firecal/releases/tag/data-south-america-2026-20261114
+
+Cube verified all 30 FCA1 hashes and shared-format reads. Rows 8–13 and columns
+10–13 are 24 fully covered interior tiles. July standard Terra/S-NPP supplies
+training; July and August standard Terra supply output. The real count query
+matches source totals exactly (7,000 and 13,359). See
+`crates/firecal-harmonize/south-america-validation.md` for the audit and limits.
+
+The complete-region blocker is resolved for this selected standard subset.
+Independent standard-overlap validation still needs a longer history: August
+VIIRS is provisional, and June is partial. No coverage-mask contract change is
+needed for the fully contained tiles used here.

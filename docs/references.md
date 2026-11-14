@@ -66,3 +66,12 @@ Add a line when you use anything from outside the team: data, a library, a metho
 - Machado, Oliveira and Fernandes 2009, A physiologically-based model for simulation of color vision deficiency
   (the matrices in `web/tokens/ramp.test.mjs`): https://www.inf.ufrgs.br/~oliveira/pubs_files/CVD_Simulation/CVD_Simulation.html
 - WCAG 2.2, contrast (1.4.3, 1.4.11) and the relative luminance formula: https://www.w3.org/TR/WCAG22/
+
+## Count-writer regional validation
+
+- Dre's South America 2026 FCA1 release, checked 2026-11-14: archive checksum,
+  per-file hashes, source-window/availability manifests and README establish the
+  standard-month and complete-interior-tile subset used for #31. The original
+  NASA FIRMS source requests and retrieval timestamps are retained in the release
+  manifests; no credentials or raw records are copied into git.
+  https://github.com/looprotate/firecal/releases/tag/data-south-america-2026-20261114
