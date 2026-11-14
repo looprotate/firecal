@@ -2,6 +2,7 @@
 // Usage: node run.mjs <firecal.wasm> <cases file> <results file>
 // Cases file: records of u32 function id, u32 payload length, payload (all little-endian).
 //   0 fc_month_index, 1 fc_month_span: payload is two u32. Answer: one u32.
+//   3 cells.csv: payload as series. Answer: a u32 status, then, when it is 0, the text.
 //   2 series: payload is south, north, west, east (f64), first month, months, plane, tile count (u32), then per
 //     tile row, column, length (u32) and the tile bytes. Answer: a u32 status, then, when it is 0, the values
 //     and the sigmas as f64.
@@ -21,7 +22,7 @@ function word(value) {
   return bytes;
 }
 
-function seriesAnswer(payload) {
+function queryOf(payload) {
   const at = new DataView(payload.buffer, payload.byteOffset, payload.byteLength);
   const [south, north, west, east] = [0, 8, 16, 24].map((offset) => at.getFloat64(offset, true));
   const [firstMonth, months, plane, tileCount] = [32, 36, 40, 44].map((offset) => at.getUint32(offset, true));
@@ -36,12 +37,24 @@ function seriesAnswer(payload) {
     });
     cursor += 12 + length;
   }
-  const answer = firecal.series({ south, north, west, east, firstMonth, months, plane, tiles });
+  return { south, north, west, east, firstMonth, months, plane, tiles };
+}
+
+function seriesAnswer(payload) {
+  const answer = firecal.series(queryOf(payload));
   const numbers = new Float64Array([...answer.value, ...answer.sigma]);
   const out = new Uint8Array(4 + numbers.length * 8);
   out.set(word(answer.status));
   const outView = new DataView(out.buffer);
   numbers.forEach((number, index) => outView.setFloat64(4 + index * 8, number, true));
+  return out;
+}
+
+function cellsCsvAnswer(payload) {
+  const answer = firecal.cellsCsv(queryOf(payload));
+  const out = new Uint8Array(4 + answer.text.length);
+  out.set(word(answer.status));
+  out.set(answer.text, 4);
   return out;
 }
 
@@ -51,6 +64,8 @@ for (let cursor = 0; cursor < cases.byteLength; ) {
   const payload = cases.subarray(cursor + 8, cursor + 8 + length);
   if (id === 2) {
     answers.push(seriesAnswer(payload));
+  } else if (id === 3) {
+    answers.push(cellsCsvAnswer(payload));
   } else {
     const first = view.getUint32(cursor + 8, true);
     const second = view.getUint32(cursor + 12, true);

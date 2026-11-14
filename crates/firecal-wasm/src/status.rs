@@ -19,6 +19,9 @@ pub const STATUS_TILE_INVALID: u32 = 4;
 /// A tile that does not hold a requested month.
 pub const STATUS_MONTH_NOT_IN_TILE: u32 = 5;
 
+/// The CSV does not fit in the buffer the page gave.
+pub const STATUS_OUTPUT_TOO_SMALL: u32 = 6;
+
 /// The status that tells the caller what to change.
 pub(crate) const fn status_of(error: QueryError) -> u32 {
     match error {
@@ -31,7 +34,10 @@ pub(crate) const fn status_of(error: QueryError) -> u32 {
         | QueryError::BaselineTooLong
         | QueryError::NoBaselineForMonth
         | QueryError::SeasonMonthsOutOfRange
-        | QueryError::SeasonIncomplete => INVALID,
+        | QueryError::SeasonIncomplete
+        | QueryError::SelfIntersecting
+        | QueryError::EnclosesPole => INVALID,
+        QueryError::BufferTooSmall => STATUS_OUTPUT_TOO_SMALL,
         QueryError::Types(Error::EmptyMonthRange | Error::MonthRangeTooLong) => {
             STATUS_MONTH_RANGE_INVALID
         }

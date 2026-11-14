@@ -1,6 +1,6 @@
 //! The calls that must give the same bytes natively and in the browser build, and how they are encoded.
 
-use super::series_cases::{SeriesCase, series_cases};
+use super::series_cases::{SeriesCase, csv_cases, series_cases};
 use firecal_testkit::SeededRandom;
 use firecal_wasm::{fc_month_index, fc_month_span};
 
@@ -22,6 +22,7 @@ const RANDOM_CASES: u64 = 2000;
 const RANDOM_BOUND: u64 = 8000;
 const SEED: u64 = 0x5EED_F1AE;
 const SERIES_ID: u32 = 2;
+const CELLS_CSV_ID: u32 = 3;
 
 /// A month export of `firecal.wasm`; the id is its position in the table of `run.mjs`.
 #[derive(Debug, Clone, Copy)]
@@ -57,6 +58,8 @@ pub(super) enum Case {
     },
     /// The series export over tiles in memory.
     Series(SeriesCase),
+    /// The `cells.csv` export over the same request.
+    CellsCsv(SeriesCase),
 }
 
 /// Every pair of edge values and seeded random pairs for each month export, then the series cases.
@@ -82,6 +85,7 @@ pub(super) fn all_cases() -> Vec<Case> {
         }
     }
     cases.extend(series_cases().into_iter().map(Case::Series));
+    cases.extend(csv_cases().into_iter().map(Case::CellsCsv));
     cases
 }
 
@@ -104,6 +108,7 @@ pub(super) fn encode(cases: &[Case]) -> Vec<u8> {
                 (function.id(), payload)
             }
             Case::Series(series) => (SERIES_ID, series.encode_payload()),
+            Case::CellsCsv(series) => (CELLS_CSV_ID, series.encode_payload()),
         };
         bytes.extend_from_slice(&id.to_le_bytes());
         bytes.extend_from_slice(&frame_length(&payload).to_le_bytes());
@@ -123,6 +128,7 @@ pub(super) fn native_results(cases: &[Case]) -> Vec<u8> {
                 second,
             } => function.call(*first, *second).to_le_bytes().to_vec(),
             Case::Series(series) => series.native_answer(),
+            Case::CellsCsv(series) => series.native_csv_answer(),
         };
         bytes.extend_from_slice(&frame_length(&answer).to_le_bytes());
         bytes.extend_from_slice(&answer);

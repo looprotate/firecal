@@ -4,13 +4,15 @@
 use super::cases::frame_length;
 use firecal_testkit::SeededRandom;
 use firecal_types::{MonthIndex, TILE_CELLS, tile_len, write_tile};
-use firecal_wasm::{SliceMemory, run_series};
+use firecal_wasm::{SliceMemory, run_cells_csv, run_series};
 
 const REQUEST_BYTES: u32 = 56;
 const FIRST_MONTH: u16 = 10;
 const TILE_MONTHS: u16 = 3;
 const SEED: u64 = 0xF1AE_5EED;
 const RANDOM_AREAS: u64 = 60;
+const CSV_ROOM_BYTES: u32 = 4 << 20;
+const WORLD: [f64; 4] = [-90.0, 90.0, -180.0, 180.0];
 // Latitude 10 to 20 in tile rows 7 and 8 and longitude 0 to 10 in tile column 18: both tiles hold hotspots.
 const TILE_ROWS: [u32; 2] = [7, 8];
 const TILE_COLUMN: u32 = 18;
@@ -53,6 +55,32 @@ impl SeriesCase {
         if status == 0 {
             let start = usize::try_from(output - 1).unwrap_or(0);
             answer.extend_from_slice(image.get(start..).unwrap_or(&[]));
+        }
+        answer
+    }
+
+    /// The native answer of the `cells.csv` export: a `u32` status, then, when it is zero, the text.
+    pub(super) fn native_csv_answer(&self) -> Vec<u8> {
+        let (mut image, request, _) = self.memory_image();
+        let buffer = address_of(&image);
+        let capacity = 4 + CSV_ROOM_BYTES;
+        image.resize(image.len() + usize::try_from(capacity).unwrap_or(0), 0);
+        let status = run_cells_csv(
+            &mut SliceMemory::new(&mut image),
+            request,
+            REQUEST_BYTES,
+            buffer,
+            capacity,
+        );
+        let mut answer = status.to_le_bytes().to_vec();
+        if status == 0 {
+            let start = usize::try_from(buffer - 1).unwrap_or(0);
+            let length = image
+                .get(start..start + 4)
+                .and_then(|word| <[u8; 4]>::try_from(word).ok())
+                .map_or(0, u32::from_le_bytes);
+            let end = start + 4 + usize::try_from(length).unwrap_or(0);
+            answer.extend_from_slice(image.get(start + 4..end).unwrap_or(&[]));
         }
         answer
     }
@@ -169,4 +197,12 @@ pub(super) fn series_cases() -> Vec<SeriesCase> {
         }
     }
     cases
+}
+
+/// The series cases, except the whole world, whose text would be too long to compare.
+pub(super) fn csv_cases() -> Vec<SeriesCase> {
+    series_cases()
+        .into_iter()
+        .filter(|case| case.area != WORLD)
+        .collect()
 }

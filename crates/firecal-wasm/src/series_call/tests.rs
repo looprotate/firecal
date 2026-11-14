@@ -14,11 +14,11 @@ use firecal_types::{MonthIndex, TILE_CELLS, tile_len, write_tile};
 //  tile (7,18) (39,0)   5   7       3  12      40  50
 //  tile (7,18) (39,1)   3   0       4   5       2   0
 
-const COUNT: u32 = 0;
-const ENERGY: u32 = 1;
-const REQUEST_LEN: u32 = 56;
+pub(crate) const COUNT: u32 = 0;
+pub(crate) const ENERGY: u32 = 1;
+pub(crate) const REQUEST_LEN: u32 = 56;
 
-fn fixture_tile() -> Vec<u8> {
+pub(crate) fn fixture_tile() -> Vec<u8> {
     let mut planes = [
         vec![0_u16; 2 * TILE_CELLS],
         vec![0; 2 * TILE_CELLS],
@@ -47,16 +47,16 @@ fn fixture_tile() -> Vec<u8> {
 }
 
 /// One request, laid out in a memory image whose address 1 is its first byte.
-struct Call {
-    area: [f64; 4],
-    first_month: u32,
-    months: u32,
-    plane: u32,
-    tiles: Vec<(u32, u32, Vec<u8>)>,
+pub(crate) struct Call {
+    pub(crate) area: [f64; 4],
+    pub(crate) first_month: u32,
+    pub(crate) months: u32,
+    pub(crate) plane: u32,
+    pub(crate) tiles: Vec<(u32, u32, Vec<u8>)>,
 }
 
 impl Call {
-    fn one_cell(plane: u32) -> Self {
+    pub(crate) fn one_cell(plane: u32) -> Self {
         Self {
             area: [10.0, 10.25, 0.0, 0.25],
             first_month: 10,
@@ -67,7 +67,7 @@ impl Call {
     }
 
     /// The image, the address of the request and the address of the output.
-    fn image(&self) -> (Vec<u8>, u32, u32) {
+    pub(crate) fn image(&self) -> (Vec<u8>, u32, u32) {
         let mut image = Vec::new();
         let mut entries = Vec::new();
         for (row, col, bytes) in &self.tiles {

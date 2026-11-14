@@ -23,6 +23,9 @@ export const STATUS_TILE_INVALID = 4;
 /** A tile that does not hold one of the requested months. */
 export const STATUS_MONTH_NOT_IN_TILE = 5;
 
+/** The text does not fit in the buffer the page gave. */
+export const STATUS_OUTPUT_TOO_SMALL = 6;
+
 /** The `plane` of a request: the harmonized count, with its sigma. */
 export const PLANE_COUNT = 0;
 /** The `plane` of a request: the harmonized energy in megawatts. It has no sigma yet: its sigmas are NaN. */
@@ -69,4 +72,14 @@ export interface FirecalExports {
    * Output, little-endian: month count `f64` values, then month count `f64` sigmas.
    */
   fc_series(requestAddress: number, requestLength: number): number;
+  /**
+   * Writes the `cells.csv` of the request block at `requestAddress` (same block as `fc_series`; its output
+   * field is not used) into the buffer of `bufferLength` bytes at `bufferAddress`: first the length of the text
+   * as a `u32`, then the text, which is `year,month,cell_lat,cell_lon,value,sigma` with a header line, one row
+   * per cell of the area and month, months first, then rows north to south and columns west to east,
+   * lines ending in `\n`. The sigma field is empty for the energy plane.
+   * Returns a `STATUS_*` (`STATUS_OUTPUT_TOO_SMALL` when the text does not fit), or `INVALID` when an address
+   * or length cannot be read or `bufferLength` is below 4. Nothing is written unless the status is `STATUS_OK`.
+   */
+  fc_cells_csv(requestAddress: number, requestLength: number, bufferAddress: number, bufferLength: number): number;
 }

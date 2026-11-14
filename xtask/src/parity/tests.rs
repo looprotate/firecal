@@ -50,7 +50,7 @@ fn the_case_list_has_month_calls_and_series_calls() {
     assert!(
         cases[month_calls..]
             .iter()
-            .all(|case| matches!(case, Case::Series(_)))
+            .all(|case| matches!(case, Case::Series(_) | Case::CellsCsv(_)))
     );
     assert!(cases.len() > month_calls);
 }
@@ -62,7 +62,7 @@ fn a_series_that_succeeds_answers_status_zero_then_two_f64_per_month() {
         .iter()
         .filter_map(|case| match case {
             Case::Series(series) => Some(series.native_answer()),
-            Case::Months { .. } => None,
+            Case::CellsCsv(_) | Case::Months { .. } => None,
         })
         .find(|answer| answer.get(..4) == Some(&[0, 0, 0, 0]))
         .unwrap();

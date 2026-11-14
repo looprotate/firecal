@@ -163,8 +163,20 @@ in this shape. The wasm call replaces it with no change to the UI.
 ## CSV export
 
 `cells.csv`: `year,month,cell_lat,cell_lon,value,sigma` for every cell of the area and every month of the
-range. `series.csv`: the `Series` above. Both are aggregates, not raw hotspots: raw per-hotspot history is out
-of scope for a static site.
+range. `series.csv`: `year,month,value,sigma,median,anomaly,unusual` for every month of the range. Both are
+aggregates, not raw hotspots: raw per-hotspot history is out of scope for a static site.
+
+Both have a header line and end every line in `\n`. `cell_lat` and `cell_lon` are the center of the cell with
+three decimals; cells go month by month, rows north to south, columns west to east. A cell in a tile that is not
+there has value 0. A number that does not exist is an empty field: the sigma of the energy plane, a month with no
+baseline. In `series.csv` the value has no decimals, sigma and anomaly three, median one, and `unusual` is `true`
+or `false`. The analog years are not in these files.
+
+**Polygon areas.** A polygon selects the cells whose center is inside it, not those it merely touches, and a cell
+whose center is on an edge belongs to one side only. Either winding works. An edge between two longitudes more
+than 180 degrees apart crosses the antimeridian, so a polygon from 170 east to 170 west is 20 degrees wide. A
+corner may sit on a pole; a polygon that goes all the way around a pole, or whose edges cross or touch, is
+refused. Polygons are in `firecal-query` only for now: the wasm exports take rectangles.
 
 **Open question for the team:** recent raw hotspots would need a FIRMS API key, which cannot live in a static
 site. Decide Saturday morning; the default is no.

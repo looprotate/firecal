@@ -152,3 +152,32 @@ test("a thousand random requests never trap", () => {
     firecal.exports.fc_free(request);
   }
 });
+
+test("cells.csv is the header and a row per cell and month", () => {
+  const answer = firecal.cellsCsv(query({ west: 0.0, east: 0.5 }));
+  assert.equal(answer.status, 0);
+  assert.equal(
+    new TextDecoder().decode(answer.text),
+    "year,month,cell_lat,cell_lon,value,sigma\n" +
+      "2000,11,10.125,0.125,5,3\n" +
+      "2000,11,10.125,0.375,3,4\n" +
+      "2000,12,10.125,0.125,7,12\n" +
+      "2000,12,10.125,0.375,0,5\n",
+  );
+});
+
+test("cells.csv for the energy leaves the sigma empty", () => {
+  const text = new TextDecoder().decode(firecal.cellsCsv(query({ plane: 1, months: 1 })).text);
+  assert.equal(text, "year,month,cell_lat,cell_lon,value,sigma\n2000,11,10.125,0.125,40,\n");
+});
+
+test("cells.csv reports its status and refuses a buffer it cannot read", () => {
+  assert.equal(firecal.cellsCsv(query({ north: 10.0 })).status, 1);
+  const request = rawRequest({});
+  assert.equal(firecal.exports.fc_cells_csv(request, 56, 0, 64), INVALID);
+  assert.equal(firecal.exports.fc_cells_csv(request, 56, 2 ** 31, 64), INVALID);
+  const buffer = firecal.exports.fc_alloc(8);
+  assert.equal(firecal.exports.fc_cells_csv(request, 56, buffer, 3), INVALID);
+  assert.equal(firecal.exports.fc_cells_csv(request, 55, buffer, 8), INVALID);
+  assert.equal(firecal.exports.fc_cells_csv(request, 56, buffer, 8), 6, "four bytes of room cannot hold the header");
+});

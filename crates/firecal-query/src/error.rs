@@ -24,6 +24,12 @@ pub enum QueryError {
     SeasonMonthsOutOfRange,
     /// The season in progress lacks a month in the series, so it cannot be ranked.
     SeasonIncomplete,
+    /// A polygon whose edges cross or touch each other.
+    SelfIntersecting,
+    /// A polygon that goes all the way around a pole, which has no longitude to cut it at.
+    EnclosesPole,
+    /// An output buffer too small for the text.
+    BufferTooSmall,
     /// A tile or month problem reported by the shared types, such as a month the tile does not hold.
     Types(Error),
 }

@@ -7,18 +7,25 @@
 mod analogs;
 mod area;
 mod baseline;
+mod cells_csv;
 mod climatology;
 mod comparison;
+mod csv_text;
 mod error;
+mod polygon;
 mod root;
 mod series;
+mod series_csv;
 mod span;
 
 pub use analogs::{Analog, Season, analog_years};
-pub use area::Rectangle;
+pub use area::{Area, Rectangle};
 pub use baseline::BaselineYears;
+pub use cells_csv::write_cells_csv;
 pub use climatology::{Climatology, climatology};
 pub use comparison::{ComparisonOut, compare_with_climatology};
 pub use error::QueryError;
+pub use polygon::{PolygonArea, Vertex};
 pub use series::{SeriesOut, series};
+pub use series_csv::{SeriesRows, write_series_csv};
 pub use span::month_span;

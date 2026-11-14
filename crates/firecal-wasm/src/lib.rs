@@ -11,16 +11,18 @@
 
 #[cfg(target_arch = "wasm32")]
 mod allocation;
+mod cells_csv_call;
 mod memory;
 mod request;
 mod series_call;
 mod status;
 
+pub use cells_csv_call::run_cells_csv;
 pub use memory::{Memory, SliceMemory};
 pub use series_call::run_series;
 pub use status::{
     INVALID, STATUS_AREA_OUT_OF_RANGE, STATUS_EMPTY_AREA, STATUS_MONTH_NOT_IN_TILE,
-    STATUS_MONTH_RANGE_INVALID, STATUS_OK, STATUS_TILE_INVALID,
+    STATUS_MONTH_RANGE_INVALID, STATUS_OK, STATUS_OUTPUT_TOO_SMALL, STATUS_TILE_INVALID,
 };
 
 use firecal_query::month_span;
@@ -57,6 +59,25 @@ pub extern "C" fn fc_alloc(len: u32) -> u32 {
 #[unsafe(no_mangle)]
 pub extern "C" fn fc_free(address: u32) -> u32 {
     allocation::free(address)
+}
+
+/// Writes the `cells.csv` of the request block at `request_address` into the buffer at `buffer_address`: see
+/// [`run_cells_csv`].
+#[cfg(target_arch = "wasm32")]
+#[unsafe(no_mangle)]
+pub extern "C" fn fc_cells_csv(
+    request_address: u32,
+    request_len: u32,
+    buffer_address: u32,
+    buffer_len: u32,
+) -> u32 {
+    run_cells_csv(
+        &mut memory::LinearMemory,
+        request_address,
+        request_len,
+        buffer_address,
+        buffer_len,
+    )
 }
 
 /// Answers the series request block of `request_len` bytes at `request_address`: see [`run_series`].

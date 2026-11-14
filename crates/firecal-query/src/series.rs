@@ -1,15 +1,7 @@
 //! The series of an area: the harmonized value and its uncertainty, month by month.
 
-#![cfg_attr(
-    test,
-    expect(
-        clippy::suboptimal_flops,
-        reason = "only with std, which tests have: fused multiply-add rounds once, and wasm must round like native"
-    )
-)]
-
 use crate::root::square_root;
-use crate::{QueryError, Rectangle};
+use crate::{Area, QueryError};
 use core::ops::Range;
 use firecal_types::{Error, MonthIndex, Plane, TILE_SIDE, TileId, TileView};
 
@@ -38,7 +30,7 @@ pub struct SeriesOut<'a> {
 /// months do not fit the index, and [`Error::MonthOutsideTile`] when a tile in `tiles` lacks a requested month.
 pub fn series(
     tiles: &[(TileId, TileView<'_>)],
-    area: &Rectangle,
+    area: &impl Area,
     first_month: MonthIndex,
     plane: Plane,
     out: SeriesOut<'_>,
@@ -68,12 +60,15 @@ pub fn series(
             };
             let rows = inside_tile(&area.rows(), tile_row);
             let columns = inside_tile(&area.columns(), tile_col);
-            for offset in 0..months {
-                let month = MonthIndex::from_index(first_month.index() + offset);
-                let sums = sum_cells(tile, month, plane, sigma.is_some(), &rows, &columns)?;
-                add_at(value, offset, sums.0);
-                if let Some(sigma) = sigma.as_deref_mut() {
-                    add_at(sigma, offset, sums.1);
+            for row in rows {
+                for col in columns.clone() {
+                    let (grid_row, grid_col) =
+                        (tile_row * TILE_SIDE + row, tile_col * TILE_SIDE + col);
+                    if !area.selects(grid_row, grid_col) {
+                        continue;
+                    }
+                    let cell = Cell { tile, row, col };
+                    add_cell(&cell, first_month, plane, value, sigma.as_deref_mut())?;
                 }
             }
         }
@@ -103,27 +98,34 @@ fn inside_tile(cells: &Range<u32>, tile: u32) -> Range<u32> {
     cells.start.max(start) - start..cells.end.min(start + TILE_SIDE) - start
 }
 
-/// The sum of `plane` and the sum of squared sigma over the cells of one tile in one month.
-fn sum_cells(
-    tile: &TileView<'_>,
-    month: MonthIndex,
+/// One cell of a tile.
+struct Cell<'a, 'b> {
+    tile: &'a TileView<'b>,
+    row: u32,
+    col: u32,
+}
+
+/// Adds the cell's `plane` value, and its squared sigma when `sigma` is given, to each month.
+fn add_cell(
+    cell: &Cell<'_, '_>,
+    first_month: MonthIndex,
     plane: Plane,
-    with_sigma: bool,
-    rows: &Range<u32>,
-    columns: &Range<u32>,
-) -> Result<(f64, f64), QueryError> {
-    let mut total = 0.0;
-    let mut squares = 0.0;
-    for row in rows.clone() {
-        for col in columns.clone() {
-            total += f64::from(tile.value(plane, month, row, col)?);
-            if with_sigma {
-                let sigma = f64::from(tile.value(Plane::Sigma, month, row, col)?);
-                squares += sigma * sigma;
-            }
+    value: &mut [f64],
+    mut sigma: Option<&mut [f64]>,
+) -> Result<(), QueryError> {
+    for offset in 0..u16::try_from(value.len()).map_err(|_| Error::MonthRangeTooLong)? {
+        let month = MonthIndex::from_index(first_month.index() + offset);
+        add_at(
+            value,
+            offset,
+            f64::from(cell.tile.value(plane, month, cell.row, cell.col)?),
+        );
+        if let Some(sigma) = sigma.as_deref_mut() {
+            let each = f64::from(cell.tile.value(Plane::Sigma, month, cell.row, cell.col)?);
+            add_at(sigma, offset, each * each);
         }
     }
-    Ok((total, squares))
+    Ok(())
 }
 
 #[cfg(test)]
