@@ -32,3 +32,10 @@ Add a line when you use anything from outside the team: data, a library, a metho
 - MODIS C6 and C6.1 Active Fire User's Guide (MODIS confidence, fields):
   https://earthdata.nasa.gov/s3fs-public/2023-09/MODIS_C6_C6.1_Fire_User_Guide_1.0.pdf
 - NASA LANCE, NRT versus standard products: https://lance.modaps.eosdis.nasa.gov/data/difference.php
+
+## Sources for the design tokens
+
+- Ottosson, OKLab (the colour space the ramp is built in and measured in): https://bottosson.github.io/posts/oklab/
+- Machado, Oliveira and Fernandes 2009, A physiologically-based model for simulation of color vision deficiency
+  (the matrices in `web/tokens/ramp.test.mjs`): https://www.inf.ufrgs.br/~oliveira/pubs_files/CVD_Simulation/CVD_Simulation.html
+- WCAG 2.2, contrast (1.4.3, 1.4.11) and the relative luminance formula: https://www.w3.org/TR/WCAG22/
