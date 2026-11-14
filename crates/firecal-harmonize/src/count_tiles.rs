@@ -211,3 +211,6 @@ fn rounded_plane_value(value: f64) -> u16 {
 
 #[cfg(test)]
 mod tests;
+
+mod overlap;
+pub use overlap::{OverlapReport, ReportError, overlap_report};

@@ -6,6 +6,7 @@
 #![doc = include_str!("../count-tiles.md")]
 #![doc = include_str!("../sigma.md")]
 #![doc = include_str!("../energy.md")]
+#![doc = include_str!("../overlap-report.md")]
 #![forbid(unsafe_code)]
 #![deny(clippy::print_stdout, clippy::print_stderr)]
 
@@ -27,3 +28,5 @@ pub use uncertainty::{OverlapCount, SigmaError, SigmaModel, fit_sigma};
 mod energy;
 
 pub use energy::{EnergyCalibration, EnergyError, EnergyKnot, fit_energy};
+
+pub use count_tiles::{OverlapReport, ReportError, overlap_report};
