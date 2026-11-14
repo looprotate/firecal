@@ -203,6 +203,6 @@ pub(super) fn series_cases() -> Vec<SeriesCase> {
 pub(super) fn csv_cases() -> Vec<SeriesCase> {
     series_cases()
         .into_iter()
-        .filter(|case| case.area != WORLD)
+        .filter(|case| case.area.map(f64::to_bits) != WORLD.map(f64::to_bits))
         .collect()
 }
