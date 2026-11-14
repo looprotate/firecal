@@ -10,6 +10,8 @@ export interface AppShell {
   areaStatus: HTMLOutputElement;
   mapBounds: HTMLElement;
   mapCoordinates: HTMLElement;
+  pinRegionButton: HTMLButtonElement;
+  pinStatus: HTMLOutputElement;
 }
 
 /** Builds the shared page shell and gives the calendar package a stable mount point. */
@@ -54,6 +56,10 @@ export function renderShell(root: HTMLElement, series: Series): AppShell {
               <button type="submit">Use this area</button>
             </div>
           </form>
+          <div class="pin-region">
+            <button type="button" id="pin-region">Pin this region for offline use</button>
+            <output class="pin-status" id="pin-status" aria-live="polite"></output>
+          </div>
         </section>
         <section class="calendar-card" aria-labelledby="calendar-title">
           <div class="card-heading">
@@ -82,7 +88,20 @@ export function renderShell(root: HTMLElement, series: Series): AppShell {
   const areaStatus = requiredOutput(root, '#area-status');
   const mapBounds = requiredElement(root, '#map-bounds');
   const mapCoordinates = requiredElement(root, '#map-coordinates');
-  return { mapHost, calendarHost, runtimeStatus, areaForm, areaInputs, areaStatus, mapBounds, mapCoordinates };
+  const pinRegionButton = requiredButton(root, '#pin-region');
+  const pinStatus = requiredOutput(root, '#pin-status');
+  return {
+    mapHost,
+    calendarHost,
+    runtimeStatus,
+    areaForm,
+    areaInputs,
+    areaStatus,
+    mapBounds,
+    mapCoordinates,
+    pinRegionButton,
+    pinStatus,
+  };
 }
 
 function requiredElement(root: HTMLElement, selector: string): HTMLElement {
@@ -99,6 +118,12 @@ function requiredOutput(root: HTMLElement, selector: string): HTMLOutputElement 
 
 function requiredForm(root: HTMLElement, selector: string): HTMLFormElement {
   const element = root.querySelector<HTMLFormElement>(selector);
+  if (!element) throw new Error(`The app shell is missing ${selector}`);
+  return element;
+}
+
+function requiredButton(root: HTMLElement, selector: string): HTMLButtonElement {
+  const element = root.querySelector<HTMLButtonElement>(selector);
   if (!element) throw new Error(`The app shell is missing ${selector}`);
   return element;
 }

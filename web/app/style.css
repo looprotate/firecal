@@ -41,7 +41,11 @@ button, input { font: inherit; }
 .eyebrow { color: var(--text-secondary); margin: 0 0 10px; }
 h1, h2, p { margin-top: 0; }
 h1 { color: var(--text-strong); font-size: clamp(30px, 4vw, 48px); font-weight: 560; letter-spacing: -0.045em; line-height: 1.06; margin-bottom: 12px; }
-.intro-copy, .calendar-intro { color: var(--text-secondary); font-size: var(--text-size-row); margin-bottom: 0; }
+.intro-copy, .pin-region { align-items: center; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; padding-top: 16px; }
+.pin-region button { background: var(--raised); border: 1px solid var(--line); border-radius: var(--radius-row); color: var(--text-strong); cursor: pointer; font-size: var(--text-size-tiny); padding: 9px 12px; }
+.pin-region button:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.pin-status { color: var(--text-secondary); font-size: var(--text-size-tiny); }
+.calendar-intro { color: var(--text-secondary); font-size: var(--text-size-row); margin-bottom: 0; }
 .series-summary { border-left: 1px solid var(--line); display: grid; gap: 5px; min-width: 210px; padding-left: 18px; }
 .summary-label { color: var(--text-secondary); }
 .series-summary strong { color: var(--text-strong); font-size: var(--text-size-input); font-weight: 550; }

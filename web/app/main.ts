@@ -4,7 +4,7 @@ import '../tokens/tokens.css';
 import './style.css';
 import sample from '../stub/series.json';
 import { mountCalendar } from '../calendar/index.ts';
-import { loadFirecal } from '../../wasm/load.ts';
+import { loadFirecal, type Firecal } from '../../wasm/load.ts';
 import { createAreaMap } from '../map/map.ts';
 import {
   AREA_SELECTED_EVENT,
@@ -14,6 +14,8 @@ import {
   polygonFromSelectionEvent,
   type AreaBoundsText,
 } from './area-input.ts';
+import { pinRegion } from './offline.ts';
+import { pinnedSeries } from './pinned-series.ts';
 import { parseSeries } from './series.ts';
 import { renderShell } from './shell.ts';
 import type { Area } from './series.ts';
@@ -30,6 +32,8 @@ const state: { area: Area; polygon?: [number, number][]; series: typeof series; 
   error: '',
 };
 const calendar = mountCalendar(shell.calendarHost, state.series);
+let firecal: Firecal | undefined;
+let selection = 0;
 const map = createAreaMap(shell.mapHost, (area) => emitAreaSelected(root, area));
 map.once('load', () => {
   map.fitBounds([[state.area.west, state.area.south], [state.area.east, state.area.north]], { padding: 36, maxZoom: 8 });
@@ -59,11 +63,19 @@ root.addEventListener(AREA_SELECTED_EVENT, (event) => {
   state.bounds = boundsFromArea(area);
   state.error = '';
   render();
+  void answerFromPinnedTiles();
   map.fitBounds([[area.west, area.south], [area.east, area.north]], { padding: 36, maxZoom: 8 });
 });
 
+shell.pinRegionButton.addEventListener('click', () => void pinSelectedRegion());
+
 render();
 void loadRuntime(shell.runtimeStatus);
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/service-worker.js').catch((error: unknown) => {
+    shell.pinStatus.textContent = `Offline use is unavailable: ${error instanceof Error ? error.message : String(error)}`;
+  });
+}
 
 function render(): void {
   shell.areaInputs.west.value = state.bounds.west;
@@ -98,9 +110,53 @@ async function loadRuntime(status: HTMLOutputElement): Promise<void> {
   try {
     const response = await fetch('/firecal.wasm');
     if (!response.ok) throw new Error('Run `cargo xtask build-wasm` from the repository root first.');
-    await loadFirecal(await response.arrayBuffer());
+    firecal = await loadFirecal(await response.arrayBuffer());
     status.textContent = 'Core loaded. The calendar shows the hand-made sample until a region is pinned.';
+    await answerFromPinnedTiles();
   } catch (error) {
     status.textContent = error instanceof Error ? error.message : 'The Firecal core could not be loaded.';
   }
+}
+
+async function pinSelectedRegion(): Promise<void> {
+  shell.pinRegionButton.disabled = true;
+  shell.pinStatus.textContent = 'Saving the tiles of this region…';
+  try {
+    const report = await pinRegion(state.area);
+    const absent = report.missing === 0 ? '' : `; ${plural(report.missing, 'tile')} without fire ${report.missing === 1 ? 'is' : 'are'} not published`;
+    shell.pinStatus.textContent = `Pinned ${plural(report.tiles, 'tile')}, ${formatBytes(report.bytes)}${absent}.`;
+    await answerFromPinnedTiles();
+  } catch (error) {
+    shell.pinStatus.textContent = error instanceof Error ? error.message : 'The region could not be pinned.';
+  } finally {
+    shell.pinRegionButton.disabled = false;
+  }
+}
+
+async function answerFromPinnedTiles(): Promise<void> {
+  const asked = ++selection;
+  if (!firecal) return;
+  try {
+    const answer = await pinnedSeries(firecal, state.area, state.polygon);
+    if (asked !== selection) return;
+    if (answer === null) {
+      shell.runtimeStatus.textContent = 'No pinned tiles here. The calendar shows the hand-made sample.';
+      return;
+    }
+    state.series = answer.series;
+    render();
+    shell.runtimeStatus.textContent = `From the core, on ${plural(answer.tiles, 'pinned tile')}, ${plural(answer.series.months.length, 'month')}.`;
+  } catch (error) {
+    if (asked !== selection) return;
+    shell.runtimeStatus.textContent = error instanceof Error ? error.message : 'The pinned tiles could not be read.';
+  }
+}
+
+function formatBytes(bytes: number): string {
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KiB`;
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MiB`;
+}
+
+function plural(count: number, noun: string): string {
+  return `${count} ${noun}${count === 1 ? '' : 's'}`;
 }
