@@ -13,3 +13,6 @@ firecal-types.workspace = true
 
 [lints]
 workspace = true
+
+[dev-dependencies]
+firecal-testkit.workspace = true
