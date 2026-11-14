@@ -59,6 +59,15 @@ h2 { color: var(--text-strong); font-size: var(--text-size-input); font-weight: 
 .maplibregl-canvas { outline: none; }
 .map-footer { color: var(--text-secondary); display: flex; font-size: var(--text-size-tiny); justify-content: space-between; padding-top: 12px; }
 .map-coordinates { color: var(--text); font-family: var(--font-code); }
+.area-form { border-top: 1px solid var(--line); display: grid; gap: 12px; margin-top: 16px; padding-top: 16px; }
+.coordinate-fields { display: grid; gap: 10px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.coordinate-fields label { color: var(--text-secondary); display: grid; font-size: var(--text-size-tiny); gap: 6px; }
+.coordinate-fields input { background: var(--bg-deep); border: 1px solid var(--line); border-radius: var(--radius-row); color: var(--text-strong); min-width: 0; padding: 9px 10px; }
+.coordinate-fields input:focus-visible, .area-form button:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.area-form-actions { align-items: center; display: flex; gap: 12px; justify-content: space-between; min-height: 38px; }
+.area-status { color: var(--error); font-size: var(--text-size-tiny); }
+.area-form button { background: var(--raised); border: 1px solid var(--line); border-radius: var(--radius-row); color: var(--text-strong); cursor: pointer; font-size: var(--text-size-tiny); padding: 9px 12px; }
+.area-form button:hover { background: var(--selection); }
 .calendar-intro { font-size: 12px; margin: 16px 0 18px; }
 .calendar-mount { min-height: 260px; }
 .runtime-status { border-top: 1px solid var(--line); color: var(--text-secondary); display: block; font-size: var(--text-size-tiny); margin-top: 14px; padding-top: 12px; }
@@ -78,5 +87,7 @@ h2 { color: var(--text-strong); font-size: var(--text-size-input); font-weight: 
   .map-card, .calendar-card { padding: 15px; }
   .map-frame { min-height: 260px; }
   .map-footer { align-items: start; flex-direction: column; gap: 6px; }
+  .area-form-actions { align-items: start; flex-direction: column; }
+  .area-form button { align-self: stretch; }
   .page-footer { font-size: var(--text-size-tiny); }
 }

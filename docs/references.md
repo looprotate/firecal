@@ -28,7 +28,8 @@ Add a line when you use anything from outside the team: data, a library, a metho
 ## Software
 
 - Rust and Cargo: the language and build tool of the core. https://www.rust-lang.org
-- MapLibre GL JS: the map in the web app, once it is added. https://maplibre.org
+- MapLibre GL JS: the renderer for the map in the web app. https://maplibre.org
+- OpenFreeMap Liberty style: the public OpenStreetMap-based vector basemap used by the web area picker. The provider permits bounded offline downloads; use its terms and attribution when implementing pinned map regions. https://openfreemap.org/quick_start/ https://openfreemap.org/tos/
 
 ## Method
 

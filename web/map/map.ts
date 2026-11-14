@@ -5,30 +5,39 @@ import {
 } from 'maplibre-gl';
 import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 import { MaplibreTerradrawControl } from '@watergis/maplibre-gl-terradraw';
+import { areaFromRectangleCoordinates } from '../app/area-input.ts';
+import type { Area } from '../app/series.ts';
 
 setWorkerUrl(workerUrl);
 
-/** Starts the map shell without a remote basemap or an API key. */
-export function createAreaMap(container: HTMLElement): Map {
+/** Creates the map, rectangle tool and validated area-selection callback. */
+export function createAreaMap(container: HTMLElement, onAreaSelected: (area: Area) => void): Map {
   const map = new Map({
     container,
-    style: {
-      version: 8,
-      sources: {},
-      layers: [],
-    },
+    style: 'https://tiles.openfreemap.org/styles/liberty',
     center: [-60, -18],
-    zoom: 4,
-    attributionControl: false,
+    zoom: 3,
+    attributionControl: { compact: true },
   });
 
   map.addControl(new NavigationControl({ showCompass: false }), 'top-right');
-  map.addControl(
-    new MaplibreTerradrawControl({
-      modes: ['rectangle', 'select', 'delete-selection', 'delete'],
-      open: true,
-    }),
-    'top-left',
-  );
+  const drawingControl = new MaplibreTerradrawControl({
+    modes: ['rectangle', 'select', 'delete-selection', 'delete'],
+    open: true,
+  });
+  map.addControl(drawingControl, 'top-left');
+  map.once('load', () => {
+    const drawing = drawingControl.getTerraDrawInstance();
+    if (!drawing) return;
+    drawing.on('finish', (id, context) => {
+      if (context.mode !== 'rectangle') return;
+      const feature = drawing.getSnapshotFeature(id);
+      if (!feature || feature.geometry.type !== 'Polygon') return;
+      const ring = feature.geometry.coordinates[0];
+      if (!ring) return;
+      const area = areaFromRectangleCoordinates(ring);
+      if (area) onAreaSelected(area);
+    });
+  });
   return map;
 }

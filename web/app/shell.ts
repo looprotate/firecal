@@ -1,3 +1,4 @@
+import type { AreaBoundsText } from './area-input.ts';
 import type { Series } from './series.ts';
 
 /** A calendar view supplied by the calendar package at the integration point. */
@@ -9,6 +10,11 @@ export interface AppShell {
   mapHost: HTMLElement;
   calendarHost: HTMLElement;
   runtimeStatus: HTMLOutputElement;
+  areaForm: HTMLFormElement;
+  areaInputs: Record<keyof AreaBoundsText, HTMLInputElement>;
+  areaStatus: HTMLOutputElement;
+  mapBounds: HTMLElement;
+  mapCoordinates: HTMLElement;
 }
 
 /** Builds the shared page shell and gives the calendar package a stable mount point. */
@@ -37,10 +43,22 @@ export function renderShell(root: HTMLElement, series: Series): AppShell {
         <section class="map-card" aria-labelledby="map-title">
           <div class="card-heading">
             <div><p class="eyebrow">01 · SELECT AN AREA</p><h2 id="map-title">Map</h2></div>
-            <span class="map-bounds">${formatLongitude(series.area.west)} / ${formatLongitude(series.area.east)}</span>
+            <span class="map-bounds" id="map-bounds">${formatLongitude(series.area.west)} / ${formatLongitude(series.area.east)}</span>
           </div>
           <div class="map-frame" id="map" aria-label="Map area picker"></div>
-          <div class="map-footer"><span>Draw on the map or enter coordinates</span><span class="map-coordinates">${formatLongitude(series.area.west)}&nbsp; · &nbsp;${formatLatitude(series.area.south)}</span></div>
+          <div class="map-footer"><span>Draw on the map or enter coordinates</span><span class="map-coordinates" id="map-coordinates">${formatLongitude(series.area.west)}&nbsp; · &nbsp;${formatLatitude(series.area.south)}</span></div>
+          <form class="area-form" id="area-form" aria-label="Enter area coordinates">
+            <div class="coordinate-fields">
+              <label>West longitude<input name="west" type="number" min="-180" max="180" step="any" required value="${series.area.west}" autocomplete="off"></label>
+              <label>South latitude<input name="south" type="number" min="-90" max="90" step="any" required value="${series.area.south}" autocomplete="off"></label>
+              <label>East longitude<input name="east" type="number" min="-180" max="180" step="any" required value="${series.area.east}" autocomplete="off"></label>
+              <label>North latitude<input name="north" type="number" min="-90" max="90" step="any" required value="${series.area.north}" autocomplete="off"></label>
+            </div>
+            <div class="area-form-actions">
+              <output class="area-status" id="area-status" aria-live="polite"></output>
+              <button type="submit">Use this area</button>
+            </div>
+          </form>
         </section>
         <section class="calendar-card" aria-labelledby="calendar-title">
           <div class="card-heading">
@@ -59,7 +77,17 @@ export function renderShell(root: HTMLElement, series: Series): AppShell {
   const mapHost = requiredElement(root, '#map');
   const calendarHost = requiredElement(root, '#calendar');
   const runtimeStatus = requiredOutput(root, '#runtime-status');
-  return { mapHost, calendarHost, runtimeStatus };
+  const areaForm = requiredForm(root, '#area-form');
+  const areaInputs = {
+    west: requiredInput(areaForm, '[name="west"]'),
+    south: requiredInput(areaForm, '[name="south"]'),
+    east: requiredInput(areaForm, '[name="east"]'),
+    north: requiredInput(areaForm, '[name="north"]'),
+  };
+  const areaStatus = requiredOutput(root, '#area-status');
+  const mapBounds = requiredElement(root, '#map-bounds');
+  const mapCoordinates = requiredElement(root, '#map-coordinates');
+  return { mapHost, calendarHost, runtimeStatus, areaForm, areaInputs, areaStatus, mapBounds, mapCoordinates };
 }
 
 /** Passes the validated Series and mount point to a calendar implementation. */
@@ -75,6 +103,18 @@ function requiredElement(root: HTMLElement, selector: string): HTMLElement {
 
 function requiredOutput(root: HTMLElement, selector: string): HTMLOutputElement {
   const element = root.querySelector<HTMLOutputElement>(selector);
+  if (!element) throw new Error(`The app shell is missing ${selector}`);
+  return element;
+}
+
+function requiredForm(root: HTMLElement, selector: string): HTMLFormElement {
+  const element = root.querySelector<HTMLFormElement>(selector);
+  if (!element) throw new Error(`The app shell is missing ${selector}`);
+  return element;
+}
+
+function requiredInput(root: HTMLElement, selector: string): HTMLInputElement {
+  const element = root.querySelector<HTMLInputElement>(selector);
   if (!element) throw new Error(`The app shell is missing ${selector}`);
   return element;
 }
