@@ -113,3 +113,34 @@
   font-family: var(--font-ui);
   font-size: var(--text-size-row);
 }
+
+.calendar-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--margin);
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-family: var(--font-ui);
+  font-size: var(--text-size-small);
+}
+
+.calendar-planes, .calendar-files { align-items: center; display: flex; gap: 4px; }
+
+.calendar-toolbar button {
+  height: 30px;
+  padding: 0 10px;
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-row);
+  background: var(--surface);
+  color: var(--text-strong);
+  cursor: pointer;
+}
+
+.calendar-toolbar button[aria-pressed="true"] {
+  border-color: var(--text-strong);
+  background: var(--text-strong);
+  color: var(--bg);
+}
+
+.calendar-files button { font-family: var(--font-code); }
+.calendar-note { color: var(--text-secondary); }

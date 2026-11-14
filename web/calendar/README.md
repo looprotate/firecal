@@ -19,6 +19,9 @@ Months across, years down, one cell per month of a Series. It draws; every numbe
 - **The season against the median**, under the legend: one column under each month of the last year, a bar from the
   median line to the core's anomaly, its sensor band at two sigma in sky (estimated), and the diamond when flagged.
   The sentence under it reads the newest month in words, so nothing depends on the drawing.
+- **Controls**, above the grid, only when the page offers them (`CalendarActions`): Count and Energy as pressed
+  buttons, which ask the page for the other plane, and `series.csv` and `cells.csv`, which save the core's text
+  as files. A polygon has no `cells.csv`, and the toolbar says so instead of offering a button that fails.
 - **Legend** under the readout: the empty cell and the seven steps from none to most, then a cell with each mark and
   what it means in words. It is drawn from the same classes as the cells.
 
