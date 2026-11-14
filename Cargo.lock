@@ -6,6 +6,7 @@ version = 4
 name = "firecal-harmonize"
 version = "0.1.0"
 dependencies = [
+ "firecal-query",
  "firecal-testkit",
  "firecal-types",
 ]
