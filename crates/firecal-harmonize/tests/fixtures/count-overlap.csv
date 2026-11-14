@@ -1,0 +1,5 @@
+month_index,cell,modis_count,viirs_count,expected_mapped_count
+276,0,0,0,0
+277,0,2,4,2
+278,0,4,8,4
+279,0,8,16,8

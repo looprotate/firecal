@@ -1,0 +1,9 @@
+viirs_count,expected_mapped_count
+0,0
+2,1
+4,2
+6,3
+8,4
+12,6
+16,8
+20,8
