@@ -49,8 +49,7 @@ impl CountTile {
                 &self.counts,
                 self.sigma
                     .as_ref()
-                    .map(|plane| plane.values.as_slice())
-                    .unwrap_or(&placeholders),
+                    .map_or(placeholders.as_slice(), |plane| plane.values.as_slice()),
                 &placeholders,
             ],
             &mut bytes,
