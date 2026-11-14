@@ -15,8 +15,13 @@ pub struct CountTile {
     pub(super) plan: CountPlan,
     pub(super) counts: Vec<u16>,
     pub(super) paired_months: Vec<MonthIndex>,
-    pub(super) sigma: Option<Vec<u16>>,
-    pub(super) sigma_model: Option<SigmaModel>,
+    pub(super) sigma: Option<SigmaPlane>,
+}
+
+#[derive(Debug, Clone)]
+pub(super) struct SigmaPlane {
+    pub(super) values: Vec<u16>,
+    pub(super) model: SigmaModel,
 }
 
 impl CountTile {
@@ -27,7 +32,7 @@ impl CountTile {
             && self
                 .sigma
                 .as_ref()
-                .is_none_or(|values| values.iter().all(|value| *value == 0))
+                .is_none_or(|plane| plane.values.iter().all(|value| *value == 0))
     }
 
     /// Encodes month-major counts using the unchanged FCT1 writer.
@@ -42,7 +47,10 @@ impl CountTile {
             self.plan.months,
             [
                 &self.counts,
-                self.sigma.as_deref().unwrap_or(&placeholders),
+                self.sigma
+                    .as_ref()
+                    .map(|plane| plane.values.as_slice())
+                    .unwrap_or(&placeholders),
                 &placeholders,
             ],
             &mut bytes,
@@ -68,15 +76,15 @@ impl CountTile {
         }
         validate_date(date)?;
         let calibration = self
-            .sigma_model
+            .sigma
             .as_ref()
-            .map_or(calibration, SigmaModel::calibration);
+            .map_or(calibration, |plane| plane.model.calibration());
         let planes = if self.sigma.is_some() {
             "\"count\",\"sigma\""
         } else {
             "\"count\""
         };
-        let sigma_model = sigma_json(self.sigma_model.as_ref());
+        let sigma_model = sigma_json(self.sigma.as_ref().map(|plane| &plane.model));
         let training_months = self
             .paired_months
             .iter()

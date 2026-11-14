@@ -1,5 +1,6 @@
 //! Bind residual uncertainty to the existing count fit, then encode estimated sigma.
 
+use super::encoding::SigmaPlane;
 use super::{AggregateIndex, CountPlan, CountTile, TileBuildError, apply, fit_aggregates};
 use crate::{OverlapCount, SigmaModel, fit_sigma};
 use firecal_types::{AggregateView, CellIndex, MonthIndex, TILE_SIDE};
@@ -91,8 +92,10 @@ pub fn apply_with_sigma(
             sigmas.push(rounded_sigma(sigma, *encoded));
         }
     }
-    tile.sigma = Some(sigmas);
-    tile.sigma_model = Some(model.clone());
+    tile.sigma = Some(SigmaPlane {
+        values: sigmas,
+        model: model.clone(),
+    });
     Ok(tile)
 }
 

@@ -182,7 +182,6 @@ pub fn apply(
         counts,
         paired_months: index.paired_months(plan),
         sigma: None,
-        sigma_model: None,
     })
 }
 
