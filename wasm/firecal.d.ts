@@ -126,10 +126,12 @@ export interface FirecalExports {
   fc_area_series(requestAddress: number, requestLength: number, bufferAddress: number, bufferLength: number): number;
   /**
    * How each month of the history compares with what is normal: for each month, the median of its calendar month
-   * over the baseline years, the anomaly `(value - median) / max(median, 1)`, and whether it is unusual,
-   * `|value - median| > 2 * sigma`. Same request and buffer as `fc_area_series`. Writes month count `f64`
-   * medians, month count `f64` anomalies, then month count bytes, 1 for unusual and 0 for not. A month whose
-   * calendar month has no baseline value has NaN for the median and the anomaly and 0 for the flag.
+   * over the baseline years, the anomaly `(value - median) / max(median, 1)`, and whether it is unusual: the
+   * difference clears the sensor band, `|value - median| > 2 * sigma`, and the value lies outside the lowest
+   * to highest value of the baseline years for its calendar month. Same request and buffer as `fc_area_series`.
+   * Writes month count `f64` medians, month count `f64` anomalies, then month count bytes, 1 for unusual and 0
+   * for not. A month whose calendar month has no baseline value has NaN for the median and the anomaly and 0 for
+   * the flag.
    * Returns a `STATUS_*` (`STATUS_BASELINE_INVALID`; `STATUS_OUTPUT_TOO_SMALL` below month count x
    * `COMPARISON_BYTES_PER_MONTH`), or `INVALID`. Nothing is written unless the status is `STATUS_OK`.
    */

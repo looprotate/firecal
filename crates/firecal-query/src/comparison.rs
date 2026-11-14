@@ -8,7 +8,8 @@ use firecal_types::{Error, MonthIndex};
 pub struct ComparisonOut<'a> {
     /// `(value - median) / max(median, 1)`: 0 is normal, 1 is twice the median, -1 is nothing.
     pub anomaly: &'a mut [f64],
-    /// `|value - median| > 2 * sigma`: the difference clears the uncertainty band.
+    /// The difference clears the sensor band (`|value - median| > 2 * sigma`) **and** the value lies outside the
+    /// lowest-to-highest range of the baseline years for its calendar month.
     pub unusual: &'a mut [bool],
 }
 
@@ -40,12 +41,18 @@ pub fn compare_with_climatology(
             .ok()
             .and_then(|offset| first_month.index().checked_add(offset))
             .ok_or(Error::MonthRangeTooLong)?;
+        let month = MonthIndex::from_index(at);
         let median = climatology
-            .median(MonthIndex::from_index(at))
+            .median(month)
+            .ok_or(QueryError::NoBaselineForMonth)?;
+        let (lowest, highest) = climatology
+            .range(month)
             .ok_or(QueryError::NoBaselineForMonth)?;
         let difference = number - median;
         *anomaly_slot = difference / median.max(1.0);
-        *unusual_slot = difference.abs() > 2.0 * spread;
+        let beyond_sensor_band = difference.abs() > 2.0 * spread;
+        let beyond_baseline_years = *number < lowest || *number > highest;
+        *unusual_slot = beyond_sensor_band && beyond_baseline_years;
     }
     Ok(())
 }

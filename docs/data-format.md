@@ -131,7 +131,7 @@ value[n]         harmonized value summed over the area
 sigma[n]         uncertainty of value; errors of cells add in quadrature (sqrt, no exp or ln)
 median[12]       historical median of value for each calendar month, over the baseline years
 anomaly[n]       (value - median[month]) / max(median[month], 1)
-unusual[n]       true when |value - median[month]| > 2 * sigma[n]
+unusual[n]       true when |value - median[month]| > 2 * sigma[n] and value[n] is outside lowest[month] .. highest[month]
 analogs[k]       the k past years most similar to the season in progress: year, distance
 ```
 
@@ -145,8 +145,23 @@ sigma of its own yet.
 
 **Climatology and anomaly.** The median of a calendar month is taken over the baseline years that the history series
 holds for it; an even count gives the mean of the two middle values. `anomaly` divides by `max(median, 1)` so a
-quiet month cannot explode, and `unusual` is strict: a difference of exactly `2 * sigma` is not flagged. A month in
+quiet month cannot explode, and `unusual` is strict. A month in
 the range whose calendar month has no baseline value is an error, not a zero.
+
+**When a month is unusual.** Two conditions, both required. The difference from the median clears the sensor band,
+`|value - median| > 2 * sigma` (a difference of exactly `2 * sigma` is not flagged), and the value lies outside the
+lowest-to-highest range of the baseline years for the same calendar month (a value equal to the lowest or the highest
+is inside). The reason: `sigma` covers only the measurement error of the harmonization, not the natural spread
+between years, so the band alone flagged 47 of 178 months (26%) of a synthetic tile and the mark said nothing. A new
+year ranks equally likely in any of the n + 1 places among n baseline years, so with 13 years it falls outside their
+range 2 times in 14 on the range alone; most of those are within the sensor band of the median and are not
+flagged. On a synthetic tile (13 baseline years with random year factors 0.7 to 1.4, 15% sigma) the range alone
+flagged 12.5% of the months of a normal year, the sensor band alone 17.8%, and both together 7.1%, about 1 in 14;
+a year built at 2.4 times was flagged in every month. The minimum and the
+maximum need no interpolation, so they are exact and identical in wasm and native, unlike a percentile. The cost is
+that a very short baseline has a narrow range: with 2 years a normal year is outside it 2 times in 3, so the sensor
+band does most of the work there. A year of the baseline is never unusual against its own baseline. A calendar month
+with no baseline has no range and is not unusual.
 
 **Analog years.** The season in progress is January to month `m` of the current year. Each month's rank is taken among
 the candidate years and the current one; ties share the middle rank, so the difference of two years is counted in

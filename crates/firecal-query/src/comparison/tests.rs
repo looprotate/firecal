@@ -8,7 +8,7 @@ fn month(year: u16, month: u16) -> MonthIndex {
 }
 
 // Normal, by hand: from three baseline years, January 20, February 8 and every other month 0 (median of the
-// values 10, 30, 20 and 4, 8, 100 and zeros).
+// values 10, 30, 20 and 4, 8, 100 and zeros). The ranges are January 10 to 30, February 4 to 100, March 0 to 0.
 fn normal() -> crate::Climatology {
     let mut value = vec![0.0; 36];
     for (at, number) in [
@@ -65,16 +65,45 @@ fn a_month_equal_to_its_median_has_anomaly_zero_and_is_not_unusual() {
 }
 
 #[test]
-fn a_difference_over_two_sigma_is_unusual() {
-    // |30 - 20| = 10 against 2 * 4 = 8
-    let (_, unusual) = compare(month(2004, 1), &[30.0], &[4.0]).unwrap();
+fn a_difference_over_two_sigma_and_beyond_the_baseline_is_unusual() {
+    // |35 - 20| = 15 against 2 * 4 = 8, and 35 is above the January maximum 30
+    let (_, unusual) = compare(month(2004, 1), &[35.0], &[4.0]).unwrap();
     assert_eq!(unusual, [true]);
 }
 
 #[test]
+fn a_value_over_two_sigma_but_inside_the_baseline_range_is_not_unusual() {
+    // February 60: |60 - 8| = 52 against 2 * 4 = 8 passes the sensor band, but the baseline has 4 to 100
+    let (_, unusual) = compare(month(2004, 2), &[60.0], &[4.0]).unwrap();
+    assert_eq!(unusual, [false]);
+}
+
+#[test]
+fn a_value_beyond_the_baseline_range_but_inside_two_sigma_is_not_unusual() {
+    // January 35 is above the maximum 30, but |35 - 20| = 15 against 2 * 8 = 16 is inside the sensor band
+    let (_, unusual) = compare(month(2004, 1), &[35.0], &[8.0]).unwrap();
+    assert_eq!(unusual, [false]);
+}
+
+#[test]
+fn a_value_equal_to_the_baseline_minimum_or_maximum_is_not_unusual() {
+    // January 10 and 30 are the extremes of the baseline, and both are far over 2 * 1 from the median 20
+    let (_, unusual) = compare(month(2004, 1), &[10.0, 30.0], &[1.0, 1.0]).unwrap();
+    assert_eq!(unusual, [false, false]);
+}
+
+#[test]
+fn a_value_just_past_the_baseline_range_is_unusual() {
+    // February 101 is above the maximum 100 and |101 - 8| = 93 against 2 * 1; January 9 is below the minimum 10
+    let (_, february) = compare(month(2004, 2), &[101.0], &[1.0]).unwrap();
+    let (_, january) = compare(month(2004, 1), &[9.0], &[1.0]).unwrap();
+    assert_eq!((february, january), (vec![true], vec![true]));
+}
+
+#[test]
 fn a_difference_of_exactly_two_sigma_is_not_unusual() {
-    // |30 - 20| = 10 against 2 * 5 = 10: the rule is strict
-    let (_, unusual) = compare(month(2004, 1), &[30.0], &[5.0]).unwrap();
+    // |35 - 20| = 15 against 2 * 7.5 = 15: the rule is strict, though 35 is beyond the baseline range
+    let (_, unusual) = compare(month(2004, 1), &[35.0], &[7.5]).unwrap();
     assert_eq!(unusual, [false]);
 }
 

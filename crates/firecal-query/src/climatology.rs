@@ -1,14 +1,16 @@
-//! What is normal for each calendar month: the median of the baseline years.
+//! What is normal for each calendar month: the median and the range of the baseline years.
 
 use crate::{BaselineYears, QueryError};
 use firecal_types::{Error, MonthIndex};
 
 const MOST_BASELINE_YEARS: usize = 64;
 
-/// The median value of each calendar month over the baseline years; `None` for a month none of them has.
+/// The median and the lowest and highest value of each calendar month over the baseline years; `None` for a
+/// month none of them has.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Climatology {
     median: [Option<f64>; 12],
+    range: [Option<(f64, f64)>; 12],
 }
 
 impl Climatology {
@@ -18,11 +20,20 @@ impl Climatology {
         let calendar_month = usize::from(month.month() - 1);
         self.median.get(calendar_month).copied().flatten()
     }
+
+    /// The lowest and the highest baseline value for the calendar month of `month`, or `None` when the baseline
+    /// has no value for it. A year inside this range is within what the baseline years have already shown.
+    #[must_use]
+    pub fn range(&self, month: MonthIndex) -> Option<(f64, f64)> {
+        let calendar_month = usize::from(month.month() - 1);
+        self.range.get(calendar_month).copied().flatten()
+    }
 }
 
 /// The climatology of `value`, a monthly series that starts at `first_month`, over the `baseline` years.
 ///
-/// An even number of years gives the mean of the two middle values; months outside the baseline are ignored.
+/// An even number of years gives the mean of the two middle values; months outside the baseline are ignored. The
+/// range is the smallest and the largest of the same values, so it needs no interpolation.
 ///
 /// # Errors
 /// [`QueryError::BaselineTooLong`] for more than 64 years of one calendar month, and [`QueryError::Types`]
@@ -33,7 +44,9 @@ pub fn climatology(
     baseline: BaselineYears,
 ) -> Result<Climatology, QueryError> {
     let mut median = [None; 12];
-    for (slot, calendar_month) in median.iter_mut().zip(1_u16..=12) {
+    let mut range = [None; 12];
+    let slots = median.iter_mut().zip(range.iter_mut());
+    for ((slot, range_slot), calendar_month) in slots.zip(1_u16..=12) {
         let mut years = [0.0; MOST_BASELINE_YEARS];
         let mut count = 0;
         for (offset, number) in value.iter().enumerate() {
@@ -48,8 +61,16 @@ pub fn climatology(
             }
         }
         *slot = middle_of(years.get_mut(..count));
+        *range_slot = extremes_of(years.get(..count));
     }
-    Ok(Climatology { median })
+    Ok(Climatology { median, range })
+}
+
+fn extremes_of(numbers: Option<&[f64]>) -> Option<(f64, f64)> {
+    let numbers = numbers.filter(|numbers| !numbers.is_empty())?;
+    let lowest = numbers.iter().copied().min_by(f64::total_cmp)?;
+    let highest = numbers.iter().copied().max_by(f64::total_cmp)?;
+    Some((lowest, highest))
 }
 
 fn middle_of(numbers: Option<&mut [f64]>) -> Option<f64> {

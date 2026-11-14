@@ -3,7 +3,8 @@ use crate::history::tests::{Call, doubles};
 use crate::{STATUS_BASELINE_INVALID, STATUS_OK, STATUS_OUTPUT_TOO_SMALL};
 
 // Baseline 2001 to 2002: the median of January is (10 + 30) / 2 = 20, of February (20 + 40) / 2 = 30, of the
-// other months 100. Sigma is 2, so a difference of more than 4 is unusual.
+// other months 100. Sigma is 2, so a difference of more than 4 clears the sensor band; the baseline ranges are
+// January 10 to 30, February 20 to 40, and 100 to 100 for the other months. Unusual needs both.
 fn run(call: &Call) -> (u32, Vec<f64>, Vec<f64>, Vec<u8>) {
     let (status, buffer) = call.run(36 * 17, |m, r, l, b, n| run_comparison(m, r, l, b, n));
     let (numbers, flags) = buffer.split_at(36 * 16);
@@ -20,7 +21,9 @@ fn the_current_season_is_compared_with_the_baseline_median() {
     assert_eq!(anomaly[24].to_bits(), (-0.75_f64).to_bits());
     assert_eq!(anomaly[25].to_bits(), (-8.0_f64 / 30.0).to_bits());
     assert_eq!(anomaly[26].to_bits(), 0.0_f64.to_bits());
-    assert_eq!(flags[24..27], [1, 1, 0]);
+    // January 5 is below 10 and 15 from the median: unusual. February 22 is 8 from the median, over the sensor
+    // band, but inside 20 to 40: not unusual. March is the median.
+    assert_eq!(flags[24..27], [1, 0, 0]);
 }
 
 #[test]

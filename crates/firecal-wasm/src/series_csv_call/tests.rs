@@ -15,7 +15,10 @@ fn the_series_is_written_with_its_median_anomaly_and_flag() {
     let lines: Vec<&str> = text.lines().collect();
     assert_eq!(lines.len(), 37);
     assert_eq!(lines[0], "year,month,value,sigma,median,anomaly,unusual");
-    assert_eq!(lines[1], "2001,1,10,2.000,20.0,-0.500,true");
+    assert_eq!(
+        lines[1], "2001,1,10,2.000,20.0,-0.500,false",
+        "the baseline minimum is not unusual"
+    );
     assert_eq!(lines[25], "2003,1,5,2.000,20.0,-0.750,true");
     assert_eq!(lines[27], "2003,3,100,2.000,100.0,0.000,false");
 }

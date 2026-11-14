@@ -47,7 +47,7 @@ export interface ComparisonAnswer {
   median: Float64Array;
   /** `(value - median) / max(median, 1)`; NaN when there is no median. */
   anomaly: Float64Array;
-  /** 1 when the month clears the uncertainty band, else 0. */
+  /** 1 when the month clears the sensor band and lies outside the baseline years' range, else 0. */
   unusual: Uint8Array;
 }
 

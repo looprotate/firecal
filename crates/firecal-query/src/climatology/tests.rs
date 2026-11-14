@@ -43,6 +43,32 @@ fn the_median_of_three_years_is_the_middle_one() {
 }
 
 #[test]
+fn the_range_is_the_lowest_and_the_highest_year() {
+    let normal = climatology(start(), &three_years(), years(2001, 2003)).unwrap();
+    assert_eq!(normal.range(month(2030, 1)), Some((10.0, 30.0)));
+    assert_eq!(normal.range(month(2030, 2)), Some((4.0, 100.0)));
+    assert_eq!(normal.range(month(2030, 3)), Some((0.0, 0.0)));
+}
+
+#[test]
+fn the_range_of_one_year_is_that_year_twice() {
+    let normal = climatology(start(), &three_years(), years(2002, 2002)).unwrap();
+    assert_eq!(normal.range(month(2030, 1)), Some((30.0, 30.0)));
+}
+
+#[test]
+fn the_range_ignores_years_outside_the_baseline() {
+    let normal = climatology(start(), &three_years(), years(2001, 2002)).unwrap();
+    assert_eq!(normal.range(month(2030, 2)), Some((4.0, 8.0)));
+}
+
+#[test]
+fn a_month_with_no_baseline_has_no_range() {
+    let normal = climatology(start(), &three_years(), years(2010, 2012)).unwrap();
+    assert_eq!(normal.range(month(2030, 1)), None);
+}
+
+#[test]
 fn the_median_of_two_years_is_their_mean() {
     let normal = climatology(start(), &three_years(), years(2001, 2002)).unwrap();
     assert_eq!(normal.median(month(2030, 1)), Some(20.0));

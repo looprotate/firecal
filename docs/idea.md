@@ -21,7 +21,7 @@ Four layers, each one needing the one before. Together they are one argument, no
 Harmonization is an estimate, so every harmonized count carries a **sigma**. The calibration is fitted per tile
 on the years both sensors saw; its residuals over those years are the error we ship, and the web app shows it.
 
-What it buys: an anomaly is flagged only when it is **outside the uncertainty band**. "This March is unusual"
+What it buys: an anomaly is flagged only when it is **outside the uncertainty band** and outside the range the baseline years have shown. "This March is unusual"
 becomes "this March is unusual *and* it is not an artifact of switching sensors". Nobody else can say that.
 
 ### 2. Energy and effort, not just points
