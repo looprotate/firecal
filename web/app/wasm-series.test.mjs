@@ -53,4 +53,16 @@ test('the selected area produces one Series from the wasm history, comparison an
   assert.equal(series.median[1], 11.5);
   assert.equal(series.analogs.length, 2);
   assert.deepEqual(series.months.slice(-2), [36, 37]);
+
+  const polygonSeries = seriesForArea(firecal, area, {
+    firstMonth: 0,
+    months: 38,
+    baselineFirst: 2001,
+    baselineLast: 2002,
+    seasonYear: 2003,
+    seasonMonths: 2,
+    tiles: [fixtureTile()],
+    polygon: [[10, 0], [10, 0.25], [10.25, 0.25], [10.25, 0]],
+  });
+  assert.deepEqual(polygonSeries.value, series.value);
 });

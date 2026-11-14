@@ -10,12 +10,14 @@ export interface WasmHistoryOptions {
   seasonYear: number;
   seasonMonths: number;
   tiles: TileFile[];
+  /** Corners as [latitude, longitude]; when present the core answers for the polygon, not the rectangle. */
+  polygon?: [number, number][];
 }
 
 /** The most analog years the calendar asks the core for. */
 const ANALOG_LIMIT = 64;
 
-/** Runs the history, comparison and analog queries of the core for an area and returns one Series. */
+/** Runs the history, comparison and analog queries of the core for a rectangle or polygon; returns one Series. */
 export function seriesForArea(firecal: Firecal, area: Area, options: WasmHistoryOptions): Series {
   const query: AnalysisQuery = {
     south: area.south,
@@ -30,6 +32,7 @@ export function seriesForArea(firecal: Firecal, area: Area, options: WasmHistory
     baselineLast: options.baselineLast,
     seasonYear: options.seasonYear,
     seasonMonths: options.seasonMonths,
+    ...(options.polygon === undefined ? {} : { polygon: options.polygon }),
   };
   const values = firecal.areaSeries(query);
   assertOk(values.status, 'area series');

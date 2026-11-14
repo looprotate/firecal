@@ -11,6 +11,7 @@ import {
   areaFromSelectionEvent,
   emitAreaSelected,
   parseAreaBounds,
+  polygonFromSelectionEvent,
   type AreaBoundsText,
 } from './area-input.ts';
 import { parseSeries } from './series.ts';
@@ -22,7 +23,7 @@ if (!root) throw new Error('The app root is missing');
 
 const series = parseSeries(sample);
 const shell = renderShell(root, series);
-const state: { area: Area; series: typeof series; bounds: AreaBoundsText; error: string } = {
+const state: { area: Area; polygon?: [number, number][]; series: typeof series; bounds: AreaBoundsText; error: string } = {
   area: series.area,
   series,
   bounds: boundsFromArea(series.area),
@@ -52,6 +53,7 @@ shell.areaForm.addEventListener('submit', (event) => {
 root.addEventListener(AREA_SELECTED_EVENT, (event) => {
   const area = areaFromSelectionEvent(event);
   if (!area) return;
+  state.polygon = polygonFromSelectionEvent(event);
   state.area = area;
   state.series = { ...series, area };
   state.bounds = boundsFromArea(area);

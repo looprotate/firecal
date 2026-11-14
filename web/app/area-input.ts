@@ -13,6 +13,11 @@ export type AreaBoundsResult =
 
 export const AREA_SELECTED_EVENT = 'firecal:area-selected';
 
+export interface AreaSelection {
+  area: Area;
+  polygon?: [number, number][];
+}
+
 /** Parses user-entered bounds and enforces the rectangle limits accepted by the core. */
 export function parseAreaBounds(bounds: AreaBoundsText): AreaBoundsResult {
   const west = parseCoordinate(bounds.west, 'West longitude');
@@ -46,8 +51,9 @@ export function parseAreaBounds(bounds: AreaBoundsText): AreaBoundsResult {
 }
 
 /** Sends the one area-selection event used by coordinate entry and map drawing. */
-export function emitAreaSelected(target: EventTarget, area: Area): void {
-  target.dispatchEvent(new CustomEvent<Area>(AREA_SELECTED_EVENT, { detail: area }));
+export function emitAreaSelected(target: EventTarget, selection: Area | AreaSelection): void {
+  const detail = 'area' in selection ? selection : { area: selection };
+  target.dispatchEvent(new CustomEvent<AreaSelection>(AREA_SELECTED_EVENT, { detail }));
 }
 
 /** Reads and validates the detail of an area-selection event from the app shell. */
@@ -55,13 +61,34 @@ export function areaFromSelectionEvent(event: Event): Area | null {
   if (!(event instanceof CustomEvent)) return null;
   const detail: unknown = event.detail;
   if (typeof detail !== 'object' || detail === null) return null;
+  const candidate = Reflect.get(detail, 'area') ?? detail;
+  if (typeof candidate !== 'object' || candidate === null) return null;
   const result = parseAreaBounds({
-    west: String(Reflect.get(detail, 'west') ?? ''),
-    south: String(Reflect.get(detail, 'south') ?? ''),
-    east: String(Reflect.get(detail, 'east') ?? ''),
-    north: String(Reflect.get(detail, 'north') ?? ''),
+    west: String(Reflect.get(candidate, 'west') ?? ''),
+    south: String(Reflect.get(candidate, 'south') ?? ''),
+    east: String(Reflect.get(candidate, 'east') ?? ''),
+    north: String(Reflect.get(candidate, 'north') ?? ''),
   });
   return result.area;
+}
+
+/** Reads a polygon from the area-selection event in the core's [latitude, longitude] order. */
+export function polygonFromSelectionEvent(event: Event): [number, number][] | undefined {
+  if (!(event instanceof CustomEvent)) return undefined;
+  const detail: unknown = event.detail;
+  if (typeof detail !== 'object' || detail === null) return undefined;
+  const polygon = Reflect.get(detail, 'polygon');
+  if (!Array.isArray(polygon)) return undefined;
+  const corners: [number, number][] = [];
+  for (const corner of polygon) {
+    if (!Array.isArray(corner) || corner.length !== 2) return undefined;
+    const [latitude, longitude] = corner;
+    if (typeof latitude !== 'number' || typeof longitude !== 'number' || !Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+      return undefined;
+    }
+    corners.push([latitude, longitude]);
+  }
+  return corners.length >= 3 ? corners : undefined;
 }
 
 /** Converts the closed outer ring emitted by rectangle mode into its geographic bounds. */
@@ -94,6 +121,33 @@ export function areaFromRectangleCoordinates(ring: readonly (readonly number[])[
     return null;
   }
   return result.area;
+}
+
+/** Converts a GeoJSON ring to the core's polygon corners and the polygon's bounding rectangle. */
+export function selectionFromPolygonCoordinates(
+  ring: readonly (readonly number[])[],
+): AreaSelection | null {
+  if (ring.length < 4) return null;
+  const first = ring[0];
+  const last = ring[ring.length - 1];
+  if (!first || !last || !samePosition(first, last)) return null;
+  const polygon: [number, number][] = [];
+  for (const position of ring.slice(0, -1)) {
+    const [longitude, latitude] = position;
+    if (longitude === undefined || latitude === undefined || !Number.isFinite(longitude) || !Number.isFinite(latitude)) {
+      return null;
+    }
+    polygon.push([latitude, longitude]);
+  }
+  const longitudes = polygon.map(([, longitude]) => longitude);
+  const latitudes = polygon.map(([latitude]) => latitude);
+  const result = parseAreaBounds({
+    west: String(Math.min(...longitudes)),
+    south: String(Math.min(...latitudes)),
+    east: String(Math.max(...longitudes)),
+    north: String(Math.max(...latitudes)),
+  });
+  return result.area ? { area: result.area, polygon } : null;
 }
 
 type CoordinateResult =

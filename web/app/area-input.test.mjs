@@ -6,6 +6,8 @@ import {
   areaFromRectangleCoordinates,
   emitAreaSelected,
   parseAreaBounds,
+  polygonFromSelectionEvent,
+  selectionFromPolygonCoordinates,
 } from './area-input.ts';
 
 test('coordinate entry parses signed decimal bounds into an Area', () => {
@@ -69,9 +71,28 @@ test('area selection emits one shared event with the validated Area', () => {
 
   emitAreaSelected(target, area);
 
-  assert.deepEqual(emitted, [area]);
+  assert.deepEqual(emitted, [{ area }]);
   assert.deepEqual(areaFromSelectionEvent(new CustomEvent(AREA_SELECTED_EVENT, { detail: area })), area);
   assert.equal(areaFromSelectionEvent(new Event(AREA_SELECTED_EVENT)), null);
+});
+
+test('a finished polygon keeps its ring for the core and derives bounds for the map', () => {
+  const selection = selectionFromPolygonCoordinates([[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]);
+  assert.deepEqual(selection, {
+    area: { west: 0, south: 0, east: 1, north: 1 },
+    polygon: [[0, 0], [0, 1], [1, 1], [1, 0]],
+  });
+  assert.equal(selectionFromPolygonCoordinates([[0, 0], [1, 1], [0, 0]]), null);
+});
+
+test('the shared area event preserves polygon corners in core order', () => {
+  const target = new EventTarget();
+  let selection;
+  target.addEventListener(AREA_SELECTED_EVENT, (event) => { selection = event; });
+  const input = selectionFromPolygonCoordinates([[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]);
+  emitAreaSelected(target, input);
+  assert.deepEqual(areaFromSelectionEvent(selection), input.area);
+  assert.deepEqual(polygonFromSelectionEvent(selection), input.polygon);
 });
 
 test('rectangle conversion refuses triangles and zero-area rings', () => {
