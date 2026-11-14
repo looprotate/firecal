@@ -23,6 +23,7 @@ publish = false
 firecal-types = { path = "crates/firecal-types" }
 firecal-query = { path = "crates/firecal-query" }
 firecal-testkit = { path = "crates/firecal-testkit" }
+firecal-wasm = { path = "crates/firecal-wasm" }
 
 # Every crate opts in with `[lints] workspace = true`. Nobody weakens this table to get a green build;
 # one case is allowed with `#[expect(lint, reason = "...")]` on that item.

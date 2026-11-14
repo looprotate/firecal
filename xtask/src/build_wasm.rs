@@ -4,7 +4,7 @@ use crate::shell::{cargo, run as shell};
 use std::fs;
 use std::path::Path;
 
-const BUILT: &str = "target/wasm32-unknown-unknown/release/firecal_wasm.wasm";
+pub(crate) const BUILT: &str = "target/wasm32-unknown-unknown/release/firecal_wasm.wasm";
 const SERVED: &str = "web/public/firecal.wasm";
 
 pub(crate) fn run() -> Result<(), String> {
@@ -19,7 +19,7 @@ pub(crate) fn run() -> Result<(), String> {
     Ok(())
 }
 
-fn run_build() -> Result<(), String> {
+pub(crate) fn run_build() -> Result<(), String> {
     shell(
         &cargo(),
         &[

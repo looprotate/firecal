@@ -5,8 +5,12 @@ edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 repository.workspace = true
-description = "Project tasks: check, guard, worktree, build-wasm"
+description = "Project tasks: check, guard, worktree, build-wasm, parity"
 publish.workspace = true
+
+[dependencies]
+firecal-testkit.workspace = true
+firecal-wasm.workspace = true
 
 [lints]
 workspace = true

@@ -32,4 +32,5 @@ cargo xtask ready              the gate before a push: clean, rebased, diff rule
 cargo xtask hooks              installs the pre-push hook that runs ready
 cargo xtask pr-lint            checks a PR title and description (CI sets PR_TITLE and PR_BODY)
 cargo xtask build-wasm         builds web/public/firecal.wasm
+cargo xtask parity             native and wasm (under Node) give identical bytes for the same calls
 ```
