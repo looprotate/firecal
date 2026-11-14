@@ -17,8 +17,8 @@ how sure it is, works with no signal, and remembers which past year this one loo
 4. Tell the agent who you are: **"I'm Biggie"**, **"I'm Easy-E"**, **"I'm Dre"**, **"I'm Cube"**,
    **"I'm 2Pac"** or **"I'm Eminem"**. It reads your file in `crew/`, takes your first open issue and starts.
 
-Licensed under Apache-2.0 (`LICENSE`). The repo is private until we submit; the challenge requires the code to
-be public and open at submission.
+Licensed under Apache-2.0 (`LICENSE`). The repository is public, as the challenge requires at submission: every
+commit, issue and pull request is world-readable, so no keys, no third-party data and no personal addresses.
 
 `AGENTS.md` is the law for every agent. The weekend plan is `docs/plan.md`.
 
