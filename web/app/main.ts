@@ -14,33 +14,38 @@ import {
   polygonFromSelectionEvent,
   type AreaBoundsText,
 } from './area-input.ts';
+import { degreesText, latitudeLabel, longitudeLabel } from './degrees.ts';
 import { pinRegion } from './offline.ts';
 import { pinnedSeries } from './pinned-series.ts';
-import { parseSeries } from './series.ts';
+import { parseSeries, type Area, type Series } from './series.ts';
 import { renderShell } from './shell.ts';
-import type { Area } from './series.ts';
 
 const root = document.querySelector<HTMLDivElement>('#app');
 if (!root) throw new Error('The app root is missing');
 
-const series = parseSeries(sample);
-const shell = renderShell(root, series);
-const state: { area: Area; polygon?: [number, number][]; series: typeof series; bounds: AreaBoundsText; error: string } = {
-  area: series.area,
-  series,
-  bounds: boundsFromArea(series.area),
+const sampleSeries = parseSeries(sample);
+const shell = renderShell(root);
+
+/** Everything on screen comes from this object; `render` draws it. */
+const state: {
+  area: Area;
+  polygon?: [number, number][];
+  series: Series;
+  fromCore: boolean;
+  bounds: AreaBoundsText;
+  error: string;
+} = {
+  area: sampleSeries.area,
+  series: sampleSeries,
+  fromCore: false,
+  bounds: boundsFromArea(sampleSeries.area),
   error: '',
 };
 const calendar = mountCalendar(shell.calendarHost, state.series);
+const areaMap = createAreaMap(shell.mapHost, (selection) => emitAreaSelected(root, selection));
+areaMap.showSelection({ area: state.area });
 let firecal: Firecal | undefined;
-let selection = 0;
-const map = createAreaMap(shell.mapHost, (area) => emitAreaSelected(root, area));
-map.once('load', () => {
-  map.fitBounds([[state.area.west, state.area.south], [state.area.east, state.area.north]], { padding: 36, maxZoom: 8 });
-});
-map.on('error', (event) => {
-  shell.runtimeStatus.textContent = `Map error: ${event.error.message}`;
-});
+let asked = 0;
 
 shell.areaForm.addEventListener('submit', (event) => {
   event.preventDefault();
@@ -49,6 +54,7 @@ shell.areaForm.addEventListener('submit', (event) => {
   if (!result.area) {
     state.error = result.error;
     render();
+    refuse(shell.areaForm);
     return;
   }
   emitAreaSelected(root, result.area);
@@ -59,18 +65,17 @@ root.addEventListener(AREA_SELECTED_EVENT, (event) => {
   if (!area) return;
   state.polygon = polygonFromSelectionEvent(event);
   state.area = area;
-  state.series = { ...series, area };
   state.bounds = boundsFromArea(area);
   state.error = '';
+  areaMap.showSelection({ area, ...(state.polygon ? { polygon: state.polygon } : {}) });
   render();
   void answerFromPinnedTiles();
-  map.fitBounds([[area.west, area.south], [area.east, area.north]], { padding: 36, maxZoom: 8 });
 });
 
 shell.pinRegionButton.addEventListener('click', () => void pinSelectedRegion());
 
 render();
-void loadRuntime(shell.runtimeStatus);
+void loadRuntime();
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/service-worker.js').catch((error: unknown) => {
     shell.pinStatus.textContent = `Offline use is unavailable: ${error instanceof Error ? error.message : String(error)}`;
@@ -83,38 +88,42 @@ function render(): void {
   shell.areaInputs.east.value = state.bounds.east;
   shell.areaInputs.north.value = state.bounds.north;
   shell.areaStatus.textContent = state.error;
-  shell.mapBounds.textContent = `${state.area.west} / ${state.area.south} — ${state.area.east} / ${state.area.north}`;
-  shell.mapCoordinates.textContent = `${state.area.west}° / ${state.area.south}°`;
+  const { west, south, east, north } = state.area;
+  const shape = state.polygon ? 'Polygon in ' : '';
+  shell.areaLabel.textContent = `${shape}${latitudeLabel(south)} to ${latitudeLabel(north)}, ${longitudeLabel(west)} to ${longitudeLabel(east)}`;
+  shell.dataSource.textContent = state.fromCore ? 'Harmonized tiles, answered on this device' : 'Hand-made sample, not data';
   calendar.update(state.series);
 }
 
+/** Moves what was refused, the way a wrong password shakes: the message says why. */
+function refuse(element: HTMLElement): void {
+  element.classList.remove('refused');
+  void element.offsetWidth;
+  element.classList.add('refused');
+}
+
 function readAreaBounds(inputs: Record<keyof AreaBoundsText, HTMLInputElement>): AreaBoundsText {
-  return {
-    west: inputs.west.value,
-    south: inputs.south.value,
-    east: inputs.east.value,
-    north: inputs.north.value,
-  };
+  return { west: inputs.west.value, south: inputs.south.value, east: inputs.east.value, north: inputs.north.value };
 }
 
 function boundsFromArea(area: Area): AreaBoundsText {
   return {
-    west: String(area.west),
-    south: String(area.south),
-    east: String(area.east),
-    north: String(area.north),
+    west: degreesText(area.west),
+    south: degreesText(area.south),
+    east: degreesText(area.east),
+    north: degreesText(area.north),
   };
 }
 
-async function loadRuntime(status: HTMLOutputElement): Promise<void> {
+async function loadRuntime(): Promise<void> {
   try {
     const response = await fetch('/firecal.wasm');
     if (!response.ok) throw new Error('Run `cargo xtask build-wasm` from the repository root first.');
     firecal = await loadFirecal(await response.arrayBuffer());
-    status.textContent = 'Core loaded. The calendar shows the hand-made sample until a region is pinned.';
+    shell.runtimeStatus.textContent = 'Core loaded. The calendar shows the hand-made sample until a region is pinned.';
     await answerFromPinnedTiles();
   } catch (error) {
-    status.textContent = error instanceof Error ? error.message : 'The Firecal core could not be loaded.';
+    shell.runtimeStatus.textContent = error instanceof Error ? error.message : 'The core could not be loaded.';
   }
 }
 
@@ -123,7 +132,9 @@ async function pinSelectedRegion(): Promise<void> {
   shell.pinStatus.textContent = 'Saving the tiles of this region…';
   try {
     const report = await pinRegion(state.area);
-    const absent = report.missing === 0 ? '' : `; ${plural(report.missing, 'tile')} without fire ${report.missing === 1 ? 'is' : 'are'} not published`;
+    const absent = report.missing === 0
+      ? ''
+      : `; ${plural(report.missing, 'tile')} without fire ${report.missing === 1 ? 'is' : 'are'} not published`;
     shell.pinStatus.textContent = `Pinned ${plural(report.tiles, 'tile')}, ${formatBytes(report.bytes)}${absent}.`;
     await answerFromPinnedTiles();
   } catch (error) {
@@ -134,20 +145,24 @@ async function pinSelectedRegion(): Promise<void> {
 }
 
 async function answerFromPinnedTiles(): Promise<void> {
-  const asked = ++selection;
+  const question = ++asked;
   if (!firecal) return;
   try {
     const answer = await pinnedSeries(firecal, state.area, state.polygon);
-    if (asked !== selection) return;
+    if (question !== asked) return;
     if (answer === null) {
+      state.series = sampleSeries;
+      state.fromCore = false;
+      render();
       shell.runtimeStatus.textContent = 'No pinned tiles here. The calendar shows the hand-made sample.';
       return;
     }
     state.series = answer.series;
+    state.fromCore = true;
     render();
     shell.runtimeStatus.textContent = `From the core, on ${plural(answer.tiles, 'pinned tile')}, ${plural(answer.series.months.length, 'month')}.`;
   } catch (error) {
-    if (asked !== selection) return;
+    if (question !== asked) return;
     shell.runtimeStatus.textContent = error instanceof Error ? error.message : 'The pinned tiles could not be read.';
   }
 }

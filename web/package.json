@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "vite",
     "typecheck": "tsc --noEmit",
-    "test": "node --test \"app/**/*.test.mjs\" \"calendar/*.test.mjs\" \"tokens/*.test.mjs\"",
+    "test": "node --test \"app/**/*.test.mjs\" \"calendar/*.test.mjs\" \"map/*.test.mjs\" \"tokens/*.test.mjs\"",
     "build": "vite build",
     "preview": "vite preview",
     "smoke": "vite build && node app/smoke/run.mjs"

@@ -1,6 +1,7 @@
+import logo from '../tokens/logo.svg';
 import type { AreaBoundsText } from './area-input.ts';
-import type { Series } from './series.ts';
 
+/** The parts of the page the app reads and writes. */
 export interface AppShell {
   mapHost: HTMLElement;
   calendarHost: HTMLElement;
@@ -8,140 +9,87 @@ export interface AppShell {
   areaForm: HTMLFormElement;
   areaInputs: Record<keyof AreaBoundsText, HTMLInputElement>;
   areaStatus: HTMLOutputElement;
-  mapBounds: HTMLElement;
-  mapCoordinates: HTMLElement;
+  areaLabel: HTMLElement;
   pinRegionButton: HTMLButtonElement;
   pinStatus: HTMLOutputElement;
+  dataSource: HTMLElement;
 }
 
-/** Builds the shared page shell and gives the calendar package a stable mount point. */
-export function renderShell(root: HTMLElement, series: Series): AppShell {
-  const metricLabel = series.plane === 'count' ? 'HOTSPOT COUNTS' : 'FIRE ENERGY';
+/** The section markers: a rectangle for the area you draw, an arch for the calendar. */
+const MARKER = {
+  area: '<svg class="marker" viewBox="0 0 10 10" aria-hidden="true"><rect x="0" y="2" width="10" height="7"/></svg>',
+  calendar: '<svg class="marker" viewBox="0 0 10 10" aria-hidden="true"><path d="M0 10V5a5 5 0 0 1 10 0v5z"/></svg>',
+};
+
+const field = (name: keyof AreaBoundsText, label: string, limit: number): string =>
+  `<label>${label}<input name="${name}" type="number" inputmode="decimal" min="${-limit}" max="${limit}" step="any" required autocomplete="off"></label>`;
+
+/** Writes the page: the area panel with the map and the coordinates, and the calendar panel. */
+export function renderShell(root: HTMLElement): AppShell {
   root.innerHTML = `
     <header class="topbar">
-      <a class="wordmark" href="/" aria-label="Firecal home">FIRECAL<span>●</span></a>
-      <p class="topbar-caption">SATELLITE FIRE ACTIVITY</p>
-      <p class="topbar-status"><span class="status-dot" aria-hidden="true"></span> FIELD MODE</p>
+      <a class="brand" href="/"><img src="${logo}" alt="" width="24" height="24"><span>firecal</span></a>
+      <p class="topbar-caption">Burning activity from MODIS and VIIRS, harmonized</p>
     </header>
     <main class="workspace">
       <section class="intro" aria-labelledby="page-title">
-        <div>
-          <p class="eyebrow">SOUTH AMERICA · ${metricLabel}</p>
-          <h1 id="page-title">Fire activity, over time.</h1>
-          <p class="intro-copy">Satellite observations, harmonized into a calendar for the place you choose.</p>
-        </div>
-        <div class="series-summary" aria-label="Loaded sample series">
-          <span class="summary-label">SAMPLE REGION</span>
-          <strong>${formatLatitude(series.area.south)} to ${formatLatitude(series.area.north)}</strong>
-          <span>${series.months.length} monthly observations</span>
-        </div>
+        <h1 id="page-title">Fire activity, month by month.</h1>
+        <p class="intro-copy">Pick an area. The calendar shows how much burned each month, how sure that number is, and how it compares with past years.</p>
       </section>
-      <section class="workspace-grid" aria-label="Area and fire calendar">
-        <section class="map-card" aria-labelledby="map-title">
-          <div class="card-heading">
-            <div><p class="eyebrow">01 · SELECT AN AREA</p><h2 id="map-title">Map</h2></div>
-            <span class="map-bounds" id="map-bounds">${formatLongitude(series.area.west)} / ${formatLongitude(series.area.east)}</span>
+      <div class="workspace-grid">
+        <section class="panel" aria-labelledby="area-title">
+          <div class="panel-heading">
+            <h2 id="area-title">${MARKER.area}Area</h2>
+            <span class="area-label" id="area-label"></span>
           </div>
-          <div class="map-frame" id="map" aria-label="Map area picker"></div>
-          <div class="map-footer"><span>Draw on the map or enter coordinates</span><span class="map-coordinates" id="map-coordinates">${formatLongitude(series.area.west)}&nbsp; · &nbsp;${formatLatitude(series.area.south)}</span></div>
-          <form class="area-form" id="area-form" aria-label="Enter area coordinates">
+          <div class="map-frame" id="map" role="region" aria-label="Map: draw a rectangle or a polygon"></div>
+          <form class="area-form" id="area-form" aria-label="Area by coordinates">
             <div class="coordinate-fields">
-              <label>West longitude<input name="west" type="number" min="-180" max="180" step="any" required value="${series.area.west}" autocomplete="off"></label>
-              <label>South latitude<input name="south" type="number" min="-90" max="90" step="any" required value="${series.area.south}" autocomplete="off"></label>
-              <label>East longitude<input name="east" type="number" min="-180" max="180" step="any" required value="${series.area.east}" autocomplete="off"></label>
-              <label>North latitude<input name="north" type="number" min="-90" max="90" step="any" required value="${series.area.north}" autocomplete="off"></label>
+              ${field('west', 'West', 180)}${field('south', 'South', 90)}${field('east', 'East', 180)}${field('north', 'North', 90)}
             </div>
-            <div class="area-form-actions">
+            <div class="form-actions">
               <output class="area-status" id="area-status" aria-live="polite"></output>
-              <button type="submit">Use this area</button>
+              <button type="submit" class="primary">Use this area</button>
             </div>
           </form>
           <div class="pin-region">
-            <button type="button" id="pin-region">Pin this region for offline use</button>
+            <button type="button" id="pin-region">Pin for offline use</button>
             <output class="pin-status" id="pin-status" aria-live="polite"></output>
           </div>
         </section>
-        <section class="calendar-card" aria-labelledby="calendar-title">
-          <div class="card-heading">
-            <div><p class="eyebrow">02 · EXPLORE THE SEASONS</p><h2 id="calendar-title">Burning calendar</h2></div>
-            <span class="mode-chip">${series.plane.toUpperCase()}</span>
+        <section class="panel" aria-labelledby="calendar-title">
+          <div class="panel-heading">
+            <h2 id="calendar-title">${MARKER.calendar}Calendar</h2>
           </div>
-          <p class="calendar-intro">Monthly fire activity across the years, with historical context.</p>
-          <div class="calendar-mount" id="calendar" aria-label="Fire activity calendar"></div>
-          <output class="runtime-status" id="runtime-status" aria-live="polite">Loading the Firecal core…</output>
+          <div class="calendar-mount" id="calendar"></div>
+          <output class="runtime-status" id="runtime-status" aria-live="polite">Loading the core…</output>
         </section>
-      </section>
-      <footer class="page-footer"><span>MODIS + VIIRS · HAND-MADE SAMPLE</span><span>OFFLINE-READY FIELD TOOL</span></footer>
+      </div>
+      <footer class="page-footer"><span>NASA FIRMS hotspots, MODIS and VIIRS</span><span id="data-source"></span></footer>
     </main>
   `;
-
-  const mapHost = requiredElement(root, '#map');
-  const calendarHost = requiredElement(root, '#calendar');
-  const runtimeStatus = requiredOutput(root, '#runtime-status');
-  const areaForm = requiredForm(root, '#area-form');
-  const areaInputs = {
-    west: requiredInput(areaForm, '[name="west"]'),
-    south: requiredInput(areaForm, '[name="south"]'),
-    east: requiredInput(areaForm, '[name="east"]'),
-    north: requiredInput(areaForm, '[name="north"]'),
-  };
-  const areaStatus = requiredOutput(root, '#area-status');
-  const mapBounds = requiredElement(root, '#map-bounds');
-  const mapCoordinates = requiredElement(root, '#map-coordinates');
-  const pinRegionButton = requiredButton(root, '#pin-region');
-  const pinStatus = requiredOutput(root, '#pin-status');
+  const areaForm = required(root, '#area-form', HTMLFormElement);
   return {
-    mapHost,
-    calendarHost,
-    runtimeStatus,
+    mapHost: required(root, '#map', HTMLElement),
+    calendarHost: required(root, '#calendar', HTMLElement),
+    runtimeStatus: required(root, '#runtime-status', HTMLOutputElement),
     areaForm,
-    areaInputs,
-    areaStatus,
-    mapBounds,
-    mapCoordinates,
-    pinRegionButton,
-    pinStatus,
+    areaInputs: {
+      west: required(areaForm, '[name="west"]', HTMLInputElement),
+      south: required(areaForm, '[name="south"]', HTMLInputElement),
+      east: required(areaForm, '[name="east"]', HTMLInputElement),
+      north: required(areaForm, '[name="north"]', HTMLInputElement),
+    },
+    areaStatus: required(root, '#area-status', HTMLOutputElement),
+    areaLabel: required(root, '#area-label', HTMLElement),
+    pinRegionButton: required(root, '#pin-region', HTMLButtonElement),
+    pinStatus: required(root, '#pin-status', HTMLOutputElement),
+    dataSource: required(root, '#data-source', HTMLElement),
   };
 }
 
-function requiredElement(root: HTMLElement, selector: string): HTMLElement {
-  const element = root.querySelector<HTMLElement>(selector);
-  if (!element) throw new Error(`The app shell is missing ${selector}`);
+function required<T extends Element>(root: ParentNode, selector: string, type: new () => T): T {
+  const element = root.querySelector(selector);
+  if (!(element instanceof type)) throw new Error(`The page is missing ${selector}`);
   return element;
-}
-
-function requiredOutput(root: HTMLElement, selector: string): HTMLOutputElement {
-  const element = root.querySelector<HTMLOutputElement>(selector);
-  if (!element) throw new Error(`The app shell is missing ${selector}`);
-  return element;
-}
-
-function requiredForm(root: HTMLElement, selector: string): HTMLFormElement {
-  const element = root.querySelector<HTMLFormElement>(selector);
-  if (!element) throw new Error(`The app shell is missing ${selector}`);
-  return element;
-}
-
-function requiredButton(root: HTMLElement, selector: string): HTMLButtonElement {
-  const element = root.querySelector<HTMLButtonElement>(selector);
-  if (!element) throw new Error(`The app shell is missing ${selector}`);
-  return element;
-}
-
-function requiredInput(root: HTMLElement, selector: string): HTMLInputElement {
-  const element = root.querySelector<HTMLInputElement>(selector);
-  if (!element) throw new Error(`The app shell is missing ${selector}`);
-  return element;
-}
-
-function formatCoordinate(value: number): string {
-  return Number.isInteger(value) ? String(Math.abs(value)) : Math.abs(value).toFixed(1);
-}
-
-function formatLatitude(value: number): string {
-  return `${formatCoordinate(value)}° ${value < 0 ? 'S' : 'N'}`;
-}
-
-function formatLongitude(value: number): string {
-  return `${formatCoordinate(value)}° ${value < 0 ? 'W' : 'E'}`;
 }
