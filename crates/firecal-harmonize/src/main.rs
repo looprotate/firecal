@@ -1,12 +1,12 @@
-//! Count-only development tile writer. All filesystem access stays in this binary.
+//! Count and estimated-sigma development tile writer. All filesystem access stays in this binary.
 
-use firecal_harmonize::{CountPlan, apply, fit_aggregates};
+use firecal_harmonize::{CountPlan, apply_with_sigma, fit_sigma_aggregates};
 use firecal_types::{AggregateView, MonthIndex, Satellite, TileId};
 use std::ffi::OsString;
 use std::path::PathBuf;
 use std::process::ExitCode;
 
-const USAGE: &str = "usage: firecal-harmonize build --complete-standard-tile OUTPUT ROW COL FIRST_MONTH MONTH_COUNT MODIS_CODE VIIRS_CODE TRAIN_THROUGH YYYY-MM-DD FILE.fca...\nThe flag asserts complete science-quality coverage of the entire tile in every supplied satellite-month; do not use country-clipped data. Output is development-only: count is the only available plane.";
+const USAGE: &str = "usage: firecal-harmonize build --complete-standard-tile OUTPUT ROW COL FIRST_MONTH MONTH_COUNT MODIS_CODE VIIRS_CODE TRAIN_THROUGH YYYY-MM-DD FILE.fca...\nThe flag asserts complete science-quality coverage of the entire tile in every supplied satellite-month; do not use country-clipped data. Output is development-only: count and estimated sigma are available; energy is unavailable.";
 
 struct Options {
     output: PathBuf,
@@ -82,12 +82,12 @@ fn run() -> Result<(), String> {
             AggregateView::parse(bytes).map_err(|error| format!("invalid FCA1 input: {error:?}"))
         })
         .collect::<Result<Vec<_>, _>>()?;
-    let calibration = fit_aggregates(&options.plan, &aggregates, options.cutoff)
+    let model = fit_sigma_aggregates(&options.plan, &aggregates, options.cutoff, 1)
         .map_err(|error| format!("fit: {error:?}"))?;
-    let tile = apply(&calibration, &options.plan, &aggregates)
+    let tile = apply_with_sigma(&model, &options.plan, &aggregates)
         .map_err(|error| format!("apply: {error:?}"))?;
     let index = tile
-        .index_json(&calibration, options.cutoff, &options.date)
+        .index_json(model.calibration(), options.cutoff, &options.date)
         .map_err(|error| format!("index: {error:?}"))?;
     let encoded = if tile.is_empty() {
         None
@@ -117,7 +117,7 @@ fn run() -> Result<(), String> {
     std::fs::write(options.output.join("index.json"), index)
         .map_err(|error| format!("write index: {error}"))?;
     println!(
-        "Count-only development build written to {}. Sigma and energy are unavailable.",
+        "Count and estimated sigma development build written to {}. Energy is unavailable; real held-out sigma coverage is not validated.",
         options.output.display()
     );
     Ok(())

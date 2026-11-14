@@ -1,10 +1,12 @@
-//! Count-only development tiles. Coverage of every input tile-month must be known complete.
+//! Development count tiles with an optional estimated-sigma plane. Coverage of every input tile-month must be known complete.
 
 use crate::{Calibration, CalibrationError, fit};
 use firecal_types::{AggregateView, MonthIndex, Satellite, TILE_CELLS, TileId};
 
 mod aggregate_index;
 use aggregate_index::AggregateIndex;
+mod uncertainty;
+pub use uncertainty::{apply_with_sigma, fit_sigma_aggregates};
 mod encoding;
 pub use encoding::CountTile;
 
@@ -15,6 +17,8 @@ pub enum TileBuildError {
     Types(firecal_types::Error),
     /// The calibration cannot fit or map a count.
     Calibration(CalibrationError),
+    /// Residual uncertainty fitting or application failed.
+    Sigma(crate::SigmaError),
     /// Sources must be a MODIS satellite followed by a VIIRS satellite.
     InvalidSourcePair,
     /// Multiple files describe the same satellite-month.
@@ -177,6 +181,8 @@ pub fn apply(
         plan: *plan,
         counts,
         paired_months: index.paired_months(plan),
+        sigma: None,
+        sigma_model: None,
     })
 }
 

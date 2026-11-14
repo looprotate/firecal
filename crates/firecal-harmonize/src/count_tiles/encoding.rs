@@ -1,26 +1,33 @@
-//! FCT1 encoding through firecal-types and explicit count-only development metadata.
+//! FCT1 encoding through firecal-types and explicit available-plane metadata.
 
 use super::{CountPlan, TileBuildError};
-use crate::Calibration;
+use crate::{Calibration, SigmaModel};
 use firecal_types::{MonthIndex, tile_len, write_tile};
 
-/// A complete tile's count plane, before publishing the future sigma/energy planes.
+/// A complete tile's counts and optional estimated uncertainty.
 ///
-/// FCT1 requires three physical planes, so the other two are zero storage placeholders.
-/// They have no scientific meaning. Consumers must honor `planes: ["count"]` and
-/// `development_only: true` in the index and must not display uncertainty or energy.
+/// Energy remains an unavailable zero storage placeholder. Count-only [`crate::apply`]
+/// also leaves sigma unavailable; [`crate::apply_with_sigma`] supplies its estimate.
+/// The index declares available planes and keeps `development_only: true` until
+/// scientific validation and the remaining planes are complete.
 #[derive(Debug, Clone)]
 pub struct CountTile {
     pub(super) plan: CountPlan,
     pub(super) counts: Vec<u16>,
     pub(super) paired_months: Vec<MonthIndex>,
+    pub(super) sigma: Option<Vec<u16>>,
+    pub(super) sigma_model: Option<SigmaModel>,
 }
 
 impl CountTile {
-    /// True when no cell-month has a nonzero encoded count; its binary file is omitted.
+    /// True when counts and every available sigma are zero; its binary file is omitted.
     #[must_use]
     pub fn is_empty(&self) -> bool {
         self.counts.iter().all(|value| *value == 0)
+            && self
+                .sigma
+                .as_ref()
+                .is_none_or(|values| values.iter().all(|value| *value == 0))
     }
 
     /// Encodes month-major counts using the unchanged FCT1 writer.
@@ -33,14 +40,18 @@ impl CountTile {
         write_tile(
             self.plan.first,
             self.plan.months,
-            [&self.counts, &placeholders, &placeholders],
+            [
+                &self.counts,
+                self.sigma.as_deref().unwrap_or(&placeholders),
+                &placeholders,
+            ],
             &mut bytes,
         )
         .map_err(TileBuildError::Types)?;
         Ok(bytes)
     }
 
-    /// Serializes metadata and the fitted knots for this count-only development build.
+    /// Serializes available planes, fitted knots and optional estimated-sigma metadata.
     /// `date` is supplied at the edge so the pure library never reads the clock.
     ///
     /// # Errors
@@ -56,6 +67,16 @@ impl CountTile {
             return Err(TileBuildError::WrongCalibrationTile);
         }
         validate_date(date)?;
+        let calibration = self
+            .sigma_model
+            .as_ref()
+            .map_or(calibration, SigmaModel::calibration);
+        let planes = if self.sigma.is_some() {
+            "\"count\",\"sigma\""
+        } else {
+            "\"count\""
+        };
+        let sigma_model = sigma_json(self.sigma_model.as_ref());
         let training_months = self
             .paired_months
             .iter()
@@ -80,7 +101,7 @@ impl CountTile {
             concat!(
                 "{{\"first_month_index\":{},\"month_count\":{},",
                 "\"calibration_version\":\"count-quantile-v1\",\"build_date\":\"{}\",",
-                "\"planes\":[\"count\"],\"stored_planes\":[\"count\",\"sigma\",\"energy\"],",
+                "\"planes\":[{}],\"sigma_model\":{},\"stored_planes\":[\"count\",\"sigma\",\"energy\"],",
                 "\"development_only\":true,\"nrt_from_month\":null,\"tiles\":[{}],",
                 "\"coverage\":{{\"tile_row\":{},\"tile_col\":{},\"complete_tile\":true}},",
                 "\"calibration\":{{\"modis_satellite\":{},\"viirs_satellite\":{},",
@@ -90,6 +111,8 @@ impl CountTile {
             self.plan.first.index(),
             self.plan.months,
             date,
+            planes,
+            sigma_model,
             files,
             row,
             col,
@@ -101,6 +124,19 @@ impl CountTile {
             knots
         ))
     }
+}
+
+fn sigma_json(model: Option<&SigmaModel>) -> String {
+    model.map_or_else(|| "null".to_owned(), |model| format!(
+        concat!(
+            "{{\"version\":\"count-residual-rms-v1\",\"residual_rms_counts\":{},",
+            "\"measurement_floor_counts\":{},\"floor_applies_to\":\"active_cells\",\"first_training_month\":{},\"last_training_month\":{},",
+            "\"base\":\"max(rms,sqrt(mapped_count),active_floor)\",",
+            "\"temporal_factor\":\"1+distance/training_span\",",
+            "\"range_factor\":\"1+excess/max_training_viirs\",",
+            "\"real_holdout_coverage\":\"not_validated\"}}"
+        ), model.residual_rms(), model.measurement_floor(), model.first_month().index(), model.last_month().index()
+    ))
 }
 
 fn validate_date(date: &str) -> Result<(), TileBuildError> {

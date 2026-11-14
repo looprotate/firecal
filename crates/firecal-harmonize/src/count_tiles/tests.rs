@@ -213,3 +213,5 @@ fn fit_aggregates_rejects_absent_overlap_and_excludes_pre2012_months() {
 }
 
 mod boundaries;
+
+mod sigma;

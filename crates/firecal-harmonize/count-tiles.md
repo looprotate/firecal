@@ -1,7 +1,9 @@
-# Count-only tile writer (#31)
+# Count and estimated-sigma tile writer (#31/#32)
 
-This development pipeline implements `fit_aggregates` and
+The count-only library API implements `fit_aggregates` and
 `apply(calibration, plan, aggregates) -> CountTile`, without changing FCA1/FCT1.
+The CLI now uses `fit_sigma_aggregates` and `apply_with_sigma` to add estimated
+uncertainty; see `sigma.md` for its assumptions and validation limits.
 `CountTile::encode` delegates every binary byte to `firecal-types::write_tile`.
 
 ## Run
@@ -40,7 +42,7 @@ other months remain outside training. Source satellites are never summed.
 - If both are absent, fail before creating the output directory.
 - Round half counts upward, then saturate at 65535. Source u32 counts are never
   truncated. The bounded integer search avoids lossy floating-point casts.
-- A tile whose encoded counts are all zero is omitted from the file list.
+- A tile whose available count and sigma values are all zero is omitted from the file list.
   Otherwise write `t_<row>_<col>.bin`. Write `index.json` last: a partial build
   without an index is not a completed dataset. An I/O failure can leave a partial
   fresh directory; inspect it and choose a new destination for a retry.
@@ -53,14 +55,15 @@ cutoff used by `fit_aggregates`/`apply` so provenance remains consistent.
 
 ## Deliberate development limit
 
-FCT1 requires three physical planes. In this count-only milestone, sigma and
-energy are zero storage placeholders, **not estimates and not observations**.
-The index therefore declares `planes: ["count"]`, lists the three physical
-`stored_planes`, and sets `development_only: true`. Only count queries with
-`SeriesOut { sigma: None, .. }` are supported. Do not publish these tiles to the
-application or use the placeholder planes for anomalies or energy. Their real
-models arrive in #32 and #33. No app loader or query contract was changed to
-interpret placeholders automatically.
+FCT1 requires three physical planes. The CLI now declares available
+`planes: ["count", "sigma"]` and records the estimated error model and its
+unvalidated real held-out coverage. Energy is still an unavailable zero storage
+placeholder. The count-only `apply` API declares just the count plane and leaves
+sigma unavailable, preserving the original diagnostic path. Both paths set
+`development_only: true`; no app loader or shared query contract changed.
+The estimated model must be validated on independent standard overlap months
+before these files are presented as a validated science product. Energy arrives
+in #33.
 
 ## Evidence
 

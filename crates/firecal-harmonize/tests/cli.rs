@@ -1,4 +1,4 @@
-//! The count-only binary writes real files that the shared reader and query can consume.
+//! The count and estimated-sigma binary writes real files that the shared reader and query can consume.
 
 #[cfg(test)]
 mod support;
@@ -50,6 +50,18 @@ fn cli_builds_count_region_in_path_with_spaces_and_rejects_overwrite() {
     let index = std::fs::read_to_string(output.join("index.json")).unwrap();
     assert!(index.contains("\"development_only\":true"));
     assert!(index.contains("\"sample_count\":1600"));
+    assert!(index.contains("\"planes\":[\"count\",\"sigma\"]"));
+    assert!(index.contains("\"real_holdout_coverage\":\"not_validated\""));
+    assert_eq!(
+        view.value(Plane::Sigma, MonthIndex::from_index(276), 0, 0)
+            .unwrap(),
+        2
+    );
+    assert_eq!(
+        view.value(Plane::Sigma, MonthIndex::from_index(278), 0, 0)
+            .unwrap(),
+        4
+    );
     assert!(
         !run(&output, "--complete-standard-tile", &fixture.inputs)
             .status
