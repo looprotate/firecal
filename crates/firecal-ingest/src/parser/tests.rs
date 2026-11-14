@@ -45,6 +45,7 @@ fn five_satellites_and_their_archive_aliases_are_supported() {
         ("Suomi NPP", "VIIRS", "n", Satellite::SuomiNpp),
         ("1", "VIIRS", "h", Satellite::Noaa20),
         ("NOAA-20", "VIIRS", "n", Satellite::Noaa20),
+        ("N20", "VIIRS", "n", Satellite::Noaa20),
         ("2", "VIIRS", "n", Satellite::Noaa21),
         ("NOAA-21", "VIIRS", "h", Satellite::Noaa21),
     ] {
