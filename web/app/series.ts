@@ -23,6 +23,8 @@ export interface Series {
   median: number[];
   anomaly: number[];
   unusual: boolean[];
+  /** The first month from near-real-time data; null when none is, or when it is not known. */
+  provisional_from: number | null;
   analogs: Analog[];
 }
 
@@ -48,6 +50,7 @@ export function parseSeries(input: unknown): Series {
   const anomaly = readNumberArray(input.anomaly, 'anomaly');
   const unusual = readBooleanArray(input.unusual, 'unusual');
   const analogs = readAnalogs(input.analogs);
+  const provisionalFrom = readProvisionalFrom(input.provisional_from, months);
 
   for (const [name, values] of [
     ['value', value],
@@ -69,6 +72,7 @@ export function parseSeries(input: unknown): Series {
     median,
     anomaly,
     unusual,
+    provisional_from: provisionalFrom,
     analogs,
   };
 }
@@ -118,6 +122,13 @@ function readBooleanArray(value: unknown, name: string): boolean[] {
     if (typeof entry !== 'boolean') throw new Error(`${name}[${at}] must be a boolean`);
     return entry;
   });
+}
+
+function readProvisionalFrom(value: unknown, months: number[]): number | null {
+  if (value === undefined || value === null) return null;
+  const month = readInteger(value, 'provisional_from', 0);
+  if (!months.includes(month)) throw new Error('provisional_from must be one of the months');
+  return month;
 }
 
 function readAnalogs(value: unknown): Analog[] {

@@ -55,6 +55,7 @@ export function seriesForArea(firecal: Firecal, area: Area, options: WasmHistory
     median,
     anomaly: [...comparison.anomaly],
     unusual: [...comparison.unusual].map((flag) => flag !== 0),
+    provisional_from: null,
     analogs: analogs.analogs,
   };
 }

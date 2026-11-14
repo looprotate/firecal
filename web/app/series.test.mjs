@@ -25,3 +25,18 @@ test('a Series with a gap in its month indexes is rejected', () => {
 
   assert.throws(() => parseSeries(invalid), /consecutive/i);
 });
+
+test('provisional months start where the Series says, and a missing or null start means none', () => {
+  assert.equal(parseSeries(stubSeries).provisional_from, 298);
+  const none = structuredClone(stubSeries);
+  none.provisional_from = null;
+  assert.equal(parseSeries(none).provisional_from, null);
+  delete none.provisional_from;
+  assert.equal(parseSeries(none).provisional_from, null);
+});
+
+test('a provisional start outside the months is rejected', () => {
+  const invalid = structuredClone(stubSeries);
+  invalid.provisional_from = 400;
+  assert.throws(() => parseSeries(invalid), /provisional_from/);
+});
