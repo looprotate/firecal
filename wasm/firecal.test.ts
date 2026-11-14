@@ -3,13 +3,14 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
+import { fileURLToPath } from "node:url";
 import { loadFirecal } from "./firecal.ts";
 import type { SeriesQuery, TileFile } from "./firecal.ts";
 
 const INVALID = 4294967295;
 const wasmPath =
   process.env["FIRECAL_WASM"] ??
-  new URL("../target/wasm32-unknown-unknown/debug/firecal_wasm.wasm", import.meta.url).pathname;
+  fileURLToPath(new URL("../target/wasm32-unknown-unknown/debug/firecal_wasm.wasm", import.meta.url));
 const firecal = await loadFirecal(readFileSync(wasmPath));
 
 // Grid cell row 319, column 720 (latitude 10.0 to 10.25, longitude 0.0 to 0.25) is tile (7, 18) at
