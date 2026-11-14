@@ -8,6 +8,12 @@ Add a line when you use anything from outside the team: data, a library, a metho
 
 ## Data
 
+- NASA FIRMS public country archive: all 48 available Uruguay CSVs (MODIS
+  2000–2025, VIIRS S-NPP 2012–2025, NOAA-20 2018–2025) used for issue #27
+  ingestion and throughput; 2023–2025 selected separately for the regional handoff.
+  https://firms.modaps.eosdis.nasa.gov/country/
+  https://firms.modaps.eosdis.nasa.gov/data/country/yearly_summary_files.txt
+
 - NASA FIRMS public yearly country hotspot CSVs: January 2024 detections from Uruguay
   (MODIS, VIIRS S-NPP and VIIRS NOAA-20) used for the issue #26 real-month validation.
   https://firms.modaps.eosdis.nasa.gov/country/
