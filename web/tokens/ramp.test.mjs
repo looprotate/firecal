@@ -67,10 +67,10 @@ function simulate(matrix, linear) {
   return matrix.map((row) => row.reduce((sum, weight, at) => sum + weight * linear[at], 0));
 }
 
-test('ramp rises in luminance, so grayscale keeps the order', () => {
+test('each step stands further from the page than the one before, so grayscale keeps the order', () => {
   for (let at = 1; at < ramp.length; at += 1) {
-    const ratio = (luminance(ramp[at]) + 0.05) / (luminance(ramp[at - 1]) + 0.05);
-    assert.ok(ratio >= 1.2, `step ${at + 1} is only ${ratio.toFixed(2)} times step ${at} in luminance`);
+    const ratio = contrast(ramp[at], token('bg')) / contrast(ramp[at - 1], token('bg'));
+    assert.ok(ratio >= 1.2, `step ${at + 1} is only ${ratio.toFixed(2)} times step ${at} in contrast with the page`);
   }
 });
 
@@ -124,4 +124,22 @@ test('text meets WCAG AA on the page and on a surface', () => {
       assert.ok(ratio >= 4.5, `--${name} on --${ground} is ${ratio.toFixed(2)}:1`);
     }
   }
+});
+
+test('each colour that means something stands out from the page: 3:1, WCAG 1.4.11', () => {
+  for (const name of ['activity', 'uncertainty', 'attention', 'healthy']) {
+    const ratio = contrast(token(name), token('bg'));
+    assert.ok(ratio >= 3, `--${name} is ${ratio.toFixed(2)}:1 against the page`);
+  }
+});
+
+test('activity is the first step of the ramp, and the last step is the ink of the text', () => {
+  assert.equal(ramp[0], token('activity'));
+  assert.equal(ramp[ramp.length - 1], token('text-strong'));
+});
+
+test('the logo is drawn only in token colours', () => {
+  const logo = readFileSync(new URL('./logo.svg', import.meta.url), 'utf8');
+  const used = [...logo.matchAll(/fill="(#[0-9a-f]{6})"/g)].map((found) => found[1]);
+  assert.deepEqual(used, [token('text-strong'), token('activity')]);
 });

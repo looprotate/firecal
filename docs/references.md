@@ -59,6 +59,9 @@ Add a line when you use anything from outside the team: data, a library, a metho
 
 ## Sources for the design tokens
 
+- The reference image for the identity: a flat composition of geometric shapes on warm paper, chosen by Axel. Six
+  colors were measured off it as pixel samples (`web/tokens/README.md`); the image itself is not in the repo.
+
 - Ottosson, OKLab (the colour space the ramp is built in and measured in): https://bottosson.github.io/posts/oklab/
 - Machado, Oliveira and Fernandes 2009, A physiologically-based model for simulation of color vision deficiency
   (the matrices in `web/tokens/ramp.test.mjs`): https://www.inf.ufrgs.br/~oliveira/pubs_files/CVD_Simulation/CVD_Simulation.html
