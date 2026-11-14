@@ -176,7 +176,22 @@ or `false`. The analog years are not in these files.
 whose center is on an edge belongs to one side only. Either winding works. An edge between two longitudes more
 than 180 degrees apart crosses the antimeridian, so a polygon from 170 east to 170 west is 20 degrees wide. A
 corner may sit on a pole; a polygon that goes all the way around a pole, or whose edges cross or touch, is
-refused. Polygons are in `firecal-query` only for now: the wasm exports take rectangles.
+refused. In the browser, `fc_series` and `fc_cells_csv` take rectangles; polygons go through the analysis exports
+below.
+
+## The browser exports
+
+`wasm/firecal.d.ts` is the contract. Four exports answer over the **whole history** the page gives them, so the
+climatology and the analogs have years to read: the series of the area, how each month compares with the median
+of its calendar month over the baseline years, the analog years of the season in progress, and `series.csv`. They
+share one 80-byte **analysis request** block: the series request, the first and last baseline year, the year and
+months of the season, and a polygon (corner count and address; zero corners means the rectangle). Every answer
+is written into a buffer the page owns, and nothing is written unless the status is zero.
+
+The comparison returns, for a month whose calendar month has no baseline value, a NaN median and anomaly and a
+flag of 0, where `firecal-query` returns an error: the page shows the month as unknown, and `series.csv` leaves
+the fields empty. Three statuses are new: a bad baseline, a bad season, and a bad polygon. The analogs are as
+many as the buffer has slots for, at most 64.
 
 **Open question for the team:** recent raw hotspots would need a FIRMS API key, which cannot live in a static
 site. Decide Saturday morning; the default is no.

@@ -20,11 +20,11 @@ const TILE_COLUMN: u32 = 18;
 /// One series request: an area, months, a plane and the tiles it is given.
 #[derive(Debug, Clone)]
 pub(super) struct SeriesCase {
-    area: [f64; 4],
-    first_month: u32,
-    months: u32,
-    plane: u32,
-    tiles: Vec<(u32, u32, Vec<u8>)>,
+    pub(super) area: [f64; 4],
+    pub(super) first_month: u32,
+    pub(super) months: u32,
+    pub(super) plane: u32,
+    pub(super) tiles: Vec<(u32, u32, Vec<u8>)>,
 }
 
 impl SeriesCase {
@@ -119,22 +119,22 @@ impl SeriesCase {
     }
 }
 
-fn address_of(image: &[u8]) -> u32 {
+pub(super) fn address_of(image: &[u8]) -> u32 {
     u32::try_from(image.len() + 1).unwrap_or(u32::MAX)
 }
 
-/// A tile of seeded random counts, sigmas and energies for three months from [`FIRST_MONTH`].
-fn random_tile(random: &mut SeededRandom) -> Vec<u8> {
+/// A tile of seeded random counts, sigmas and energies for `months` months from `first_month`.
+pub(super) fn random_tile(random: &mut SeededRandom, first_month: u16, months: u16) -> Vec<u8> {
     let mut plane = |bound: u64| -> Vec<u16> {
-        (0..usize::from(TILE_MONTHS) * TILE_CELLS)
+        (0..usize::from(months) * TILE_CELLS)
             .map(|_| u16::try_from(random.next_below(bound)).unwrap_or(0))
             .collect()
     };
     let (count, sigma, energy) = (plane(1000), plane(100), plane(5000));
-    let mut bytes = vec![0; tile_len(TILE_MONTHS)];
+    let mut bytes = vec![0; tile_len(months)];
     let written = write_tile(
-        MonthIndex::from_index(FIRST_MONTH),
-        TILE_MONTHS,
+        MonthIndex::from_index(first_month),
+        months,
         [&count, &sigma, &energy],
         &mut bytes,
     );
@@ -145,7 +145,7 @@ fn random_tile(random: &mut SeededRandom) -> Vec<u8> {
     bytes
 }
 
-fn quarter_degrees(random: &mut SeededRandom, low: f64, steps: u64) -> f64 {
+pub(super) fn quarter_degrees(random: &mut SeededRandom, low: f64, steps: u64) -> f64 {
     0.25_f64.mul_add(
         f64::from(u32::try_from(random.next_below(steps)).unwrap_or(0)),
         low,
@@ -158,7 +158,13 @@ pub(super) fn series_cases() -> Vec<SeriesCase> {
     let mut random = SeededRandom::new(SEED);
     let tiles: Vec<(u32, u32, Vec<u8>)> = TILE_ROWS
         .iter()
-        .map(|row| (*row, TILE_COLUMN, random_tile(&mut random)))
+        .map(|row| {
+            (
+                *row,
+                TILE_COLUMN,
+                random_tile(&mut random, FIRST_MONTH, TILE_MONTHS),
+            )
+        })
         .collect();
     let mut areas = vec![
         [10.0, 10.25, 0.0, 0.25],

@@ -1,6 +1,7 @@
 //! `parity`: the same calls through the native build and through `firecal.wasm` under Node must give
 //! identical bytes. A difference means the browser would show other numbers than the pipeline.
 
+mod analysis_cases;
 mod cases;
 mod series_cases;
 

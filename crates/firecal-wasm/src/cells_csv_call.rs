@@ -2,11 +2,10 @@
 //! memory for the text.
 
 use crate::memory::Memory;
-use crate::series_call::{prepare, read_request, tile_files};
+use crate::output::{store_text, text_capacity};
+use crate::series_call::{prepare, read_request, rectangle_of, tile_files};
 use crate::status::{INVALID, STATUS_OK, status_of};
 use firecal_query::write_cells_csv;
-
-const LENGTH_BYTES: u32 = 4;
 
 /// Writes `cells.csv` for the request block at `request_address` into a buffer.
 ///
@@ -40,15 +39,14 @@ fn answer<M: Memory>(
     buffer_len: u32,
 ) -> Result<(), u32> {
     let (request, entries) = read_request(memory, request_address, request_len)?;
-    let capacity = buffer_len.checked_sub(LENGTH_BYTES).ok_or(INVALID)?;
-    memory.read(buffer_address, buffer_len).ok_or(INVALID)?;
-    let mut text = vec![0; usize::try_from(capacity).map_err(|_| INVALID)?];
+    let mut text = vec![0; text_capacity(memory, buffer_address, buffer_len)?];
     let written = {
         let files = tile_files(memory, &entries)?;
         let prepared = prepare(&request, &files)?;
+        let area = rectangle_of(&request)?;
         write_cells_csv(
             &prepared.tiles,
-            &prepared.area,
+            &area,
             prepared.first_month,
             prepared.months,
             prepared.plane,
@@ -56,14 +54,12 @@ fn answer<M: Memory>(
         )
         .map_err(status_of)?
     };
-    let out = memory.write(buffer_address, buffer_len).ok_or(INVALID)?;
-    let (length_out, text_out) =
-        out.split_at_mut(usize::try_from(LENGTH_BYTES).map_err(|_| INVALID)?);
-    length_out.copy_from_slice(&u32::try_from(written).map_err(|_| INVALID)?.to_le_bytes());
-    text_out
-        .get_mut(..written)
-        .ok_or(INVALID)?
-        .copy_from_slice(text.get(..written).ok_or(INVALID)?);
+    store_text(
+        memory,
+        buffer_address,
+        buffer_len,
+        text.get(..written).ok_or(INVALID)?,
+    )?;
     Ok(())
 }
 

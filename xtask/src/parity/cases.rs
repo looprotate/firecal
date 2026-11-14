@@ -1,5 +1,6 @@
 //! The calls that must give the same bytes natively and in the browser build, and how they are encoded.
 
+use super::analysis_cases::{AnalysisCase, Export, analysis_cases};
 use super::series_cases::{SeriesCase, csv_cases, series_cases};
 use firecal_testkit::SeededRandom;
 use firecal_wasm::{fc_month_index, fc_month_span};
@@ -60,6 +61,8 @@ pub(super) enum Case {
     Series(SeriesCase),
     /// The `cells.csv` export over the same request.
     CellsCsv(SeriesCase),
+    /// An analysis export over a history, a baseline, a season and maybe a polygon.
+    Analysis(Export, AnalysisCase),
 }
 
 /// Every pair of edge values and seeded random pairs for each month export, then the series cases.
@@ -86,6 +89,9 @@ pub(super) fn all_cases() -> Vec<Case> {
     }
     cases.extend(series_cases().into_iter().map(Case::Series));
     cases.extend(csv_cases().into_iter().map(Case::CellsCsv));
+    for case in analysis_cases() {
+        cases.extend(Export::ALL.map(|export| Case::Analysis(export, case.clone())));
+    }
     cases
 }
 
@@ -109,6 +115,7 @@ pub(super) fn encode(cases: &[Case]) -> Vec<u8> {
             }
             Case::Series(series) => (SERIES_ID, series.encode_payload()),
             Case::CellsCsv(series) => (CELLS_CSV_ID, series.encode_payload()),
+            Case::Analysis(export, analysis) => (export.id(), analysis.encode_payload()),
         };
         bytes.extend_from_slice(&id.to_le_bytes());
         bytes.extend_from_slice(&frame_length(&payload).to_le_bytes());
@@ -129,6 +136,7 @@ pub(super) fn native_results(cases: &[Case]) -> Vec<u8> {
             } => function.call(*first, *second).to_le_bytes().to_vec(),
             Case::Series(series) => series.native_answer(),
             Case::CellsCsv(series) => series.native_csv_answer(),
+            Case::Analysis(export, analysis) => analysis.native_answer(*export),
         };
         bytes.extend_from_slice(&frame_length(&answer).to_le_bytes());
         bytes.extend_from_slice(&answer);

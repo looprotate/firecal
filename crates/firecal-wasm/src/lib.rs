@@ -11,18 +11,31 @@
 
 #[cfg(target_arch = "wasm32")]
 mod allocation;
+mod analogs_call;
+mod analysis_request;
+mod area_series_call;
 mod cells_csv_call;
+mod comparison;
+mod comparison_call;
+mod history;
 mod memory;
+mod output;
 mod request;
 mod series_call;
+mod series_csv_call;
 mod status;
 
+pub use analogs_call::run_analogs;
+pub use area_series_call::run_area_series;
 pub use cells_csv_call::run_cells_csv;
+pub use comparison_call::run_comparison;
 pub use memory::{Memory, SliceMemory};
 pub use series_call::run_series;
+pub use series_csv_call::run_series_csv;
 pub use status::{
-    INVALID, STATUS_AREA_OUT_OF_RANGE, STATUS_EMPTY_AREA, STATUS_MONTH_NOT_IN_TILE,
-    STATUS_MONTH_RANGE_INVALID, STATUS_OK, STATUS_OUTPUT_TOO_SMALL, STATUS_TILE_INVALID,
+    INVALID, STATUS_AREA_OUT_OF_RANGE, STATUS_BASELINE_INVALID, STATUS_EMPTY_AREA,
+    STATUS_MONTH_NOT_IN_TILE, STATUS_MONTH_RANGE_INVALID, STATUS_OK, STATUS_OUTPUT_TOO_SMALL,
+    STATUS_POLYGON_INVALID, STATUS_SEASON_INVALID, STATUS_TILE_INVALID,
 };
 
 use firecal_query::month_span;
@@ -85,6 +98,78 @@ pub extern "C" fn fc_cells_csv(
 #[unsafe(no_mangle)]
 pub extern "C" fn fc_series(request_address: u32, request_len: u32) -> u32 {
     run_series(&mut memory::LinearMemory, request_address, request_len)
+}
+
+/// The series of an analysis request block over its rectangle or polygon: see [`run_area_series`].
+#[cfg(target_arch = "wasm32")]
+#[unsafe(no_mangle)]
+pub extern "C" fn fc_area_series(
+    request_address: u32,
+    request_len: u32,
+    buffer_address: u32,
+    buffer_len: u32,
+) -> u32 {
+    run_area_series(
+        &mut memory::LinearMemory,
+        request_address,
+        request_len,
+        buffer_address,
+        buffer_len,
+    )
+}
+
+/// The median, anomaly and unusual flag of each month of an analysis request block: see [`run_comparison`].
+#[cfg(target_arch = "wasm32")]
+#[unsafe(no_mangle)]
+pub extern "C" fn fc_comparison(
+    request_address: u32,
+    request_len: u32,
+    buffer_address: u32,
+    buffer_len: u32,
+) -> u32 {
+    run_comparison(
+        &mut memory::LinearMemory,
+        request_address,
+        request_len,
+        buffer_address,
+        buffer_len,
+    )
+}
+
+/// The analog years of an analysis request block: see [`run_analogs`].
+#[cfg(target_arch = "wasm32")]
+#[unsafe(no_mangle)]
+pub extern "C" fn fc_analogs(
+    request_address: u32,
+    request_len: u32,
+    buffer_address: u32,
+    buffer_len: u32,
+) -> u32 {
+    run_analogs(
+        &mut memory::LinearMemory,
+        request_address,
+        request_len,
+        buffer_address,
+        buffer_len,
+    )
+}
+
+/// The `series.csv` of an analysis request block: see [`run_series_csv`].
+#[cfg(target_arch = "wasm32")]
+#[unsafe(no_mangle)]
+pub extern "C" fn fc_series_csv(
+    request_address: u32,
+    request_len: u32,
+    buffer_address: u32,
+    buffer_len: u32,
+) -> u32 {
+    run_series_csv(
+        &mut memory::LinearMemory,
+        request_address,
+        request_len,
+        buffer_address,
+        buffer_len,
+    )
 }
 
 #[cfg(test)]

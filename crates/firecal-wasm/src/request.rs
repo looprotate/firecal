@@ -47,11 +47,11 @@ pub(crate) struct TileEntry {
     pub(crate) len: u32,
 }
 
-fn word(bytes: &[u8], at: usize) -> Option<u32> {
+pub(crate) fn word(bytes: &[u8], at: usize) -> Option<u32> {
     Some(u32::from_le_bytes(bytes.get(at..at + 4)?.try_into().ok()?))
 }
 
-fn double(bytes: &[u8], at: usize) -> Option<f64> {
+pub(crate) fn double(bytes: &[u8], at: usize) -> Option<f64> {
     Some(f64::from_le_bytes(bytes.get(at..at + 8)?.try_into().ok()?))
 }
 

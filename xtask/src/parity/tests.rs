@@ -47,11 +47,10 @@ fn the_case_list_has_month_calls_and_series_calls() {
             .iter()
             .all(|case| matches!(case, Case::Months { .. }))
     );
-    assert!(
-        cases[month_calls..]
-            .iter()
-            .all(|case| matches!(case, Case::Series(_) | Case::CellsCsv(_)))
-    );
+    assert!(cases[month_calls..].iter().all(|case| matches!(
+        case,
+        Case::Series(_) | Case::CellsCsv(_) | Case::Analysis(..)
+    )));
     assert!(cases.len() > month_calls);
 }
 
@@ -62,7 +61,7 @@ fn a_series_that_succeeds_answers_status_zero_then_two_f64_per_month() {
         .iter()
         .filter_map(|case| match case {
             Case::Series(series) => Some(series.native_answer()),
-            Case::CellsCsv(_) | Case::Months { .. } => None,
+            Case::CellsCsv(_) | Case::Analysis(..) | Case::Months { .. } => None,
         })
         .find(|answer| answer.get(..4) == Some(&[0, 0, 0, 0]))
         .unwrap();
@@ -92,4 +91,26 @@ fn one_different_byte_names_its_call() {
 #[test]
 fn different_lengths_are_a_difference() {
     assert!(first_difference(&[4, 0, 0, 0, 1, 2, 3, 4], &[4, 0, 0, 0, 1, 2, 3]).is_some());
+}
+
+#[test]
+fn analysis_cases_reach_every_export_with_answers_that_are_not_all_errors() {
+    let cases = all_cases();
+    for id in [4_u32, 5, 6, 7] {
+        let answers: Vec<Vec<u8>> = cases
+            .iter()
+            .filter(|case| matches!(case, Case::Analysis(export, _) if export.id() == id))
+            .map(|case| native_results(std::slice::from_ref(case)))
+            .collect();
+        let succeeded = answers
+            .iter()
+            .filter(|framed| framed.get(4..8) == Some(&[0, 0, 0, 0]))
+            .count();
+        assert!(
+            succeeded > 10,
+            "export {id}: {succeeded} of {} succeeded",
+            answers.len()
+        );
+        assert!(succeeded < answers.len(), "export {id} never fails");
+    }
 }

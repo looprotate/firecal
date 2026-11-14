@@ -6,7 +6,7 @@ use crate::request::{REQUEST_BYTES, Request, TILE_ENTRY_BYTES, TileEntry};
 use crate::status::{
     INVALID, STATUS_MONTH_RANGE_INVALID, STATUS_OK, STATUS_TILE_INVALID, status_of,
 };
-use firecal_query::{Rectangle, SeriesOut, series};
+use firecal_query::{Area, Rectangle, SeriesOut, series};
 use firecal_types::{MonthIndex, Plane, TileId, TileView};
 
 const OUTPUT_BYTES_PER_MONTH: u32 = 16;
@@ -55,13 +55,18 @@ pub(crate) fn read_request<M: Memory>(
         return Err(INVALID);
     }
     let request = Request::parse(memory.read(address, len).ok_or(INVALID)?).ok_or(INVALID)?;
+    let entries = read_table(memory, &request)?;
+    Ok((request, entries))
+}
+
+/// The tile table of `request`, with its address and length checked to be inside `memory`.
+pub(crate) fn read_table<M: Memory>(memory: &M, request: &Request) -> Result<Vec<TileEntry>, u32> {
     let table_len = request
         .tile_count
         .checked_mul(TILE_ENTRY_BYTES)
         .ok_or(INVALID)?;
     let table = memory.read(request.tile_table, table_len).ok_or(INVALID)?;
-    let entries = TileEntry::parse_table(table).ok_or(INVALID)?;
-    Ok((request, entries))
+    TileEntry::parse_table(table).ok_or(INVALID)
 }
 
 /// A tile file in memory with its row and column in the tile grid.
@@ -86,13 +91,12 @@ fn write_doubles(out: &mut [u8], numbers: &[f64]) {
     }
 }
 
-/// The tiles, area, plane and months of a request, read and checked.
+/// The tiles, plane and months of a request, read and checked.
 pub(crate) struct Prepared<'f> {
     pub(crate) plane: Plane,
     pub(crate) months: u16,
     pub(crate) first_month: MonthIndex,
     pub(crate) tiles: Vec<(TileId, TileView<'f>)>,
-    pub(crate) area: Rectangle,
 }
 
 pub(crate) fn prepare<'f>(
@@ -112,19 +116,29 @@ pub(crate) fn prepare<'f>(
         let view = TileView::parse(bytes).map_err(|_| STATUS_TILE_INVALID)?;
         tiles.push((id, view));
     }
-    let area = Rectangle::new(request.south, request.north, request.west, request.east)
-        .map_err(status_of)?;
     Ok(Prepared {
         plane,
         months,
         first_month: MonthIndex::from_index(first_month),
         tiles,
-        area,
     })
+}
+
+/// The rectangle a request names.
+pub(crate) fn rectangle_of(request: &Request) -> Result<Rectangle, u32> {
+    Rectangle::new(request.south, request.north, request.west, request.east).map_err(status_of)
 }
 
 fn compute(request: &Request, files: &[(u32, u32, &[u8])]) -> Result<(Vec<f64>, Vec<f64>), u32> {
     let prepared = prepare(request, files)?;
+    sum_over(&prepared, &rectangle_of(request)?)
+}
+
+/// The value and sigma of each month of `prepared` summed over `area`; the sigmas are NaN for the energy.
+pub(crate) fn sum_over(
+    prepared: &Prepared<'_>,
+    area: &impl Area,
+) -> Result<(Vec<f64>, Vec<f64>), u32> {
     let mut value = vec![0.0; usize::from(prepared.months)];
     let mut sigma = vec![0.0; usize::from(prepared.months)];
     let with_sigma = prepared.plane == Plane::Count;
@@ -134,7 +148,7 @@ fn compute(request: &Request, files: &[(u32, u32, &[u8])]) -> Result<(Vec<f64>, 
     };
     series(
         &prepared.tiles,
-        &prepared.area,
+        area,
         prepared.first_month,
         prepared.plane,
         out,

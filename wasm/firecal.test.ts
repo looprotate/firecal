@@ -5,7 +5,7 @@ import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 import { loadFirecal } from "./firecal.ts";
-import type { SeriesQuery, TileFile } from "./firecal.ts";
+import type { AnalysisQuery, SeriesQuery, TileFile } from "./firecal.ts";
 
 const INVALID = 4294967295;
 const wasmPath =
@@ -180,4 +180,117 @@ test("cells.csv reports its status and refuses a buffer it cannot read", () => {
   assert.equal(firecal.exports.fc_cells_csv(request, 56, buffer, 3), INVALID);
   assert.equal(firecal.exports.fc_cells_csv(request, 55, buffer, 8), INVALID);
   assert.equal(firecal.exports.fc_cells_csv(request, 56, buffer, 8), 6, "four bytes of room cannot hold the header");
+});
+
+// A history of three years in tile (7, 18), January 2001 (index 12) to December 2003, for the cell at position
+// (39, 0): row 319, column 720. Counts, with 100 in every month not listed, and sigma 2 throughout:
+//
+//          Jan  Feb
+//   2001    10   20
+//   2002    30   40
+//   2003     5   22
+//
+// The cell east of it holds 1 every month with sigma 0. Medians over 2001 to 2002: January 20, February 30.
+function historyTile(): Uint8Array {
+  const cells = 1600;
+  const count = new Uint16Array(36 * cells);
+  const sigma = new Uint16Array(36 * cells);
+  const listed = [[10, 20], [30, 40], [5, 22]];
+  for (let month = 0; month < 36; month += 1) {
+    count[month * cells + 39 * 40] = listed[Math.floor(month / 12)]?.[month % 12] ?? 100;
+    count[month * cells + 39 * 40 + 1] = 1;
+    sigma[month * cells + 39 * 40] = 2;
+  }
+  const bytes = new Uint8Array(16 + 3 * 36 * cells * 2);
+  const view = new DataView(bytes.buffer);
+  bytes.set([0x46, 0x43, 0x54, 0x31]);
+  view.setUint16(4, 36, true);
+  view.setUint16(6, 12, true);
+  view.setUint8(8, 3);
+  [count, sigma, new Uint16Array(36 * cells)].forEach((plane, at) =>
+    plane.forEach((value, cell) => view.setUint16(16 + (at * 36 * cells + cell) * 2, value, true)),
+  );
+  return bytes;
+}
+
+function history(changes: Partial<AnalysisQuery>): AnalysisQuery {
+  return {
+    south: 10.0, north: 10.25, west: 0.0, east: 0.25,
+    firstMonth: 12, months: 36, plane: 0, tiles: [{ row: 7, col: 18, bytes: historyTile() }],
+    baselineFirst: 2001, baselineLast: 2002, seasonYear: 2003, seasonMonths: 2,
+    ...changes,
+  };
+}
+
+test("the area series of a rectangle and of a polygon over the same cell agree", () => {
+  const byRectangle = firecal.areaSeries(history({}));
+  const byPolygon = firecal.areaSeries(history({ polygon: [[10.0, 0.0], [10.25, 0.0], [10.25, 0.25], [10.0, 0.25]] }));
+  assert.equal(byRectangle.status, 0);
+  assert.deepEqual([...byRectangle.value.slice(0, 3)], [10, 20, 100]);
+  assert.deepEqual([...byRectangle.sigma.slice(0, 2)], [2, 2]);
+  assert.deepEqual(byPolygon, byRectangle);
+});
+
+test("a polygon selects the cells whose center it contains and refuses a bow tie", () => {
+  const east = firecal.areaSeries(history({ polygon: [[10.0, 0.25], [10.25, 0.25], [10.25, 0.5], [10.0, 0.5]] }));
+  assert.ok([...east.value].every((value) => value === 1));
+  const bowTie = firecal.areaSeries(history({ polygon: [[10.0, 0.0], [10.25, 0.25], [10.25, 0.0], [10.0, 0.25]] }));
+  assert.equal(bowTie.status, 9);
+});
+
+test("the comparison flags the months that clear the uncertainty band", () => {
+  const answer = firecal.comparison(history({}));
+  assert.equal(answer.status, 0);
+  assert.deepEqual([...answer.median.slice(24, 27)], [20, 30, 100]);
+  assert.equal(answer.anomaly[24], -0.75); // (5 - 20) / 20
+  assert.equal(answer.anomaly[26], 0);
+  assert.deepEqual([...answer.unusual.slice(24, 27)], [1, 1, 0]);
+});
+
+test("a month with no baseline has no median and is not unusual", () => {
+  const answer = firecal.comparison(history({ baselineFirst: 2010, baselineLast: 2011 }));
+  assert.equal(answer.status, 0);
+  assert.ok([...answer.median].every(Number.isNaN) && [...answer.anomaly].every(Number.isNaN));
+  assert.ok([...answer.unusual].every((flag) => flag === 0));
+});
+
+test("the three analog years are the nearest past years, nearest first", () => {
+  // Only two past years exist: 2001 at distance 2 and 2002 at distance 3.
+  const answer = firecal.analogs(history({}), 3);
+  assert.equal(answer.status, 0);
+  assert.deepEqual(answer.analogs, [{ year: 2001, distance: 2 }, { year: 2002, distance: 3 }]);
+  assert.deepEqual(firecal.analogs(history({}), 1).analogs, [{ year: 2001, distance: 2 }]);
+});
+
+test("analogs and the comparison report a bad baseline or season", () => {
+  assert.equal(firecal.analogs(history({ seasonMonths: 13 }), 3).status, 8);
+  assert.equal(firecal.analogs(history({ seasonYear: 2004 }), 3).status, 8);
+  assert.equal(firecal.analogs(history({ baselineFirst: 2002, baselineLast: 2001 }), 3).status, 7);
+  assert.equal(firecal.comparison(history({ baselineLast: 70000 })).status, 7);
+});
+
+test("series.csv is the series with its median, anomaly and flag", () => {
+  const answer = firecal.seriesCsv(history({}));
+  assert.equal(answer.status, 0);
+  const lines = new TextDecoder().decode(answer.text).split("\n");
+  assert.equal(lines[0], "year,month,value,sigma,median,anomaly,unusual");
+  assert.equal(lines[25], "2003,1,5,2.000,20.0,-0.750,true");
+  assert.equal(lines[27], "2003,3,100,2.000,100.0,0.000,false");
+  assert.equal(lines.length, 38); // header, 36 rows, and the empty text after the last newline
+});
+
+test("the analysis exports refuse what they cannot read and never trap", () => {
+  const past = 2 ** 31;
+  const request = firecal.exports.fc_alloc(80);
+  const buffer = firecal.exports.fc_alloc(64);
+  for (const call of [
+    firecal.exports.fc_area_series, firecal.exports.fc_comparison, firecal.exports.fc_analogs, firecal.exports.fc_series_csv,
+  ]) {
+    assert.equal(call(0, 80, buffer, 64), INVALID);
+    assert.equal(call(past, 80, buffer, 64), INVALID);
+    assert.equal(call(request, 79, buffer, 64), INVALID);
+    assert.equal(call(request, INVALID, buffer, 64), INVALID);
+  }
+  // A zeroed block has an area with no extent.
+  assert.equal(firecal.exports.fc_area_series(request, 80, buffer, 64), 1);
 });

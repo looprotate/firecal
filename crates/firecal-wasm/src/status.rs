@@ -22,6 +22,13 @@ pub const STATUS_MONTH_NOT_IN_TILE: u32 = 5;
 /// The CSV does not fit in the buffer the page gave.
 pub const STATUS_OUTPUT_TOO_SMALL: u32 = 6;
 
+/// A baseline whose first year is after its last, a year outside 16 bits, or more than 64 years.
+pub const STATUS_BASELINE_INVALID: u32 = 7;
+/// A season of zero months or more than twelve, or one the series does not hold in full.
+pub const STATUS_SEASON_INVALID: u32 = 8;
+/// A polygon whose edges cross or touch, or that goes all the way around a pole.
+pub const STATUS_POLYGON_INVALID: u32 = 9;
+
 /// The status that tells the caller what to change.
 pub(crate) const fn status_of(error: QueryError) -> u32 {
     match error {
@@ -29,14 +36,10 @@ pub(crate) const fn status_of(error: QueryError) -> u32 {
         QueryError::LatitudeOutOfRange | QueryError::LongitudeOutOfRange => {
             STATUS_AREA_OUT_OF_RANGE
         }
-        QueryError::OutputLengthMismatch
-        | QueryError::EmptyBaseline
-        | QueryError::BaselineTooLong
-        | QueryError::NoBaselineForMonth
-        | QueryError::SeasonMonthsOutOfRange
-        | QueryError::SeasonIncomplete
-        | QueryError::SelfIntersecting
-        | QueryError::EnclosesPole => INVALID,
+        QueryError::OutputLengthMismatch | QueryError::NoBaselineForMonth => INVALID,
+        QueryError::EmptyBaseline | QueryError::BaselineTooLong => STATUS_BASELINE_INVALID,
+        QueryError::SeasonMonthsOutOfRange | QueryError::SeasonIncomplete => STATUS_SEASON_INVALID,
+        QueryError::SelfIntersecting | QueryError::EnclosesPole => STATUS_POLYGON_INVALID,
         QueryError::BufferTooSmall => STATUS_OUTPUT_TOO_SMALL,
         QueryError::Types(Error::EmptyMonthRange | Error::MonthRangeTooLong) => {
             STATUS_MONTH_RANGE_INVALID
