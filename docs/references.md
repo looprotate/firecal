@@ -37,6 +37,11 @@ Add a line when you use anything from outside the team: data, a library, a metho
 
 ## Sources checked for the FIRMS facts
 
+- NASA FIRMS FAQ: issue #28 research on nominal overpasses, latitude effects,
+  hotspot-only versus pixel-quality information, and the limits of an
+  observation-effort proxy; checked 2026-11-14.
+  https://www.earthdata.nasa.gov/data/tools/firms/faq
+
 - FIRMS Archive Download (coverage dates, request form, standard versus NRT):
   https://firms2.modaps.eosdis.nasa.gov/download/
 - FIRMS active fire data attributes (MODIS and VIIRS columns, confidence, type, day or night):

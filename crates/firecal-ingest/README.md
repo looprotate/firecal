@@ -1,5 +1,10 @@
 # Ingest FIRMS CSV files
 
+The optional observation-effort feature from #28 is dropped from the current
+demo. The research, proposed method, missing inputs and conditions for revisiting
+it are documented in `effort-proxy.md` and included in the crate documentation.
+No effort layer or effort-based normalization is emitted.
+
 The binary recursively reads CSVs, filters low-confidence and non-vegetation
 rows, and writes FCA1 aggregates per satellite, month and cell. It uses the
 parser from #24 and the aggregator from #25.

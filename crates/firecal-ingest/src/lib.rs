@@ -26,6 +26,7 @@
 //! validated even on filtered rows. NRT files without `type` cannot be filtered
 //! by source type. CSV records must occupy one physical line; quoted commas and
 //! doubled quotes in unused fields are supported, embedded newlines are rejected.
+#![doc = include_str!("../effort-proxy.md")]
 #![forbid(unsafe_code)]
 #![deny(clippy::print_stdout, clippy::print_stderr)]
 
