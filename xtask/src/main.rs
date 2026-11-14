@@ -1,6 +1,6 @@
 //! Project tasks, the same on macOS and Windows: `cargo xtask <task>`.
 //!
-//! - `check [--full]`: format, lints, tests, and the wasm build; `--full` adds the release profile.
+//! - `check [--full]`: format, lints, tests, the wasm build and its Node test; `--full` adds the release profile.
 //! - `guard [base]`: fails when the branch edits files its owner does not own.
 //! - `worktree <owner>/<task>`: a fresh worktree and branch for one agent.
 //! - `ready`: the gate before a push: clean tree, rebased, diff rules, `check --full`, `guard`.

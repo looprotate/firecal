@@ -1,10 +1,8 @@
-//! The calls that must give the same bytes natively and in the browser build.
+//! The calls that must give the same bytes natively and in the browser build, and how they are encoded.
 
+use super::series_cases::{SeriesCase, series_cases};
 use firecal_testkit::SeededRandom;
 use firecal_wasm::{fc_month_index, fc_month_span};
-
-/// Bytes of one encoded call: function id, first argument, second argument, each a little-endian `u32`.
-pub(super) const CASE_BYTES: usize = 12;
 
 const EDGE_VALUES: [u32; 12] = [
     0,
@@ -23,8 +21,9 @@ const EDGE_VALUES: [u32; 12] = [
 const RANDOM_CASES: u64 = 2000;
 const RANDOM_BOUND: u64 = 8000;
 const SEED: u64 = 0x5EED_F1AE;
+const SERIES_ID: u32 = 2;
 
-/// An export of `firecal.wasm`; the id is its position in the table of `run.mjs`.
+/// A month export of `firecal.wasm`; the id is its position in the table of `run.mjs`.
 #[derive(Debug, Clone, Copy)]
 pub(super) enum Function {
     MonthIndex,
@@ -47,22 +46,27 @@ impl Function {
     }
 }
 
-/// One call to an export, with its two numeric arguments.
-#[derive(Debug, Clone, Copy)]
-pub(super) struct Case {
-    pub(super) function: Function,
-    pub(super) first: u32,
-    pub(super) second: u32,
+/// One call to an export.
+#[derive(Debug, Clone)]
+pub(super) enum Case {
+    /// A month export with its two numeric arguments.
+    Months {
+        function: Function,
+        first: u32,
+        second: u32,
+    },
+    /// The series export over tiles in memory.
+    Series(SeriesCase),
 }
 
-/// Every pair of edge values, then seeded random pairs, for each export.
+/// Every pair of edge values and seeded random pairs for each month export, then the series cases.
 pub(super) fn all_cases() -> Vec<Case> {
     let mut cases = Vec::new();
     let mut random = SeededRandom::new(SEED);
     for function in [Function::MonthIndex, Function::MonthSpan] {
         for first in EDGE_VALUES {
             for second in EDGE_VALUES {
-                cases.push(Case {
+                cases.push(Case::Months {
                     function,
                     first,
                     second,
@@ -70,13 +74,14 @@ pub(super) fn all_cases() -> Vec<Case> {
             }
         }
         for _ in 0..RANDOM_CASES {
-            cases.push(Case {
+            cases.push(Case::Months {
                 function,
                 first: random_below(&mut random),
                 second: random_below(&mut random),
             });
         }
     }
+    cases.extend(series_cases().into_iter().map(Case::Series));
     cases
 }
 
@@ -84,22 +89,48 @@ fn random_below(random: &mut SeededRandom) -> u32 {
     u32::try_from(random.next_below(RANDOM_BOUND)).unwrap_or(0)
 }
 
-/// The cases as the bytes `run.mjs` reads.
+/// The cases as the records `run.mjs` reads: function id, payload length, payload.
 pub(super) fn encode(cases: &[Case]) -> Vec<u8> {
-    let mut bytes = Vec::with_capacity(cases.len() * CASE_BYTES);
+    let mut bytes = Vec::new();
     for case in cases {
-        bytes.extend_from_slice(&case.function.id().to_le_bytes());
-        bytes.extend_from_slice(&case.first.to_le_bytes());
-        bytes.extend_from_slice(&case.second.to_le_bytes());
+        let (id, payload) = match case {
+            Case::Months {
+                function,
+                first,
+                second,
+            } => {
+                let mut payload = first.to_le_bytes().to_vec();
+                payload.extend_from_slice(&second.to_le_bytes());
+                (function.id(), payload)
+            }
+            Case::Series(series) => (SERIES_ID, series.encode_payload()),
+        };
+        bytes.extend_from_slice(&id.to_le_bytes());
+        bytes.extend_from_slice(&frame_length(&payload).to_le_bytes());
+        bytes.extend_from_slice(&payload);
     }
     bytes
 }
 
-/// What the native build answers to each case, one little-endian `u32` per case.
+/// What the native build answers to each case: per case a `u32` answer length and the answer.
 pub(super) fn native_results(cases: &[Case]) -> Vec<u8> {
-    let mut bytes = Vec::with_capacity(cases.len() * 4);
+    let mut bytes = Vec::new();
     for case in cases {
-        bytes.extend_from_slice(&case.function.call(case.first, case.second).to_le_bytes());
+        let answer = match case {
+            Case::Months {
+                function,
+                first,
+                second,
+            } => function.call(*first, *second).to_le_bytes().to_vec(),
+            Case::Series(series) => series.native_answer(),
+        };
+        bytes.extend_from_slice(&frame_length(&answer).to_le_bytes());
+        bytes.extend_from_slice(&answer);
     }
     bytes
+}
+
+/// A length for a frame; a case never comes near `u32::MAX` bytes.
+pub(super) fn frame_length(bytes: &[u8]) -> u32 {
+    u32::try_from(bytes.len()).unwrap_or(u32::MAX)
 }

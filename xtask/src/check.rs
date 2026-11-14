@@ -3,7 +3,7 @@
 use crate::shell::{cargo, run as shell};
 use std::path::Path;
 
-/// Format, lints, tests and the wasm build. With `full`, also the release profile, which has its own
+/// Format, lints, tests, the wasm build and the Node test that loads it. With `full`, also the release profile, which has its own
 /// optimizer and must give the same answers. Once `web/package.json` exists, the web app is checked too.
 pub(crate) fn run(full: bool) -> Result<(), String> {
     let cargo = cargo();
@@ -30,6 +30,20 @@ pub(crate) fn run(full: bool) -> Result<(), String> {
             "wasm32-unknown-unknown",
         ],
     )?;
+    shell(
+        &cargo,
+        &[
+            "clippy",
+            "--package",
+            "firecal-wasm",
+            "--target",
+            "wasm32-unknown-unknown",
+            "--",
+            "-D",
+            "warnings",
+        ],
+    )?;
+    shell("node", &["--test", "wasm/firecal.test.ts"])?;
     if full {
         shell(
             &cargo,

@@ -2,10 +2,11 @@
 //! identical bytes. A difference means the browser would show other numbers than the pipeline.
 
 mod cases;
+mod series_cases;
 
 use crate::build_wasm::{BUILT, run_build};
 use crate::shell::run as shell;
-use cases::{CASE_BYTES, all_cases, encode, native_results};
+use cases::{all_cases, encode, native_results};
 use std::fs;
 use std::path::{Path, PathBuf};
 
@@ -50,23 +51,38 @@ fn compare_through_node(folder: &Path, cases: &[u8], native: &[u8]) -> Result<()
 
 /// A sentence naming the first call whose answers differ, or `None` when the bytes are identical.
 pub(crate) fn first_difference(native: &[u8], wasm: &[u8]) -> Option<String> {
-    if native.len() != wasm.len() {
-        return Some(format!(
-            "native answered {} bytes, wasm {}",
-            native.len(),
-            wasm.len()
-        ));
-    }
     let at = native
         .iter()
         .zip(wasm)
-        .position(|(left, right)| left != right)?;
+        .position(|(left, right)| left != right);
+    if at.is_none() && native.len() == wasm.len() {
+        return None;
+    }
+    let offset = at.unwrap_or_else(|| native.len().min(wasm.len()));
     Some(format!(
-        "call {} differs: native {:?}, wasm {:?} (answers are 4 bytes; a call is {CASE_BYTES} bytes)",
-        at / 4,
-        native.get(at / 4 * 4..at / 4 * 4 + 4),
-        wasm.get(at / 4 * 4..at / 4 * 4 + 4),
+        "call {} differs at byte {offset} of the answers: native has {} bytes, wasm {}",
+        call_containing(native, offset),
+        native.len(),
+        wasm.len()
     ))
+}
+
+/// The position of the call whose framed answer holds `offset`; answers are a `u32` length then the bytes.
+fn call_containing(answers: &[u8], offset: usize) -> usize {
+    let mut start = 0;
+    let mut call = 0;
+    while let Some(length) = answers
+        .get(start..start + 4)
+        .and_then(|word| <[u8; 4]>::try_from(word).ok())
+        .and_then(|word| usize::try_from(u32::from_le_bytes(word)).ok())
+    {
+        start += 4 + length;
+        if offset < start {
+            break;
+        }
+        call += 1;
+    }
+    call
 }
 
 #[cfg(test)]

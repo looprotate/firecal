@@ -25,7 +25,7 @@ be public and open at submission.
 ## Commands
 
 ```
-cargo xtask check [--full]     format, lints, tests, wasm build; --full adds the release profile
+cargo xtask check [--full]     format, lints, tests, wasm build and its Node test; --full adds release
 cargo xtask guard [base]       fails when a branch edits files its owner does not own
 cargo xtask worktree <a>/<t>   a fresh worktree and branch for one agent
 cargo xtask ready              the gate before a push: clean, rebased, diff rules, check --full, guard
