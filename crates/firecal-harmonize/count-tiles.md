@@ -26,7 +26,7 @@ Missing zero-kept satellite-month files must be reconstructed as explicit empty
 FCA1 files only when external coverage records establish that they are known
 zeros. A file absent from disk never asserts zero coverage.
 
-The requested range is nonempty and cannot overflow MonthIndex. Every month
+The requested range is nonempty and cannot overflow `MonthIndex`. Every month
 requires at least one selected source file; extra satellites, out-of-range
 months and duplicate satellite-month files are errors. The cutoff must lie
 inside the range. Fit uses paired months from 2012 onward through that cutoff;
