@@ -37,6 +37,13 @@ Add a line when you use anything from outside the team: data, a library, a metho
 
 ## Sources checked for the FIRMS facts
 
+- NASA FIRMS area CSV API, data availability API and MAP_KEY documentation:
+  direct SP/NRT downloads for issue #23, requested in non-overlapping blocks
+  of at most five days with credentials supplied only at the download edge.
+  https://firms.modaps.eosdis.nasa.gov/api/area/
+  https://firms.modaps.eosdis.nasa.gov/api/data_availability/
+  https://firms.modaps.eosdis.nasa.gov/api/map_key/
+
 - NASA FIRMS FAQ: issue #28 research on nominal overpasses, latitude effects,
   hotspot-only versus pixel-quality information, and the limits of an
   observation-effort proxy; checked 2026-11-14.

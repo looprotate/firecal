@@ -1,5 +1,9 @@
 # Ingest FIRMS CSV files
 
+The #23 South America API download is documented in `firms-2026-download.md`,
+with the file inventory in `firms-2026-files.md` and reusable public API links
+in `firms-api-access.md`. Real CSVs and credentials are never committed.
+
 The optional observation-effort feature from #28 is dropped from the current
 demo. The research, proposed method, missing inputs and conditions for revisiting
 it are documented in `effort-proxy.md` and included in the crate documentation.
