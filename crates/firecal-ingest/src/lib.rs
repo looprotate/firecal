@@ -29,8 +29,11 @@
 #![forbid(unsafe_code)]
 #![deny(clippy::print_stdout, clippy::print_stderr)]
 
+mod aggregate;
 mod csv;
 mod date;
+mod grid;
 mod parser;
 
+pub use aggregate::{AggregateError, Aggregator};
 pub use parser::{CsvHeader, Hotspot, ParseError};
