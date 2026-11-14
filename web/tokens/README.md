@@ -21,7 +21,10 @@ Seven steps for activity, plus `--ramp-0` for a cell with none.
 ## Marks that do not rely on color
 
 - Unusual month: a diamond, dark fill with a light edge (`--mark-fill`, `--mark-edge`), so it shows on every step.
-- Provisional month: a dashed edge in `--provisional-edge`.
+- Provisional month: a triangle in the bottom left corner, 10px along each side (`--provisional-size`), the same
+  dark fill and light edge as the diamond (`--provisional-fill`, `--provisional-edge`), so the shape tells it apart
+  and the diamond keeps the top right. A dashed edge was tried first: inside the cell it was lost on both the dark and
+  the light steps, and outside it was too thin to see at calendar size.
 - Focus and selection: a `--focus-ring` outline.
 
 ## Type, size, motion

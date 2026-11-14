@@ -105,6 +105,18 @@ test('the diamond shows on every step', () => {
   });
 });
 
+test('the provisional triangle shows on every step and on an empty cell, without color', () => {
+  const size = /--provisional-size:\s*(\d+)px;/.exec(css);
+  assert.ok(size, '--provisional-size is missing from tokens.css');
+  assert.ok(Number(size[1]) >= 8, `the triangle is ${size[1]}px along each side, under 8px`);
+  const edge = contrast(token('provisional-edge'), token('provisional-fill'));
+  assert.ok(edge >= 7, `the triangle's own edge is ${edge.toFixed(2)}:1 against its fill`);
+  [token('ramp-0'), ...ramp].forEach((color, at) => {
+    const outer = Math.max(contrast(token('provisional-fill'), color), contrast(token('provisional-edge'), color));
+    assert.ok(outer >= 3, `step ${at}: the triangle is ${outer.toFixed(2)}:1 against the cell`);
+  });
+});
+
 test('text meets WCAG AA on the page and on a surface', () => {
   for (const name of ['text', 'text-strong', 'text-secondary', 'error', 'added']) {
     for (const ground of ['bg', 'bg-deep', 'surface']) {

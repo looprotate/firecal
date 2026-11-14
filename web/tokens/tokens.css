@@ -26,11 +26,14 @@
   --ramp-6: #f9d58c;
   --ramp-7: #fdf1d0;
 
-  /* Marks that never rely on colour: the diamond is dark with a light edge, so it
-     shows on every step; a provisional cell has a dashed edge. */
+  /* Marks that never rely on colour: the diamond (top right) is dark with a light edge, so it
+     shows on every step; a provisional cell has the same dark triangle with a light edge in its
+     bottom left corner, --provisional-size along each side. */
   --mark-fill: #151515;
   --mark-edge: #f5f5f2;
-  --provisional-edge: #868686;
+  --provisional-fill: #151515;
+  --provisional-edge: #f5f5f2;
+  --provisional-size: 10px;
   --focus-ring: #f5f5f2;
 
   --font-ui: system-ui, -apple-system, "SF Pro Text", "Segoe UI", sans-serif;
