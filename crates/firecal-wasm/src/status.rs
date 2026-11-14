@@ -26,7 +26,10 @@ pub(crate) const fn status_of(error: QueryError) -> u32 {
         QueryError::LatitudeOutOfRange | QueryError::LongitudeOutOfRange => {
             STATUS_AREA_OUT_OF_RANGE
         }
-        QueryError::OutputLengthMismatch => INVALID,
+        QueryError::OutputLengthMismatch
+        | QueryError::EmptyBaseline
+        | QueryError::BaselineTooLong
+        | QueryError::NoBaselineForMonth => INVALID,
         QueryError::Types(Error::EmptyMonthRange | Error::MonthRangeTooLong) => {
             STATUS_MONTH_RANGE_INVALID
         }

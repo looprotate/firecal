@@ -143,6 +143,11 @@ requested month is an error, so the caller clamps the range to the months in `in
 squared sigma, taken with `+ - * /` only. The `sigma` plane is the uncertainty of the count, so an energy series has no
 sigma of its own yet.
 
+**Climatology and anomaly.** The median of a calendar month is taken over the baseline years that the history series
+holds for it; an even count gives the mean of the two middle values. `anomaly` divides by `max(median, 1)` so a
+quiet month cannot explode, and `unusual` is strict: a difference of exactly `2 * sigma` is not flagged. A month in
+the range whose calendar month has no baseline value is an error, not a zero.
+
 Baseline years: all complete years before the current one, unless the UI picks others. Analog distance is the
 sum over months of the difference in **rank within the calendar month** across years, so it does not need
 logarithms and treats quiet and busy regions alike.

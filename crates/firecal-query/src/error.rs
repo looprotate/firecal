@@ -14,6 +14,12 @@ pub enum QueryError {
     LongitudeOutOfRange,
     /// The value and sigma output buffers do not have the same length.
     OutputLengthMismatch,
+    /// A baseline whose first year is after its last.
+    EmptyBaseline,
+    /// A baseline with more years in one calendar month than the median can sort: more than 64.
+    BaselineTooLong,
+    /// A month to compare that no baseline year has a value for.
+    NoBaselineForMonth,
     /// A tile or month problem reported by the shared types, such as a month the tile does not hold.
     Types(Error),
 }
