@@ -135,6 +135,14 @@ unusual[n]       true when |value - median[month]| > 2 * sigma[n]
 analogs[k]       the k past years most similar to the season in progress: year, distance
 ```
 
+**Rectangle areas.** A rectangle selects every cell it overlaps with positive area: thinner than a cell selects that
+cell, one that only touches a cell's edge does not. `west` is left of `east`, so a rectangle never crosses the
+antimeridian. A tile missing from the set counts as zeros (ocean, no hotspots); a tile that is present but lacks a
+requested month is an error, so the caller clamps the range to the months in `index.json`. `value` and `sigma` are
+`f64`: sums of whole numbers are exact far beyond the world, and `sigma` is the square root of the sum of the cells'
+squared sigma, taken with `+ - * /` only. The `sigma` plane is the uncertainty of the count, so an energy series has no
+sigma of its own yet.
+
 Baseline years: all complete years before the current one, unless the UI picks others. Analog distance is the
 sum over months of the difference in **rank within the calendar month** across years, so it does not need
 logarithms and treats quiet and busy regions alike.

@@ -4,6 +4,13 @@
 #![forbid(unsafe_code)]
 #![deny(clippy::print_stdout, clippy::print_stderr)]
 
+mod area;
+mod error;
+mod root;
+mod series;
 mod span;
 
+pub use area::Rectangle;
+pub use error::QueryError;
+pub use series::{SeriesOut, series};
 pub use span::month_span;
