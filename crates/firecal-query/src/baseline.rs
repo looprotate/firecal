@@ -36,6 +36,18 @@ impl BaselineYears {
         }
     }
 
+    /// The first year.
+    #[must_use]
+    pub const fn first(&self) -> u16 {
+        self.first
+    }
+
+    /// The last year.
+    #[must_use]
+    pub const fn last(&self) -> u16 {
+        self.last
+    }
+
     /// Whether `year` is one of the baseline years.
     #[must_use]
     pub const fn contains(&self, year: u16) -> bool {

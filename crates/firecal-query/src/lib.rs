@@ -4,6 +4,7 @@
 #![forbid(unsafe_code)]
 #![deny(clippy::print_stdout, clippy::print_stderr)]
 
+mod analogs;
 mod area;
 mod baseline;
 mod climatology;
@@ -13,6 +14,7 @@ mod root;
 mod series;
 mod span;
 
+pub use analogs::{Analog, Season, analog_years};
 pub use area::Rectangle;
 pub use baseline::BaselineYears;
 pub use climatology::{Climatology, climatology};

@@ -20,6 +20,10 @@ pub enum QueryError {
     BaselineTooLong,
     /// A month to compare that no baseline year has a value for.
     NoBaselineForMonth,
+    /// A season of zero months or more than twelve.
+    SeasonMonthsOutOfRange,
+    /// The season in progress lacks a month in the series, so it cannot be ranked.
+    SeasonIncomplete,
     /// A tile or month problem reported by the shared types, such as a month the tile does not hold.
     Types(Error),
 }

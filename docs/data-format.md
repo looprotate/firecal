@@ -148,6 +148,11 @@ holds for it; an even count gives the mean of the two middle values. `anomaly` d
 quiet month cannot explode, and `unusual` is strict: a difference of exactly `2 * sigma` is not flagged. A month in
 the range whose calendar month has no baseline value is an error, not a zero.
 
+**Analog years.** The season in progress is January to month `m` of the current year. Each month's rank is taken among
+the candidate years and the current one; ties share the middle rank, so the difference of two years is counted in
+halves. A baseline year is a candidate only if the series holds all `m` months for it, and the current year is never its
+own analog. Years at the same distance come oldest first.
+
 Baseline years: all complete years before the current one, unless the UI picks others. Analog distance is the
 sum over months of the difference in **rank within the calendar month** across years, so it does not need
 logarithms and treats quiet and busy regions alike.

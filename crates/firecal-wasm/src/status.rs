@@ -29,7 +29,9 @@ pub(crate) const fn status_of(error: QueryError) -> u32 {
         QueryError::OutputLengthMismatch
         | QueryError::EmptyBaseline
         | QueryError::BaselineTooLong
-        | QueryError::NoBaselineForMonth => INVALID,
+        | QueryError::NoBaselineForMonth
+        | QueryError::SeasonMonthsOutOfRange
+        | QueryError::SeasonIncomplete => INVALID,
         QueryError::Types(Error::EmptyMonthRange | Error::MonthRangeTooLong) => {
             STATUS_MONTH_RANGE_INVALID
         }
