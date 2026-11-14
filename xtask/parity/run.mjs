@@ -13,7 +13,7 @@
 //     and the sigmas as f64.
 // Results file: per record a u32 answer length and the answer.
 import { readFileSync, writeFileSync } from "node:fs";
-import { loadFirecal } from "../../wasm/firecal.ts";
+import { loadFirecal } from "../../wasm/load.ts";
 
 const [wasmPath, casesPath, resultsPath] = process.argv.slice(2);
 const firecal = await loadFirecal(readFileSync(wasmPath));

@@ -66,7 +66,8 @@ pub(crate) fn run(full: bool) -> Result<(), String> {
     Ok(())
 }
 
-/// The npm steps that check the web app: none until it exists, then install exactly, types, tests, build.
+/// The npm steps that check the web app: none until it exists, then install exactly, the types of the app and of
+/// the wasm loader, tests, build.
 pub(crate) fn web_steps(web_exists: bool) -> Vec<&'static [&'static str]> {
     if !web_exists {
         return Vec::new();
@@ -74,6 +75,15 @@ pub(crate) fn web_steps(web_exists: bool) -> Vec<&'static [&'static str]> {
     vec![
         &["--prefix", "web", "ci"],
         &["--prefix", "web", "run", "typecheck"],
+        &[
+            "--prefix",
+            "web",
+            "exec",
+            "--",
+            "tsc",
+            "-p",
+            "wasm/tsconfig.json",
+        ],
         &["--prefix", "web", "test"],
         &["--prefix", "web", "run", "build"],
     ]

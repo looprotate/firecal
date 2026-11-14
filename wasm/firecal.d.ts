@@ -2,7 +2,7 @@
  * The browser contract of `firecal-wasm`: plain exports of `firecal.wasm`, no glue code.
  * Numbers are `u32` (or `f64` where it says so); a function that cannot do what was asked returns a status
  * and `INVALID` for anything it cannot read, never a trap. Memory addresses start at 1: address 0 is refused.
- * JavaScript reads a `u32` result of the raw module as a signed number (`INVALID` is -1): `wasm/firecal.ts` loads
+ * JavaScript reads a `u32` result of the raw module as a signed number (`INVALID` is -1): `wasm/load.ts` loads
  * the module and returns the exports below with every result unsigned, as typed here.
  * Changing this file is a contract change (see docs/engineering.md).
  */

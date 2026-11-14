@@ -4,8 +4,8 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
-import { loadFirecal } from "./firecal.ts";
-import type { AnalysisQuery, SeriesQuery, TileFile } from "./firecal.ts";
+import { loadFirecal } from "./load.ts";
+import type { AnalysisQuery, SeriesQuery, TileFile } from "./load.ts";
 
 const INVALID = 4294967295;
 const wasmPath =
