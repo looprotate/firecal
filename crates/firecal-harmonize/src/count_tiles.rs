@@ -1,4 +1,4 @@
-//! Development count tiles with an optional estimated-sigma plane. Coverage of every input tile-month must be known complete.
+//! Development count tiles with optional estimated-sigma and FRP planes. Coverage of every input tile-month must be known complete.
 
 use crate::{Calibration, CalibrationError, fit};
 use firecal_types::{AggregateView, MonthIndex, Satellite, TILE_CELLS, TileId};
@@ -7,10 +7,13 @@ mod aggregate_index;
 use aggregate_index::AggregateIndex;
 mod uncertainty;
 pub use uncertainty::{apply_with_sigma, fit_sigma_aggregates};
+mod energy;
+pub use energy::{apply_with_energy, fit_energy_aggregates};
 mod encoding;
+mod metadata;
 pub use encoding::CountTile;
 
-/// Why a count-only tile build cannot proceed.
+/// Why a tile build cannot proceed.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum TileBuildError {
     /// A shared file-format or month-range validation failed.
@@ -19,6 +22,8 @@ pub enum TileBuildError {
     Calibration(CalibrationError),
     /// Residual uncertainty fitting or application failed.
     Sigma(crate::SigmaError),
+    /// FRP calibration fitting or application failed.
+    Energy(crate::EnergyError),
     /// Sources must be a MODIS satellite followed by a VIIRS satellite.
     InvalidSourcePair,
     /// Multiple files describe the same satellite-month.
@@ -84,6 +89,16 @@ impl CountPlan {
             viirs,
         })
     }
+    fn check_cutoff(&self, cutoff: MonthIndex) -> Result<(), TileBuildError> {
+        if cutoff
+            .index()
+            .checked_sub(self.first.index())
+            .is_none_or(|offset| offset >= self.months)
+        {
+            return Err(TileBuildError::TrainingCutoffOutsideRange);
+        }
+        Ok(())
+    }
     /// The tile covered by the output.
     #[must_use]
     pub const fn tile(self) -> TileId {
@@ -109,13 +124,7 @@ pub fn fit_aggregates(
     aggregates: &[AggregateView<'_>],
     train_through: MonthIndex,
 ) -> Result<Calibration, TileBuildError> {
-    if train_through
-        .index()
-        .checked_sub(plan.first.index())
-        .is_none_or(|offset| offset >= plan.months)
-    {
-        return Err(TileBuildError::TrainingCutoffOutsideRange);
-    }
+    plan.check_cutoff(train_through)?;
     let index = AggregateIndex::new(plan, aggregates)?;
     let mut modis = Vec::new();
     let mut viirs = Vec::new();
@@ -163,11 +172,11 @@ pub fn apply(
             counts.extend(
                 modis
                     .into_iter()
-                    .map(|value| rounded_count(f64::from(value))),
+                    .map(|value| rounded_plane_value(f64::from(value))),
             );
         } else if let Some(viirs) = index.counts(plan, month, plan.viirs) {
             for value in viirs {
-                counts.push(rounded_count(
+                counts.push(rounded_plane_value(
                     calibration
                         .map_count(value)
                         .map_err(TileBuildError::Calibration)?,
@@ -182,10 +191,11 @@ pub fn apply(
         counts,
         paired_months: index.paired_months(plan),
         sigma: None,
+        energy: None,
     })
 }
 
-fn rounded_count(value: f64) -> u16 {
+fn rounded_plane_value(value: f64) -> u16 {
     let mut low = 0_u16;
     let mut high = u16::MAX;
     while low < high {

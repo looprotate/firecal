@@ -1,9 +1,10 @@
-# Count and estimated-sigma tile writer (#31/#32)
+# Count, estimated-sigma and FRP tile writer (#31/#32/#33)
 
 The count-only library API implements `fit_aggregates` and
 `apply(calibration, plan, aggregates) -> CountTile`, without changing FCA1/FCT1.
-The CLI now uses `fit_sigma_aggregates` and `apply_with_sigma` to add estimated
-uncertainty; see `sigma.md` for its assumptions and validation limits.
+The CLI now uses `fit_sigma_aggregates`, `fit_energy_aggregates` and
+`apply_with_energy` to add estimated count uncertainty and independently
+calibrated FRP. See `sigma.md` and `energy.md` for assumptions and limits.
 `CountTile::encode` delegates every binary byte to `firecal-types::write_tile`.
 
 ## Run
@@ -42,7 +43,7 @@ other months remain outside training. Source satellites are never summed.
 - If both are absent, fail before creating the output directory.
 - Round half counts upward, then saturate at 65535. Source u32 counts are never
   truncated. The bounded integer search avoids lossy floating-point casts.
-- A tile whose available count and sigma values are all zero is omitted from the file list.
+- A tile whose available count, sigma and FRP values are all zero is omitted from the file list.
   Otherwise write `t_<row>_<col>.bin`. Write `index.json` last: a partial build
   without an index is not a completed dataset. An I/O failure can leave a partial
   fresh directory; inspect it and choose a new destination for a retry.
@@ -55,15 +56,17 @@ cutoff used by `fit_aggregates`/`apply` so provenance remains consistent.
 
 ## Deliberate development limit
 
-FCT1 requires three physical planes. The CLI now declares available
-`planes: ["count", "sigma"]` and records the estimated error model and its
-unvalidated real held-out coverage. Energy is still an unavailable zero storage
-placeholder. The count-only `apply` API declares just the count plane and leaves
-sigma unavailable, preserving the original diagnostic path. Both paths set
-`development_only: true`; no app loader or shared query contract changed.
-The estimated model must be validated on independent standard overlap months
-before these files are presented as a validated science product. Energy arrives
-in #33.
+The CLI now populates all three FCT1 planes and declares available
+`planes: ["count", "sigma", "energy"]`. Sigma describes count only. Energy is
+monthly summed FRP in megawatts, not time-integrated energy, and has no sigma of
+its own. The index records each calibration independently and keeps
+`development_only: true` with real validation still pending.
+
+The count-only `apply` and count/sigma `apply_with_sigma` library APIs remain
+available for diagnostics and declare only their available planes. No app
+loader or shared query contract changed. The estimated models still need
+validation on independent standard overlap months before they are presented
+as a validated science product.
 
 ## Evidence
 

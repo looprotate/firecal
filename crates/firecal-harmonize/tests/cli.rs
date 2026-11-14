@@ -1,4 +1,4 @@
-//! The count and estimated-sigma binary writes real files that the shared reader and query can consume.
+//! The count, estimated-sigma and FRP binary writes real files that the shared reader and query can consume.
 
 #[cfg(test)]
 mod support;
@@ -47,10 +47,26 @@ fn cli_builds_count_region_in_path_with_spaces_and_rejects_overwrite() {
         values.map(f64::to_bits),
         [6.0_f64, 0.0, 5.0].map(f64::to_bits)
     );
+    let mut power = [0.0; 3];
+    series(
+        &[(TileId::new(0, 0).unwrap(), view)],
+        &area,
+        MonthIndex::from_index(276),
+        Plane::Energy,
+        SeriesOut {
+            value: &mut power,
+            sigma: None,
+        },
+    )
+    .unwrap();
+    assert_eq!(
+        power.map(f64::to_bits),
+        [60.0_f64, 0.0, 15.0].map(f64::to_bits)
+    );
     let index = std::fs::read_to_string(output.join("index.json")).unwrap();
     assert!(index.contains("\"development_only\":true"));
     assert!(index.contains("\"sample_count\":1600"));
-    assert!(index.contains("\"planes\":[\"count\",\"sigma\"]"));
+    assert!(index.contains("\"planes\":[\"count\",\"sigma\",\"energy\"]"));
     assert!(index.contains("\"real_holdout_coverage\":\"not_validated\""));
     assert_eq!(
         view.value(Plane::Sigma, MonthIndex::from_index(276), 0, 0)

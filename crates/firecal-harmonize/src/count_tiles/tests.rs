@@ -119,7 +119,7 @@ fn apply_saturates_and_rounds_counts_without_u16_wrapping() {
         (65535.0, 65535),
         (f64::from(u32::MAX), 65535),
     ] {
-        assert_eq!(rounded_count(value), expected);
+        assert_eq!(rounded_plane_value(value), expected);
     }
     let p = CountPlan::new(
         plan().tile(),
@@ -215,3 +215,5 @@ fn fit_aggregates_rejects_absent_overlap_and_excludes_pre2012_months() {
 mod boundaries;
 
 mod sigma;
+
+mod energy;

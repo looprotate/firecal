@@ -15,15 +15,15 @@ impl Fixture {
             std::env::temp_dir().join(format!("firecal-count-{}-{name}", std::process::id()));
         std::fs::create_dir(&root).unwrap();
         let mut inputs = Vec::new();
-        for (satellite, month, counts) in [
-            (Satellite::Terra, 276, vec![2, 4]),
-            (Satellite::SuomiNpp, 276, vec![4, 8]),
-            (Satellite::Terra, 277, vec![]),
-            (Satellite::SuomiNpp, 277, vec![8]),
-            (Satellite::SuomiNpp, 278, vec![3, 6]),
+        for (satellite, month, counts, frp) in [
+            (Satellite::Terra, 276, vec![2, 4], vec![20.0, 40.0]),
+            (Satellite::SuomiNpp, 276, vec![4, 8], vec![5.0, 10.0]),
+            (Satellite::Terra, 277, vec![], vec![]),
+            (Satellite::SuomiNpp, 277, vec![8], vec![99.0]),
+            (Satellite::SuomiNpp, 278, vec![3, 6], vec![1.25, 2.5]),
         ] {
             let path = root.join(format!("{}-{month}.fca", satellite.code()));
-            write(&path, satellite, month, &counts);
+            write(&path, satellite, month, &counts, &frp);
             inputs.push(path);
         }
         Self { root, inputs }
@@ -34,14 +34,15 @@ impl Drop for Fixture {
         std::fs::remove_dir_all(&self.root).unwrap();
     }
 }
-fn write(path: &Path, satellite: Satellite, month: u16, counts: &[u32]) {
+fn write(path: &Path, satellite: Satellite, month: u16, counts: &[u32], frp: &[f32]) {
     let records: Vec<_> = counts
         .iter()
+        .zip(frp)
         .enumerate()
-        .map(|(col, &count)| AggregateRecord {
+        .map(|(col, (&count, &power))| AggregateRecord {
             cell: CellIndex::new(0, u32::try_from(col).unwrap()).unwrap(),
             count,
-            frp_megawatts: 0.0,
+            frp_megawatts: power,
             day_count: 0,
         })
         .collect();

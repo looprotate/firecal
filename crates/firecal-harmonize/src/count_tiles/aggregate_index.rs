@@ -1,7 +1,9 @@
 //! Validated satellite-month lookup and tile-local sparse-to-dense conversion.
 
 use super::{CountPlan, TileBuildError};
-use firecal_types::{AggregateView, MonthIndex, Satellite, TILE_CELLS, TILE_SIDE, TileId};
+use firecal_types::{
+    AggregateRecord, AggregateView, MonthIndex, Satellite, TILE_CELLS, TILE_SIDE, TileId,
+};
 use std::collections::BTreeMap;
 
 pub(super) struct AggregateIndex<'a> {
@@ -53,8 +55,25 @@ impl<'a> AggregateIndex<'a> {
         month: MonthIndex,
         satellite: Satellite,
     ) -> Option<Vec<u32>> {
+        self.values(plan, month, satellite, |record| record.count)
+    }
+    pub(super) fn frp(
+        &self,
+        plan: &CountPlan,
+        month: MonthIndex,
+        satellite: Satellite,
+    ) -> Option<Vec<f32>> {
+        self.values(plan, month, satellite, |record| record.frp_megawatts)
+    }
+    fn values<T: Copy + Default>(
+        &self,
+        plan: &CountPlan,
+        month: MonthIndex,
+        satellite: Satellite,
+        project: impl Fn(AggregateRecord) -> T,
+    ) -> Option<Vec<T>> {
         let view = self.files.get(&(month, satellite))?;
-        let mut counts = vec![0; TILE_CELLS];
+        let mut values = vec![T::default(); TILE_CELLS];
         for record in view
             .records()
             .filter(|record| TileId::of_cell(record.cell) == plan.tile)
@@ -63,11 +82,11 @@ impl<'a> AggregateIndex<'a> {
                 (record.cell.row() % TILE_SIDE) * TILE_SIDE + record.cell.col() % TILE_SIDE;
             if let Some(slot) = usize::try_from(offset)
                 .ok()
-                .and_then(|offset| counts.get_mut(offset))
+                .and_then(|offset| values.get_mut(offset))
             {
-                *slot = record.count;
+                *slot = project(record);
             }
         }
-        Some(counts)
+        Some(values)
     }
 }

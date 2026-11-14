@@ -5,7 +5,8 @@ residuals. `fit_sigma_aggregates` assembles that training population from paired
 complete standard-product tile-months. `apply_with_sigma` writes the existing
 FCT1 sigma plane without changing count bytes or the shared file format. The
 CLI now uses this path by default, with an active-cell floor of one count.
-Energy remains unavailable; all output remains development-only.
+The independent FRP plane is described in `energy.md`; count sigma never
+serves as FRP uncertainty. All output remains development-only.
 
 ## Assumptions and arithmetic
 
@@ -56,8 +57,9 @@ nonzero sigma is retained, preserving uncertainty from actual VIIRS activity.
 
 The JSON index records model version, residual RMS, active-cell floor, training
 bounds and widening policies. It declares `planes: ["count", "sigma"]` and
-`real_holdout_coverage: "not_validated"`; energy storage remains an unavailable
-placeholder. The count-only library API remains usable for #31 diagnostics.
+`real_holdout_coverage: "not_validated"`. When `apply_with_energy` is used, the
+third plane receives independently calibrated FRP; it still has no sigma of
+its own. The count-only library API remains usable for #31 diagnostics.
 
 ## Hand-computed and held-out checks
 
