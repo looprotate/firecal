@@ -8,6 +8,12 @@ Add a line when you use anything from outside the team: data, a library, a metho
 
 ## Data
 
+- NASA FIRMS public yearly country hotspot CSVs: January 2024 detections from Uruguay
+  (MODIS, VIIRS S-NPP and VIIRS NOAA-20) used for the issue #26 real-month validation.
+  https://firms.modaps.eosdis.nasa.gov/country/
+  File listing: https://firms.modaps.eosdis.nasa.gov/data/country/yearly_summary_files.txt
+  Attribute/provenance notes: https://firms.modaps.eosdis.nasa.gov/data/country/AttributesReadme.txt
+
 - NASA FIRMS (Fire Information for Resource Management System): the MODIS and VIIRS active-fire hotspots that
   every number comes from. https://firms.modaps.eosdis.nasa.gov
 - MODIS (Terra and Aqua) active fire product, collection 6.1; VIIRS 375 m active fire product (Suomi NPP,

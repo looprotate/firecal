@@ -35,9 +35,11 @@ elapsed milliseconds and integer rows per second (including parsing and I/O).
 - The command does not deduplicate detections or reconcile standard and NRT
   products. Supply non-overlapping inputs and keep processing provenance outside
   the aggregate format; never silently mix overlapping standard/NRT coverage.
-- Unit/integration tests use synthetic fixtures. Validation and throughput on
-  one real month remain pending the downloads in #23; #26 is not complete until
-  the real-data comparison with the serial result is recorded.
+- Normal tests use synthetic fixtures. An opt-in test also validates a local
+  real month against an independent serial oracle; no real detections enter git.
+  January 2024 Uruguay passed this check; see `validation.md` for the sources,
+  measurements, limitations and reproduction command. The wider #23 download
+  remains a separate task.
 
 ## Verification
 
@@ -46,3 +48,7 @@ FCA1 bytes, sensitive FRP sums across batches, 1/2/7/8 workers, all five
 satellites, separate months, nested paths (including spaces and Unicode),
 malformed input, worker errors, row-counter overflow, and preserved outputs.
 `cargo xtask ready` is required before pushing.
+
+For a flat directory of real CSVs restricted to one month, set
+`FIRECAL_VALIDATION_INPUT` and run
+`cargo test --release -p firecal-ingest --test real_month -- --ignored --nocapture`.
