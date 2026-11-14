@@ -10,7 +10,12 @@ Months across, years down, one cell per month of a Series. It draws; every numbe
   `web/tokens/tokens.css`.
 - **Keyboard.** Tab enters at the newest month; arrows move one cell, Home and End the row, PageUp and PageDown a
   year. The month, value and estimated uncertainty are in each cell's label and in the readout under the grid.
-- **Focus ring** is a separate rectangle offset from the cell by a dark gap, so it shows on the lightest step too.
+- **Focus ring** is a separate rectangle offset from the cell by a gap, so it shows on every step.
+- **Provisional months** (from `provisional_from` of the Series on) carry a triangle in the bottom left corner,
+  `--provisional-size` along each side, inside the cell's rounded corner, and say "provisional" in their label. The
+  token test proves it shows on every step and on an empty cell; `marks.test.mjs` proves where it is drawn.
+- **Legend** under the readout: the empty cell and the seven steps from none to most, then a cell with each mark and
+  what it means in words. It is drawn from the same classes as the cells.
 
 ```
 node --test web/calendar

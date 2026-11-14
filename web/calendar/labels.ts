@@ -28,10 +28,11 @@ export function monthTitle(year: number, month: number): string {
 
 /**
  * The words for a cell: what a screen reader says and what the readout shows on focus and hover. The
- * uncertainty is said to be estimated, and left out when the plane has none.
+ * uncertainty is said to be estimated, and left out when the plane has none; a provisional month says so.
  */
 export function describeCell(cell: Cell, plane: CalendarSeries['plane']): string {
   const unit = plane === 'energy' ? 'MW of fire radiative power' : 'hotspots';
   const sigma = Number.isFinite(cell.sigma) ? `, uncertainty ±${formatNumber(cell.sigma)} (estimated)` : '';
-  return `${monthTitle(cell.year, cell.month)}: ${formatNumber(cell.value)} ${unit}${sigma}`;
+  const provisional = cell.provisional ? ', provisional' : '';
+  return `${monthTitle(cell.year, cell.month)}: ${formatNumber(cell.value)} ${unit}${sigma}${provisional}`;
 }

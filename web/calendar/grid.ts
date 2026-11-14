@@ -13,6 +13,8 @@ export interface Cell {
   /** NaN when the plane has no uncertainty (energy). */
   sigma: number;
   step: RampStep;
+  /** From near-real-time data, not yet science quality. */
+  provisional: boolean;
 }
 
 /** Years down, months across. A column holds `null` where the series has no month. */
@@ -41,6 +43,7 @@ export function buildGrid(series: CalendarSeries): Grid {
   const lastYear = yearOfMonthIndex(first + count - 1);
   const years = Array.from({ length: lastYear - firstYear + 1 }, (_, at) => firstYear + at);
   const max = series.value.reduce((largest, value) => Math.max(largest, value), 0);
+  const provisionalFrom = series.provisional_from ?? Number.POSITIVE_INFINITY;
 
   const rows: (Cell | null)[][] = years.map(() => Array.from({ length: 12 }, () => null));
   series.value.forEach((value, at) => {
@@ -54,6 +57,7 @@ export function buildGrid(series: CalendarSeries): Grid {
       value,
       sigma: series.sigma[at] ?? Number.NaN,
       step: rampStep(value, max),
+      provisional: monthIndex >= provisionalFrom,
     };
   });
   return { years, rows };

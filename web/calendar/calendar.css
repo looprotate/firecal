@@ -9,6 +9,15 @@
   font-family: var(--font-ui);
 }
 
+.calendar-legend {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin-top: var(--margin);
+  font-family: var(--font-ui);
+}
+
+.calendar-legend .axis,
 .calendar-grid .axis {
   fill: var(--text-secondary);
   font-size: var(--text-size-small);
@@ -25,6 +34,15 @@
   stroke-width: var(--hairline);
 }
 
+.calendar-grid .provisional,
+.calendar-legend .provisional {
+  fill: var(--provisional-fill);
+  stroke: var(--provisional-edge);
+  stroke-width: 1px;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
 .calendar-grid .focus-ring {
   fill: none;
   stroke: var(--focus-ring);
@@ -32,14 +50,14 @@
   pointer-events: none;
 }
 
-.calendar-grid .ramp-0 { fill: var(--ramp-0); }
-.calendar-grid .ramp-1 { fill: var(--ramp-1); }
-.calendar-grid .ramp-2 { fill: var(--ramp-2); }
-.calendar-grid .ramp-3 { fill: var(--ramp-3); }
-.calendar-grid .ramp-4 { fill: var(--ramp-4); }
-.calendar-grid .ramp-5 { fill: var(--ramp-5); }
-.calendar-grid .ramp-6 { fill: var(--ramp-6); }
-.calendar-grid .ramp-7 { fill: var(--ramp-7); }
+:is(.calendar-grid, .calendar-legend) .ramp-0 { fill: var(--ramp-0); }
+:is(.calendar-grid, .calendar-legend) .ramp-1 { fill: var(--ramp-1); }
+:is(.calendar-grid, .calendar-legend) .ramp-2 { fill: var(--ramp-2); }
+:is(.calendar-grid, .calendar-legend) .ramp-3 { fill: var(--ramp-3); }
+:is(.calendar-grid, .calendar-legend) .ramp-4 { fill: var(--ramp-4); }
+:is(.calendar-grid, .calendar-legend) .ramp-5 { fill: var(--ramp-5); }
+:is(.calendar-grid, .calendar-legend) .ramp-6 { fill: var(--ramp-6); }
+:is(.calendar-grid, .calendar-legend) .ramp-7 { fill: var(--ramp-7); }
 
 .calendar-readout {
   min-height: 1.4em;

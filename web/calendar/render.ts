@@ -3,7 +3,8 @@ import { describeCell, monthTitle } from './labels.ts';
 import { latestPosition } from './keyboard.ts';
 import type { CalendarSeries } from './series.ts';
 
-const CELL = 28;
+/** The side of a cell, in SVG units. */
+export const CELL = 28;
 const GAP = 6;
 const LEFT = 40;
 const TOP = 20;
@@ -13,6 +14,18 @@ const MONTH_LETTERS = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D
 
 /** Where the focus ring sits relative to the cell it surrounds, in SVG units. */
 export const FOCUS_RING_OFFSET = RING_OFFSET;
+
+/** The provisional triangle's sides, as `--provisional-size` in `web/tokens/tokens.css`. */
+export const PROVISIONAL_SIZE = 10;
+/** How far the triangle sits in from the cell's edges, so it stays inside the rounded corner. */
+const MARK_INSET = 2;
+
+/** The provisional triangle in the bottom left corner of the cell at `x`, `y`. */
+export function provisionalTriangle(x: number, y: number): string {
+  const left = x + MARK_INSET;
+  const bottom = y + CELL - MARK_INSET;
+  return `<path class="provisional" aria-hidden="true" d="M${left} ${bottom - PROVISIONAL_SIZE}V${bottom}H${left + PROVISIONAL_SIZE}Z"/>`;
+}
 
 /** The SVG of the calendar as text. Colors come from CSS classes `ramp-0` to `ramp-7`, never from here. */
 export function renderCalendarSvg(grid: Grid, plane: CalendarSeries['plane']): string {
@@ -37,7 +50,8 @@ export function renderCalendarSvg(grid: Grid, plane: CalendarSeries['plane']): s
             return `<rect class="cell absent" role="gridcell" aria-label="${label}: not in the series" aria-disabled="true" x="${x}" y="${y}" width="${CELL}" height="${CELL}" rx="6"/>`;
           }
           const entering = entry !== null && entry.row === at && entry.column === column;
-          return `<rect class="cell ramp-${cell.step}" role="gridcell" tabindex="${entering ? 0 : -1}" data-row="${at}" data-column="${column}" aria-label="${describeCell(cell, plane)}" x="${x}" y="${y}" width="${CELL}" height="${CELL}" rx="6"/>`;
+          const rect = `<rect class="cell ramp-${cell.step}" role="gridcell" tabindex="${entering ? 0 : -1}" data-row="${at}" data-column="${column}" aria-label="${describeCell(cell, plane)}" x="${x}" y="${y}" width="${CELL}" height="${CELL}" rx="6"/>`;
+          return cell.provisional ? rect + provisionalTriangle(x, y) : rect;
         })
         .join('');
       return `<g role="row">${year}${cells}</g>`;

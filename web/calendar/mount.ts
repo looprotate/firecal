@@ -1,6 +1,7 @@
 import { buildGrid, type Grid } from './grid.ts';
 import { describeCell } from './labels.ts';
 import { nextPosition, type Position } from './keyboard.ts';
+import { renderLegendSvg } from './legend.ts';
 import { FOCUS_RING_OFFSET, renderCalendarSvg } from './render.ts';
 import type { CalendarSeries } from './series.ts';
 
@@ -35,7 +36,10 @@ export function mountCalendar(container: HTMLElement, series: CalendarSeries): C
   readout.setAttribute('aria-live', 'polite');
   const host = document.createElement('div');
   host.className = 'calendar';
-  container.replaceChildren(host, readout);
+  const legend = document.createElement('div');
+  legend.className = 'calendar';
+  legend.innerHTML = renderLegendSvg();
+  container.replaceChildren(host, readout, legend);
 
   const show = (at: Position | null): void => {
     const cell = at === null ? null : (grid.rows[at.row]?.[at.column] ?? null);
