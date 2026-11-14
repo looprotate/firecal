@@ -64,11 +64,14 @@ pub(crate) fn read_request<M: Memory>(
     Ok((request, entries))
 }
 
+/// A tile file in memory with its row and column in the tile grid.
+pub(crate) type TileFile<'m> = (u32, u32, &'m [u8]);
+
 /// The bytes of each tile in the table, with its row and column.
 pub(crate) fn tile_files<'m, M: Memory>(
     memory: &'m M,
     entries: &[TileEntry],
-) -> Result<Vec<(u32, u32, &'m [u8])>, u32> {
+) -> Result<Vec<TileFile<'m>>, u32> {
     let mut files = Vec::with_capacity(entries.len());
     for entry in entries {
         let bytes = memory.read(entry.address, entry.len).ok_or(INVALID)?;

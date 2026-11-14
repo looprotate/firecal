@@ -8,9 +8,10 @@ use firecal_query::write_cells_csv;
 
 const LENGTH_BYTES: u32 = 4;
 
-/// Writes `cells.csv` for the request block at `request_address` (the `output` field of the block is not
-/// used) into the buffer of `buffer_len` bytes at `buffer_address`: first the length of the text as a `u32`,
-/// then the text. Returns a status from [`crate::status`]; a buffer too small for the text is
+/// Writes `cells.csv` for the request block at `request_address` into a buffer.
+///
+/// The `output` field of the block is not used. The buffer is `buffer_len` bytes: first the length of the
+/// text as a `u32`, then the text. Returns a status from [`crate::status`]; a buffer too small for the text is
 /// `STATUS_OUTPUT_TOO_SMALL`, and nothing is written unless the status is zero.
 pub fn run_cells_csv<M: Memory>(
     memory: &mut M,
