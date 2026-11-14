@@ -14,6 +14,11 @@ Months across, years down, one cell per month of a Series. It draws; every numbe
 - **Provisional months** (from `provisional_from` of the Series on) carry a triangle in the bottom left corner,
   `--provisional-size` along each side, inside the cell's rounded corner, and say "provisional" in their label. The
   token test proves it shows on every step and on an empty cell; `marks.test.mjs` proves where it is drawn.
+- **Unusual months** carry a diamond in the top right corner, ink with a paper edge, and say "unusual" in their
+  label. Only the core decides: the calendar draws `unusual` from the Series and never compares values itself.
+- **The season against the median**, under the legend: one column under each month of the last year, a bar from the
+  median line to the core's anomaly, its sensor band at two sigma in sky (estimated), and the diamond when flagged.
+  The sentence under it reads the newest month in words, so nothing depends on the drawing.
 - **Legend** under the readout: the empty cell and the seven steps from none to most, then a cell with each mark and
   what it means in words. It is drawn from the same classes as the cells.
 

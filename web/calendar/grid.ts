@@ -15,6 +15,12 @@ export interface Cell {
   step: RampStep;
   /** From near-real-time data, not yet science quality. */
   provisional: boolean;
+  /** The median of the same calendar month over the baseline years; NaN when there is none. */
+  median: number;
+  /** `(value - median) / max(median, 1)` from the core; NaN when there is no median. */
+  anomaly: number;
+  /** Flagged by the core: outside the sensor band and outside the baseline years' range. */
+  unusual: boolean;
 }
 
 /** Years down, months across. A column holds `null` where the series has no month. */
@@ -58,6 +64,9 @@ export function buildGrid(series: CalendarSeries): Grid {
       sigma: series.sigma[at] ?? Number.NaN,
       step: rampStep(value, max),
       provisional: monthIndex >= provisionalFrom,
+      median: series.median?.[monthOfMonthIndex(monthIndex) - 1] ?? Number.NaN,
+      anomaly: series.anomaly?.[at] ?? Number.NaN,
+      unusual: series.unusual?.[at] ?? false,
     };
   });
   return { years, rows };

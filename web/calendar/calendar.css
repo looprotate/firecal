@@ -10,14 +10,19 @@
 }
 
 .calendar-legend {
-  display: block;
-  max-width: 100%;
-  height: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--margin) 16px;
   margin-top: var(--margin);
+  color: var(--text-secondary);
   font-family: var(--font-ui);
+  font-size: var(--text-size-small);
 }
 
-.calendar-legend .axis,
+.calendar-legend span { align-items: center; display: inline-flex; gap: 6px; }
+.calendar-legend svg { display: block; flex: none; }
+.calendar-legend .legend-glyph { height: 20px; width: 20px; }
+
 .calendar-grid .axis {
   fill: var(--text-secondary);
   font-size: var(--text-size-small);
@@ -41,6 +46,48 @@
   stroke-width: 1px;
   stroke-linejoin: round;
   pointer-events: none;
+}
+
+.calendar-grid .unusual,
+.calendar-legend .unusual,
+.anomaly-strip .unusual {
+  fill: var(--mark-fill);
+  stroke: var(--mark-edge);
+  stroke-width: 1px;
+  pointer-events: none;
+}
+
+.anomaly-strip {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  font-family: var(--font-ui);
+}
+
+.anomaly-strip .axis { fill: var(--text-secondary); font-size: var(--text-size-small); }
+.anomaly-strip .median-line { stroke: var(--disabled); stroke-width: 1px; }
+.anomaly-strip .activity { fill: var(--activity); }
+.anomaly-strip .uncertainty { fill: none; stroke: var(--uncertainty); stroke-width: 2px; }
+
+.calendar-season {
+  border-top: var(--hairline) solid var(--line);
+  margin-top: 16px;
+  padding-top: 12px;
+}
+
+.calendar-season-title {
+  margin: 0 0 var(--margin);
+  color: var(--text-strong);
+  font-family: var(--font-ui);
+  font-size: var(--text-size-row);
+  font-weight: 600;
+}
+
+.calendar-season-current {
+  margin: var(--margin) 0 0;
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: var(--text-size-row);
 }
 
 .calendar-grid .focus-ring {

@@ -1,25 +1,27 @@
+import { CELL } from './layout.ts';
+import { provisionalTriangle, unusualDiamond } from './marks.ts';
 import { RAMP_STEPS } from './ramp.ts';
-import { CELL, provisionalTriangle } from './render.ts';
 
 const SWATCH = 14;
 const GAP = 2;
-const HEIGHT = CELL + 2;
-const MIDDLE = HEIGHT / 2;
+
+const glyph = (mark: string): string =>
+  `<svg class="legend-glyph" viewBox="0 0 ${CELL} ${CELL}" width="${CELL}" height="${CELL}" aria-hidden="true">`
+  + `<rect class="sample ramp-3" width="${CELL}" height="${CELL}" rx="6"/>${mark}</svg>`;
 
 /**
  * The key under the calendar, drawn from the same shapes and classes as the cells: the empty cell and the seven
- * steps from none to most, then a cell with each mark and what it means in words.
+ * steps from none to most, then a cell with each mark and what it means in words. HTML around small drawings, so
+ * the words wrap and keep their size on a narrow screen.
  */
-export function renderLegendSvg(): string {
-  const top = MIDDLE - SWATCH / 2;
+export function renderLegend(): string {
+  const width = (RAMP_STEPS + 1) * (SWATCH + GAP) - GAP;
   const steps = Array.from({ length: RAMP_STEPS + 1 }, (_, step) =>
-    `<rect class="swatch ramp-${step}" x="${36 + step * (SWATCH + GAP)}" y="${top}" width="${SWATCH}" height="${SWATCH}" rx="3"/>`,
+    `<rect class="swatch ramp-${step}" x="${step * (SWATCH + GAP)}" y="0" width="${SWATCH}" height="${SWATCH}" rx="3"/>`,
   ).join('');
-  const most = 36 + (RAMP_STEPS + 1) * (SWATCH + GAP) + 4;
-  const mark = most + 52;
-  const width = mark + CELL + 8 + 200;
-  return `<svg class="calendar-legend" role="img" aria-label="Legend: the darker the cell, the more activity; a triangle in the corner marks a provisional month" viewBox="0 0 ${width} ${HEIGHT}" width="${width}" height="${HEIGHT}">`
-    + `<text class="axis" x="0" y="${MIDDLE + 4}">None</text>${steps}<text class="axis" x="${most}" y="${MIDDLE + 4}">Most</text>`
-    + `<rect class="sample ramp-3" x="${mark}" y="1" width="${CELL}" height="${CELL}" rx="6"/>${provisionalTriangle(mark, 1)}`
-    + `<text class="axis" x="${mark + CELL + 8}" y="${MIDDLE + 4}">Provisional: near-real-time data</text></svg>`;
+  return '<div class="calendar-legend" role="list" aria-label="Legend">'
+    + `<span role="listitem">None <svg viewBox="0 0 ${width} ${SWATCH}" width="${width}" height="${SWATCH}" aria-hidden="true">${steps}</svg> Most</span>`
+    + `<span role="listitem">${glyph(unusualDiamond(0, 0))}Unusual: outside the band and the past years</span>`
+    + `<span role="listitem">${glyph(provisionalTriangle(0, 0))}Provisional: near-real-time data</span>`
+    + '</div>';
 }

@@ -1,8 +1,9 @@
 import { buildGrid, type Grid } from './grid.ts';
 import { describeCell } from './labels.ts';
-import { nextPosition, type Position } from './keyboard.ts';
-import { renderLegendSvg } from './legend.ts';
+import { latestPosition, nextPosition, type Position } from './keyboard.ts';
+import { renderLegend } from './legend.ts';
 import { FOCUS_RING_OFFSET, renderCalendarSvg } from './render.ts';
+import { describeSeasonMonth, renderStripSvg } from './strip.ts';
 import type { CalendarSeries } from './series.ts';
 
 /** A calendar drawn into a page element. */
@@ -38,8 +39,17 @@ export function mountCalendar(container: HTMLElement, series: CalendarSeries): C
   host.className = 'calendar';
   const legend = document.createElement('div');
   legend.className = 'calendar';
-  legend.innerHTML = renderLegendSvg();
-  container.replaceChildren(host, readout, legend);
+  legend.innerHTML = renderLegend();
+  const season = document.createElement('section');
+  season.className = 'calendar-season';
+  const strip = document.createElement('div');
+  strip.className = 'calendar';
+  const seasonTitle = document.createElement('h3');
+  seasonTitle.className = 'calendar-season-title';
+  const seasonText = document.createElement('p');
+  seasonText.className = 'calendar-season-current';
+  season.append(seasonTitle, strip, seasonText);
+  container.replaceChildren(host, readout, legend, season);
 
   const show = (at: Position | null): void => {
     const cell = at === null ? null : (grid.rows[at.row]?.[at.column] ?? null);
@@ -49,6 +59,12 @@ export function mountCalendar(container: HTMLElement, series: CalendarSeries): C
   const draw = (): void => {
     grid = buildGrid(current);
     host.innerHTML = renderCalendarSvg(grid, current.plane);
+    strip.innerHTML = renderStripSvg(grid, current.plane);
+    const latest = latestPosition(grid);
+    const newest = latest === null ? null : (grid.rows[latest.row]?.[latest.column] ?? null);
+    season.hidden = strip.innerHTML === '' || newest === null;
+    seasonTitle.textContent = `${grid.years.at(-1) ?? ''} against the median of past years`;
+    seasonText.textContent = newest === null ? '' : describeSeasonMonth(newest, current.plane);
     show(null);
   };
 

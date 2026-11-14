@@ -4,8 +4,9 @@ import { test } from 'node:test';
 import stubSeries from '../stub/series.json' with { type: 'json' };
 import { buildGrid } from './grid.ts';
 import { describeCell } from './labels.ts';
-import { renderLegendSvg } from './legend.ts';
-import { PROVISIONAL_SIZE, renderCalendarSvg } from './render.ts';
+import { renderLegend } from './legend.ts';
+import { PROVISIONAL_SIZE } from './marks.ts';
+import { renderCalendarSvg } from './render.ts';
 
 const tokens = readFileSync(new URL('../tokens/tokens.css', import.meta.url), 'utf8');
 
@@ -43,12 +44,12 @@ test('the triangle is the size the tokens give it', () => {
 });
 
 test('the legend shows the empty cell, the seven steps in order, and the provisional triangle, in words too', () => {
-  const svg = renderLegendSvg();
+  const svg = renderLegend();
   const steps = [...svg.matchAll(/class="swatch ramp-(\d)"/g)].map((found) => Number(found[1]));
   assert.deepEqual(steps, [0, 1, 2, 3, 4, 5, 6, 7]);
   assert.match(svg, /class="provisional"/);
-  assert.match(svg, />None</);
-  assert.match(svg, />Most</);
+  assert.match(svg, />None </);
+  assert.match(svg, /> Most</);
   assert.match(svg, />Provisional: near-real-time data</);
   assert.ok(!/#[0-9a-f]{3,6}|fill=|stroke=/i.test(svg), 'colors come from the tokens');
 });
