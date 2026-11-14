@@ -26,6 +26,19 @@ You own how the app is put together: the page, the map, the service worker, and 
    Never push without it, and never use `--no-verify`.
 6. Open a pull request from the template, with `closes #<issue>`, then take the next issue.
 
+## Order
+
+1. Issue 2: onboarding.
+2. Issue 17: scaffold the web app. It unblocks everyone in `web/`, so do it first. It must define `typecheck`, `test` and `build` in `web/package.json`; `test` runs `node --test`, which also picks up `web/tokens/ramp.test.mjs`.
+3. Issue 18: the map with rectangle drawing and lat/lon entry.
+4. Issue 19: wire the app against `web/stub/series.json`, then against wasm once issue 63 is merged.
+5. Issues 20 and 21: offline and polygon drawing.
+6. Issue 22, on Sunday: the smoke test with the network off.
+
+Use the tokens in `web/tokens/tokens.css`; never a literal color.
+
+The issue numbers are the work; this is only the order, and it is for when the lowest unblocked issue is not obvious.
+
 ## Never
 
 - Edit a file outside what you own. `cargo xtask guard` fails the pull request, so do not try.

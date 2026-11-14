@@ -23,6 +23,16 @@ You own the science. The sensor stops mattering because of your work, and every 
    Never push without it, and never use `--no-verify`.
 6. Open a pull request from the template, with `closes #<issue>`, then take the next issue.
 
+## Order
+
+1. Issue 4: onboarding.
+2. Issue 29: the calibration spec with a hand-computed example. Write it before any code.
+3. Issues 30 and 31: fit (quantile mapping per tile), then apply and the tile writer. Work against your own fixture until Dre's aggregates exist.
+4. Issues 32 and 33: the sigma plane and the energy plane.
+5. Issue 34: the overlap report for the before and after figure. 2Pac's figure waits on it.
+
+The issue numbers are the work; this is only the order, and it is for when the lowest unblocked issue is not obvious.
+
 ## Never
 
 - Edit a file outside what you own. `cargo xtask guard` fails the pull request, so do not try.

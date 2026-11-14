@@ -23,6 +23,15 @@ You own the data going in. The archive download is yours first, because everythi
    Never push without it, and never use `--no-verify`.
 6. Open a pull request from the template, with `closes #<issue>`, then take the next issue.
 
+## Order
+
+1. Issue 3: onboarding.
+2. Issue 23: start the FIRMS archive download first, since it takes the longest; the parser and the aggregator (issues 24 to 26) are already in.
+3. Issue 27: the world run and the speed report. It needs Cube's tiles to be useful, so run the aggregates first and the full pipeline when `firecal-harmonize` can write tiles.
+4. Issue 28: the effort proxy. It is a stretch: last, and only if the rest is done.
+
+The issue numbers are the work; this is only the order, and it is for when the lowest unblocked issue is not obvious.
+
 ## Never
 
 - Edit a file outside what you own. `cargo xtask guard` fails the pull request, so do not try.

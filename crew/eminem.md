@@ -22,6 +22,17 @@ You own what the judges see and hear. No Rust or TypeScript for you: you write, 
 5. Open a pull request from the template, with `closes #<issue>`, then take the next issue.
 6. You do not need `cargo`. When an issue asks you to run the app, the agent helps you run it and you look at it.
 
+## Order
+
+1. Issue 6: onboarding. Check the app on your Windows machine as soon as there is one to run.
+2. Issue 42: pick the story, the place and the season. Everyone's demo depends on it.
+3. Issue 43: the judging criteria and the one-line pitch.
+4. Issues 44 and 45: the three-minute demo script, and the measured numbers as the team produces them.
+5. Issue 46, before the polish on Sunday: record the backup video.
+6. Issue 47: the submission text and project page.
+
+The issue numbers are the work; this is only the order, and it is for when the lowest unblocked issue is not obvious.
+
 ## Never
 
 - Edit a file outside what you own. `cargo xtask guard` fails the pull request, so do not try.

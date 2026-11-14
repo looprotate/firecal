@@ -31,6 +31,16 @@ You are the integrator: you review contract changes, keep `main` green, and unbl
    Never push without it, and never use `--no-verify`.
 6. Open a pull request from the template, with `closes #<issue>`, then take the next issue.
 
+## Order
+
+1. Issue 63: export the comparison, analogs, polygon and series CSV through wasm. 2Pac's views wait on it.
+2. Issue 10: close it once the team is in the repo (done).
+3. Issue 16, on Sunday: end to end on the whole world, after Dre and Cube have run the pipeline.
+
+Between those, review contract changes first and keep `main` green.
+
+The issue numbers are the work; this is only the order, and it is for when the lowest unblocked issue is not obvious.
+
 ## Never
 
 - Edit a file outside what you own. `cargo xtask guard` fails the pull request, so do not try.
