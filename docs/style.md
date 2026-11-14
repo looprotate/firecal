@@ -98,7 +98,7 @@ The team cannot review Rust line by line, so **the tests are the review**.
 - Offline: a service worker caches the app shell and the tiles of pinned regions. It is tested with the
   network off.
 - Test: one smoke test that loads the app, applies a fixed area against fixture tiles, and checks the calendar
-  cells.
+  cells, online and with the host stopped: `npm --prefix web run smoke`.
 
 ## The look
 

@@ -30,6 +30,8 @@ jobs:
         run: cargo xtask check --full
       - name: Native and wasm give identical bytes
         run: cargo xtask parity
+      - name: The built app answers in Chrome, online and with the host stopped
+        run: npm --prefix web run smoke
 
   guard:
     name: guard

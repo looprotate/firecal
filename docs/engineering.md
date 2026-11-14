@@ -160,7 +160,8 @@ The tests are the review. A feature is not written until you know how it will be
    within a tolerance written in the test with its reason; sigma is checked to cover the real MODIS value at the
    stated rate.
 7. **Web smoke**: load the app against fixture tiles, apply a fixed area, assert the calendar cell values;
-   repeat with the network off.
+   repeat with the network off. `npm --prefix web run smoke`, in headless Chrome (`CHROME_PATH` if it is not in
+   the usual place); it reads the debug wasm build, so run `cargo xtask check` first.
 
 ### Edge cases that must have a test
 
@@ -240,8 +241,8 @@ Two agents in the same checkout overwrite each other and fight over `target/`. S
 - **Rebase** on `main` before opening the PR and again if `main` moved; never merge `main` into the branch.
   Pull requests are **squash-merged**: one pull request is one commit on `main`, whose title is the PR title
   and whose body is the PR description. Linear history, and every commit is revertable on its own.
-- `main` is protected: a PR needs green CI (`check --full` on macOS, Windows and Linux, which includes the wasm build, `guard` and `pr-lint`; `parity` and
-  the web build join when they exist). There is no required approval: when CI is green the author merges their
+- `main` is protected: a PR needs green CI: `check --full` (which includes the wasm build and the web build),
+  `parity` and the web smoke in Chrome, on macOS, Windows and Linux, plus `guard` and `pr-lint`. There is no required approval: when CI is green the author merges their
   own pull request, squashed.
 - **Merge small and early.** A branch older than two hours is a risk; split it. A long-lived branch is the main
   way collisions happen.
