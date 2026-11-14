@@ -39,8 +39,8 @@ and MODIS `y[i]`. Accumulate and interpolate in `f64` in this fixed order.
 Each order statistic has plotting position `p[i] = i / (n - 1)` for `n > 1`.
 Pair `x[i]` with `y[i]` at that position. Collapse each run of equal VIIRS values
 into one knot whose target is the arithmetic mean of that run's MODIS values.
-This is the MODIS empirical quantile at the run's middle rank under linear
-interpolation. Nonnegative ordered inputs therefore give nonnegative,
+This averages the MODIS order statistics across the tied VIIRS ranks.
+Nonnegative ordered inputs therefore give nonnegative,
 nondecreasing knots, including ties in either sensor.
 
 Zero is an explicit structural exception: if the run has `x = 0`, its knot is
