@@ -15,7 +15,7 @@ pub(crate) fn square_root(value: f64) -> f64 {
     }
     let mut guess = f64::from_bits((value.to_bits() >> 1) + HALVED_EXPONENT_BIAS);
     for _ in 0..NEWTON_STEPS {
-        guess = 0.5 * (guess + value / guess);
+        guess = guess.midpoint(value / guess);
     }
     guess
 }

@@ -1,5 +1,13 @@
 //! The series of an area: the harmonized value and its uncertainty, month by month.
 
+#![cfg_attr(
+    test,
+    expect(
+        clippy::suboptimal_flops,
+        reason = "only with std, which tests have: fused multiply-add rounds once, and wasm must round like native"
+    )
+)]
+
 use crate::root::square_root;
 use crate::{QueryError, Rectangle};
 use core::ops::Range;
@@ -15,8 +23,9 @@ pub struct SeriesOut<'a> {
     pub sigma: Option<&'a mut [f64]>,
 }
 
-/// Sums `plane` over the cells of `area` for each month from `first_month`, as many months as `out.value`
-/// holds. A tile that is not in `tiles` (ocean, no hotspots) counts as zeros; if two entries have the same
+/// Sums `plane` over the cells of `area` for each month from `first_month`, one per entry of `out.value`.
+///
+/// A tile that is not in `tiles` (ocean, no hotspots) counts as zeros; if two entries have the same
 /// id the first is used.
 ///
 /// The sigma comes from the [`Plane::Sigma`] plane, which is the uncertainty of the count: ask for it with
@@ -84,7 +93,7 @@ fn add_at(slots: &mut [f64], offset: u16, amount: f64) {
 }
 
 /// The tile rows or columns that a range of grid rows or columns reaches.
-fn tile_span(cells: &Range<u32>) -> Range<u32> {
+const fn tile_span(cells: &Range<u32>) -> Range<u32> {
     cells.start / TILE_SIDE..(cells.end - 1) / TILE_SIDE + 1
 }
 

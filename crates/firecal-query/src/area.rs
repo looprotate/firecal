@@ -1,5 +1,13 @@
 //! A rectangle of latitude and longitude and the grid cells it touches.
 
+#![cfg_attr(
+    test,
+    expect(
+        clippy::suboptimal_flops,
+        reason = "only with std, which tests have: fused multiply-add rounds once, and wasm must round like native"
+    )
+)]
+
 use crate::QueryError;
 use core::ops::Range;
 use firecal_types::{GRID_COLUMNS, GRID_ROWS};
@@ -10,7 +18,7 @@ const CELL_DEGREES: f64 = 0.25;
 /// thinner than a cell selects that cell, and one that only touches a cell's edge does not.
 ///
 /// It cannot cross the antimeridian: `west` is left of `east`.
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Rectangle {
     rows: (u32, u32),
     columns: (u32, u32),

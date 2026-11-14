@@ -1,3 +1,8 @@
+#![expect(
+    clippy::suboptimal_flops,
+    reason = "the check mirrors the plain arithmetic the code uses"
+)]
+
 use super::square_root;
 
 #[test]
@@ -19,8 +24,7 @@ fn the_roots_of_small_perfect_squares_are_exact() {
 
 #[test]
 fn the_root_of_two_is_within_one_part_in_ten_to_the_fifteen() {
-    // 1.4142135623730951 is the root of two written out to every digit f64 holds.
-    assert!((square_root(2.0) - 1.414_213_562_373_095_1).abs() < 1e-15);
+    assert!((square_root(2.0) - core::f64::consts::SQRT_2).abs() < 1e-15);
 }
 
 #[test]
