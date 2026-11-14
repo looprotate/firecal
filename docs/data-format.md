@@ -132,8 +132,13 @@ sigma[n]         uncertainty of value; errors of cells add in quadrature (sqrt, 
 median[12]       historical median of value for each calendar month, over the baseline years
 anomaly[n]       (value - median[month]) / max(median[month], 1)
 unusual[n]       true when |value - median[month]| > 2 * sigma[n] and value[n] is outside lowest[month] .. highest[month]
+provisional_from the first MonthIndex from near-real-time data (`nrt_from_month` of index.json), or null when none is
 analogs[k]       the k past years most similar to the season in progress: year, distance
 ```
+
+**Provisional months.** Every month from `provisional_from` on comes from near-real-time detections, not the
+science-quality product, and the calendar marks it. It is null when the history is all standard, and when the page
+cannot tell, as for tiles pinned without their `index.json`.
 
 **Rectangle areas.** A rectangle selects every cell it overlaps with positive area: thinner than a cell selects that
 cell, one that only touches a cell's edge does not. `west` is left of `east`, so a rectangle never crosses the
