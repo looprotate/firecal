@@ -56,7 +56,7 @@ browser. A test requires both builds to give identical bytes. The TypeScript int
 on screen comes from the core. There is no backend, so the app is a static site and works offline.
 
 **What sets it apart.**
-1. Uncertainty on every number, and an anomaly flagged only outside the band and the range of the baseline years.
+1. Uncertainty on every number, and a month flagged only when it rises past the band and above every baseline year.
 2. Energy as well as counts: many small agricultural burns look different from a few large fires.
 3. Analog years: a picture of the seasons most like this one, compared by rank within the month, so quiet and
    busy regions are judged the same way.
