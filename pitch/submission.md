@@ -25,11 +25,12 @@ look for burning need to know how much to trust a number, not only the number.
 
 ## Link to Project Demo
 
-The animated film, `firecal-demo-animated.mp4` (29.9 s, 1920 × 1080, `video.md`), once a person uploads it where it
-opens in a private window; that link goes here. The backup is the 26-second screen cut, `firecal-demo-30s.webm`.
-At most 30 seconds or seven slides, or the project is not eligible for global judging. Public, no login; test it in
-a private window. Beats: `video.md`. Nobody under 18 may appear. The film is silent, with all its words on screen in
-English.
+https://github.com/looprotate/firecal/releases/download/space-apps-2026/firecal-demo.mp4
+
+The animated film (29.9 s, 1920 × 1080, `video.md`), attached to the `space-apps-2026` release of the repository:
+public, no login, checked by downloading it signed out. The backup is the 26-second screen cut,
+`firecal-demo-30s.webm`, not uploaded. At most 30 seconds or seven slides, or the project is not eligible for global
+judging. Nobody under 18 appears. The film is silent, with all its words on screen in English.
 
 ## Link to Final Project
 
@@ -122,7 +123,7 @@ year's partners and the team did not use their data.
 ## Review checklist before pressing "Submit for Judging"
 
 - [ ] Every required field filled, all in English.
-- [ ] Demo link opens in a private window; at most 30 seconds or seven slides.
+- [x] Demo link opens without signing in (downloaded signed out on 2026-11-15); 29.9 seconds.
 - [x] Repository public and licensed (Apache-2.0); the README is a short description of the project and how to
       run it.
 - [ ] Every number in the text is in `pitch/numbers.md`; none is bracketed.

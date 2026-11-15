@@ -82,11 +82,12 @@ uploading: 30.0 seconds at most.
 
 - [x] Save every video **outside git** in two places, and write here where they are and their length. Today both
       places are on Axel's laptop; a copy on the team's drive or a USB stick is still to do.
-- [ ] Upload the animated film where the form can link it, public, no login, and open the link in a private window.
+- [x] Upload the animated film where the form can link it, public, no login: attached to the `space-apps-2026`
+      release on 2026-11-15, downloaded signed out and byte-identical to the local file.
 - [ ] Declare the AI's part in the submission form (`submission.md`, "Use of Super Intelligence").
 
 | File | Length | Saved in | Saved in | Link |
 |---|---|---|---|---|
-| `firecal-demo-animated.mp4` (1920 × 1080, H.264), **the submitted demo** | 29.9 s | `~/dev/firecal/data/video/` on Axel's laptop (ignored by git) | `~/Movies/firecal/` on the same laptop | not uploaded: uploading publishes it, so a person does |
+| `firecal-demo-animated.mp4` (1920 × 1080, H.264), **the submitted demo** | 29.9 s | `~/dev/firecal/data/video/` on Axel's laptop (ignored by git) | `~/Movies/firecal/` on the same laptop | [`firecal-demo.mp4`](https://github.com/looprotate/firecal/releases/download/space-apps-2026/firecal-demo.mp4) |
 | `firecal-demo-full.webm` (1600 × 900, VP9) | 51 s | `~/dev/firecal/data/video/` on Axel's laptop (ignored by git) | `~/Movies/firecal/` on the same laptop | not uploaded |
 | `firecal-demo-30s.webm` | 26 s | the same | the same | not uploaded: uploading publishes it, so a person does |
