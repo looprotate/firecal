@@ -127,8 +127,8 @@ export interface FirecalExports {
   /**
    * How each month of the history compares with what is normal: for each month, the median of its calendar month
    * over the baseline years, the anomaly `(value - median) / max(median, 1)`, and whether it is unusual: the
-   * difference clears the sensor band, `|value - median| > 2 * sigma`, and the value lies outside the lowest
-   * to highest value of the baseline years for its calendar month. Same request and buffer as `fc_area_series`.
+   * month rose, `value - median > 2 * sigma`, and the value is above the highest value of the baseline years for
+   * its calendar month. A drop is never unusual. Same request and buffer as `fc_area_series`.
    * Writes month count `f64` medians, month count `f64` anomalies, then month count bytes, 1 for unusual and 0
    * for not. A month whose calendar month has no baseline value has NaN for the median and the anomaly and 0 for
    * the flag.

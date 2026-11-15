@@ -163,18 +163,20 @@ holds for it; an even count gives the mean of the two middle values. `anomaly` d
 quiet month cannot explode, and `unusual` is strict. A month in
 the range whose calendar month has no baseline value is an error, not a zero.
 
-**When a month is unusual.** Two conditions, both required. The difference from the median clears the sensor band,
-`|value - median| > 2 * sigma` (a difference of exactly `2 * sigma` is not flagged), and the value lies outside the
-lowest-to-highest range of the baseline years for the same calendar month (a value equal to the lowest or the highest
-is inside). The reason: `sigma` covers only the measurement error of the harmonization, not the natural spread
+**When a month is unusual.** Only a rise is flagged, and two conditions are both required. The rise over the
+median clears the sensor band, `value - median > 2 * sigma` (a rise of exactly `2 * sigma` is not flagged), and the
+value is above the highest of the baseline years for the same calendar month (a value equal to the highest is not
+above it). A month below its median keeps its negative anomaly but is never flagged: on small areas the diamond
+otherwise marked months with 0 or 1 hotspots, and a quiet month is not what the mark is for (decided by Axel on
+2026-11-15). The reason for the two conditions: `sigma` covers only the measurement error of the harmonization, not the natural spread
 between years, so the band alone flagged 47 of 178 months (26%) of a synthetic tile and the mark said nothing. A new
-year ranks equally likely in any of the n + 1 places among n baseline years, so with 13 years it falls outside their
-range 2 times in 14 on the range alone; most of those are within the sensor band of the median and are not
-flagged. On a synthetic tile (13 baseline years with random year factors 0.7 to 1.4, 15% sigma) the range alone
-flagged 12.5% of the months of a normal year, the sensor band alone 17.8%, and both together 7.1%, about 1 in 14;
-a year built at 2.4 times was flagged in every month. The minimum and the
+year ranks equally likely in any of the n + 1 places among n baseline years, so with 13 years it is above all of
+them 1 time in 14 on the range alone; most of those are within the sensor band of the median and are not flagged.
+On a synthetic tile (13 baseline years with random year factors 0.7 to 1.4, 15% sigma), when drops still counted,
+the range alone flagged 12.5% of the months of a normal year, the sensor band alone 17.8%, and both together 7.1%;
+counting only rises can only flag fewer of them. A year built at 2.4 times was flagged in every month. The minimum and the
 maximum need no interpolation, so they are exact and identical in wasm and native, unlike a percentile. The cost is
-that a very short baseline has a narrow range: with 2 years a normal year is outside it 2 times in 3, so the sensor
+that a very short baseline has a narrow range: with 2 years a normal year is above it 1 time in 3, so the sensor
 band does most of the work there. A year of the baseline is never unusual against its own baseline. A calendar month
 with no baseline has no range and is not unusual.
 
