@@ -23,6 +23,14 @@ One Rust core harmonizes the archive into static tiles and, compiled to WebAssem
 browser, byte for byte the same as the native build. There is no server: the app is a static site that works
 offline. The interface, the site and the film share one hand-drawn style.
 
+## Use of AI
+
+The team designed firecal and wrote its rules; AI coding agents (Claude Code and Codex) wrote and tested most of the
+code and documentation under them: the Rust pipeline and core, the app, the site, and the code that draws the demo
+film. Every number on screen and in the film is computed by that code from NASA FIRMS data; nothing is invented. The
+film and its poster are drawn as SVG by that code, with no image-generation model, and carry an "AI-assisted
+animation" mark; the film's metadata says the same.
+
 ## Run it
 
 ```
