@@ -27,11 +27,12 @@ export function createAreaMap(container: HTMLElement, onSelected: (selection: Ar
   });
   map.addControl(new NavigationControl({ showCompass: false }), 'top-right');
   const drawing = new MaplibreTerradrawControl({
-    modes: ['rectangle', 'polygon', 'delete'],
+    modes: ['rectangle', 'polygon'],
     open: true,
     modeOptions: inkModes(colors.selection),
   });
   map.addControl(drawing, 'top-left');
+  nameDrawingButtons(container);
 
   let pending: AreaSelection | null = null;
   const outline = (selection: AreaSelection): void => {
@@ -58,6 +59,15 @@ export function createAreaMap(container: HTMLElement, onSelected: (selection: Ar
     });
   });
   return { map, showSelection: outline };
+}
+
+/** The drawing buttons carry only a title; give them the names a screen reader says. */
+function nameDrawingButtons(container: HTMLElement): void {
+  const names: Record<string, string> = { rectangle: 'Draw a rectangle', polygon: 'Draw a polygon' };
+  for (const [mode, name] of Object.entries(names)) {
+    const button = container.querySelector<HTMLButtonElement>(`.maplibregl-terradraw-add-${mode}-button`);
+    button?.setAttribute('aria-label', name);
+  }
 }
 
 function rectangleSelection(drawn: readonly (readonly number[])[]): AreaSelection | null {
