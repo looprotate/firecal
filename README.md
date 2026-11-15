@@ -6,6 +6,8 @@ how sure it is, works with no signal, and remembers which past year this one loo
 
 ## For the judges
 
+![The calendar of south-east Australia, November 2000 to December 2019, with November and December 2019 flagged](docs/calendar-south-east-australia.png)
+
 Two generations of NASA fire satellites, MODIS since 2000 and VIIRS since 2012, count burning in ways that cannot be
 compared. firecal maps VIIRS onto MODIS per 10° tile, keeps the error of that mapping as an uncertainty on every
 number, and draws a calendar for any area you pick: months across, years down. A month is flagged only when it

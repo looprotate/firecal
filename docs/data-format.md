@@ -81,6 +81,13 @@ tiles/t_<row10>_<col10>.bin   one tile; row10 and col10 are its row and column i
 
 A tile with no hotspots in any month is not written.
 
+**How the browser finds its tiles.** It needs no catalog: for an area it asks for every tile the area touches at
+`tiles/t_<row10>_<col10>.bin`; a tile the host does not have (a 404, or a page served in its place) holds no fire and
+counts as zeros; and the months come from each tile's header, the range being the months every tile of the area
+holds. `index.json` is the pipeline's record of provenance (calibration, planes, training months), written beside
+the tiles of one build, and the page does not read it. It does not yet know `nrt_from_month` either, so a series from
+pinned tiles has `provisional_from` null.
+
 ### Tile file (little-endian)
 
 | Offset | Type | Field |
