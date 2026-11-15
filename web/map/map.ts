@@ -4,7 +4,7 @@ import { MaplibreTerradrawControl, getDefaultModeOptions } from '@watergis/mapli
 import { areaFromRectangleCoordinates, selectionFromPolygonCoordinates } from '../app/area-input.ts';
 import type { AreaSelection } from '../app/area-input.ts';
 import { selectionOutline } from './outline.ts';
-import { MAP_COLOR_SOURCES, mapStyle, mixWithPaper, type MapColors } from './style.ts';
+import { COVERAGE, MAP_COLOR_SOURCES, mapStyle, mixWithPaper, type MapColors } from './style.ts';
 
 setWorkerUrl(workerUrl);
 
@@ -13,6 +13,8 @@ export interface AreaMap {
   map: Map;
   /** Outlines the area (or the polygon inside it) and frames it. */
   showSelection(selection: AreaSelection): void;
+  /** Outlines the region the host has tiles for, given as the edges of its outline. */
+  showCoverage(edges: [number, number][][]): void;
 }
 
 /** Creates the map, the rectangle and polygon tools, and the outline of the selected area. */
@@ -39,7 +41,20 @@ export function createAreaMap(container: HTMLElement, onSelected: (selection: Ar
     fitBounds: (bounds, options) => map.fitBounds(bounds, options),
   });
 
+  let coverage: [number, number][][] = [];
+  let loaded = false;
+  const drawCoverage = (): void => {
+    if (!loaded) return;
+    map.getSource<GeoJSONSource>(COVERAGE)?.setData({
+      type: 'Feature',
+      properties: {},
+      geometry: { type: 'MultiLineString', coordinates: coverage },
+    });
+  };
+
   map.once('load', () => {
+    loaded = true;
+    drawCoverage();
     outline.ready();
     const terraDraw = drawing.getTerraDrawInstance();
     terraDraw?.on('finish', (id, context) => {
@@ -51,7 +66,14 @@ export function createAreaMap(container: HTMLElement, onSelected: (selection: Ar
       if (selection) onSelected(selection);
     });
   });
-  return { map, showSelection: outline.show };
+  return {
+    map,
+    showSelection: outline.show,
+    showCoverage(edges) {
+      coverage = edges;
+      drawCoverage();
+    },
+  };
 }
 
 /** The drawing buttons carry only a title; give them the names a screen reader says. */
@@ -83,6 +105,7 @@ function tokenColors(): MapColors {
     region: color('region'),
     label: color('label'),
     selection: color('selection'),
+    coverage: color('coverage'),
   };
 }
 

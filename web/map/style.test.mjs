@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { MAP_COLOR_SOURCES, SELECTION, mapStyle, mixWithPaper } from './style.ts';
 
-const colors = { land: '#000001', water: '#000002', border: '#000003', region: '#000004', label: '#000005', selection: '#000006' };
+const colors = { land: '#000001', water: '#000002', border: '#000003', region: '#000004', label: '#000005', selection: '#000006', coverage: '#000007' };
 
 test('every color in the basemap is one of the token colors it was given', () => {
   const style = JSON.stringify(mapStyle(colors));

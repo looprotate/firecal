@@ -23,6 +23,7 @@ const KINDS: Record<string, FrameKind> = {
   panel: { radius: 12, wobble: 1.4 },
   map: { radius: 8, wobble: 1.1 },
   field: { radius: 6, wobble: 0.7 },
+  note: { radius: 10, wobble: 1 },
   button: BUTTON,
 };
 
