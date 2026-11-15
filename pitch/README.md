@@ -22,7 +22,7 @@ Images in `figures/` are generated, never drawn by hand:
 
 | File | Made by | Again with |
 |---|---|---|
-| `title-card.svg` | `title_card()` in Axel's `theme/firecal.py`, the same generator as the tokens | `python3 theme/palette.py --write` in `~/dev/me` |
+| `title-card.svg` | `title_card_svg()` in `xtask/src/tokens/files.rs`, the same generator as the tokens | `cargo xtask tokens` |
 | `harmonization-before-after.svg` | the app's own figure (`web/calendar/figure.ts`) on the overlap report of south-east Australia, 2012 to 2019, fitted on 2012 to 2018 with 2019 held out (squares) | `firecal-harmonize report` on the Australia aggregates (see `numbers.md`), then the panel's "Save as SVG" |
 
 The figure says in its own text which months were fitted (agreement by construction) and which were held out
