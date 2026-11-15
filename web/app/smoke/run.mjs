@@ -46,8 +46,9 @@ try {
   await page.waitFor(`navigator.serviceWorker.ready.then(() => Boolean(navigator.serviceWorker.controller))`);
 
   await page.evaluate(useArea(0, 10, 0.25, 10.25));
+  assert.equal(await page.waitFor(januaryCell), EXPECTED, 'online, from the published tile');
   await page.evaluate(`document.querySelector('#pin-region').click()`);
-  assert.equal(await page.waitFor(januaryCell), EXPECTED, 'online, after pinning');
+  await page.waitFor(`document.querySelector('#pin-status')?.textContent.startsWith('Pinned 1 tile')`);
 
   await host.stop();
   await page.navigate(host.origin);
