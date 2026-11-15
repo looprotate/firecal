@@ -16,8 +16,8 @@ export interface WasmHistoryOptions {
   polygon?: [number, number][];
 }
 
-/** The most analog years the calendar asks the core for. */
-const ANALOG_LIMIT = 64;
+/** The analog years the calendar shows: the three nearest, as `docs/idea.md` and the demo script describe. */
+const ANALOG_LIMIT = 3;
 /** `PLANE_COUNT` and `PLANE_ENERGY` of `wasm/firecal.d.ts`. */
 const PLANE_NUMBER: Record<Series['plane'], number> = { count: 0, energy: 1 };
 

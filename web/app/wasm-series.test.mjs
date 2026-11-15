@@ -98,3 +98,24 @@ test('the CSV files are the core text of the same query, with the headers of doc
   assert.equal(decode(files.cells()).split('\n')[0], 'year,month,cell_lat,cell_lon,value,sigma');
   assert.equal(csvFiles(firecal, query, true).cells, undefined, 'a polygon has no cells.csv');
 });
+
+test('the core is asked for the three nearest analog years, nearest first', () => {
+  const months = 86; // January 2000 to February 2007: seven complete baseline years.
+  const cells = 1600;
+  const bytes = new Uint8Array(16 + 3 * months * cells * 2);
+  const view = new DataView(bytes.buffer);
+  bytes.set([0x46, 0x43, 0x54, 0x31]);
+  view.setUint16(4, months, true);
+  view.setUint8(8, 3);
+  for (let month = 0; month < months; month += 1) {
+    const at = month * cells + 39 * 40;
+    view.setUint16(16 + at * 2, 10 + ((month * 7) % 13), true);
+    view.setUint16(16 + (months * cells + at) * 2, 1, true);
+  }
+  const series = seriesForArea(firecal, { west: 0, south: 10, east: 0.25, north: 10.25 }, {
+    firstMonth: 0, months, baselineFirst: 2000, baselineLast: 2006, seasonYear: 2007, seasonMonths: 2,
+    tiles: [{ row: 7, col: 18, bytes }],
+  });
+  assert.equal(series.analogs.length, 3);
+  assert.ok(series.analogs[0].distance <= series.analogs[1].distance && series.analogs[1].distance <= series.analogs[2].distance);
+});
