@@ -29,14 +29,30 @@ on 2026-11-14.
 | **South America box** (west -82, south -56, east -34, north 13) | None downloaded. | 2026-06-23 to 2026-11-14, all five satellites, standard where available and NRT after. S-NPP stops on 2026-11-02. | Current season only |
 | Anywhere else | None. | None. | Needs a new download |
 
-Two consequences. Only Uruguay can show a full history today. And the South America box cannot show "now
+Two consequences. Only Uruguay has a full history today. And the South America box cannot show "now
 against history" until someone downloads its past; it has the current season and nothing to compare it with.
+
+### Checked by Biggie's agent on the real output, 2026-11-14
+
+- **South America box:** Dre's release was downloaded and harmonized end to end: 24 complete tiles, July and August
+  2026, query in the browser in 13 µs (`numbers.md`). The calendar cannot show it yet: the app needs at least one
+  complete year before the season to compare with, and there is none. So B still needs a history download.
+- **Uruguay:** the history exists only as Dre's per-satellite aggregates, and it cannot become tiles today.
+  `firecal-harmonize build` accepts only tiles whose coverage is complete (`--complete-standard-tile`), and a country
+  archive is cut at the border: every 10° tile that holds Uruguay also holds Argentina, Brazil or the sea, which the
+  country files do not cover. Asserting the flag would turn the unobserved part into zeros, which the calibration
+  spec forbids (`crates/firecal-harmonize/calibration.md`, "Calibration population"). A needs one of two things
+  first: a regional (masked) mode in `firecal-harmonize` (Cube), or the full-tile archive of the Uruguay tiles from
+  the FIRMS archive download (Dre). Either is work on Sunday, not a switch.
+- **What runs today on real data:** the harmonization figure (July 2026, 24 tiles) and every number in
+  `numbers.md`. The calendar on screen is the hand-made sample until one of the two above lands.
 
 ## Candidates
 
 ### A. Uruguay, a recent season (recommended)
 
-- **For:** the only place where every layer of the demo can run on real, already ingested data this weekend.
+- **For:** the only place with a history already ingested; every layer of the demo could run on it once it becomes
+  tiles (see the check above: that is not today).
   Three sensors over a long history gives a real overlap for sigma and a real set of years for analogs. No
   new download, so no new risk on Saturday.
 - **For:** a small place is a good place to show honesty. Its monthly counts are small, so the uncertainty band
@@ -84,7 +100,8 @@ It is fine as a one-slide mention ("the same calendar works for ..."), only if t
 ## Questions for people
 
 1. Axel and Americo: is Uruguay the place the team wants to stand behind on stage?
-2. Biggie: once tiles exist, which Uruguay month clears the band, and which three years are its analogs?
+2. Cube or Dre: which of the two routes above gets Uruguay into tiles, and by what hour? Then Biggie: which Uruguay
+   month clears the band, and which three years are its analogs?
 3. Dre: could a history for a named sub-box of South America be on disk by an hour we can name? (Only if B is
    wanted; a request file goes in `requests/` when it is.)
 
