@@ -34,7 +34,7 @@ English.
 ## Link to Final Project
 
 https://github.com/looprotate/firecal (public since 2026-11-14, Apache-2.0). The app is a static site run from the
-repository (README, "For the judges"); it is not hosted. If a new website hosts the
+repository (its README says how); it is not hosted. If a new website hosts the
 app, the guide recommends requesting a FortiGuard web filter classification so judges can open it.
 
 ## Detailed Project Description
@@ -97,10 +97,8 @@ Draft, to be confirmed by the team: the team used AI coding agents (Claude Code 
 write and test code and documentation in this repository, working from a design and rules written by the team.
 The agents did not choose the idea. The demo video is an animation drawn by code that an AI agent wrote, in a style
 the team chose: every frame is an SVG drawing computed from the app's real numbers, with no image-generation model.
-The backup video was recorded by an agent driving the real app. Each video's description says an AI agent made it.
-The film carries no on-screen AI watermark, by the team's decision; the guide asks for a visible watermark on
-SI-generated images and videos, so confirm with the organizers before submitting, or add one. Generated content
-may not use NASA branding, and the film uses none.
+The backup video was recorded by an agent driving the real app. This answer is where the team declares the AI's
+part; the videos carry no notice of their own. Generated content may not use NASA branding, and the film uses none.
 
 ## NASA Data
 
@@ -125,8 +123,8 @@ year's partners and the team did not use their data.
 
 - [ ] Every required field filled, all in English.
 - [ ] Demo link opens in a private window; at most 30 seconds or seven slides.
-- [x] Repository public and licensed (Apache-2.0); the README says so. Whether it reads well for a judge is the
-      request to Biggie, still open.
+- [x] Repository public and licensed (Apache-2.0); the README is a short description of the project and how to
+      run it.
 - [ ] Every number in the text is in `pitch/numbers.md`; none is bracketed.
 - [ ] The two confirmation boxes read and ticked by a person.
 - [ ] Nobody under 18 in any image or video.

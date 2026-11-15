@@ -27,10 +27,9 @@ and for the offline area, read from the app on the pinned tiles.
 | 18 to 24 | How it works, offline | A map of the area; the network goes off; a new area is drawn; the calendar redraws with that area's real answer. "In under a millisecond, by the same Rust core." NASA FIRMS named as the data. |
 | 24 to 30 | The future | "Any area you draw. Any season. In the field, with no signal." The logo, the name and the repository's address. |
 
-On screen at all times: "Data: NASA FIRMS". It carries **no AI watermark**: Axel decided on 2026-11-15 to declare
-the AI's part in the submission text instead (`submission.md`, "Use of Super Intelligence"). The project submission
-guide says SI-generated images and videos must include a visible watermark; confirm with the organizers before
-the deadline, or add one back (the source has the line).
+On screen at all times: "Data: NASA FIRMS". The film carries no AI notice: which AI tools the team used, and what
+for, is declared when the project is submitted (`submission.md`, "Use of Super Intelligence"), as Axel decided on
+2026-11-15.
 
 ## The screen recordings
 
@@ -53,7 +52,7 @@ are backups, not the pitch: a person may record the full run again with a voice,
 | # | Seconds (full run) | The app shows | Action | Done when |
 |---|---|---|---|---|
 | 1 | 0:00 to 0:03 | `title-card.svg` | Nothing | The card has been still for two seconds |
-| 2 | 0:03 to 0:20 | The page, area panel on the left, calendar on the right, the sample or the region | Hold | The status under the calendar says "From the core, on N pinned tiles" |
+| 2 | 0:03 to 0:20 | The page, area panel on the left, calendar on the right, the sample or the region | Hold | The status under the calendar says "From the core, on N tiles (N pinned)" |
 | 3 | 0:20 to 0:40 | Coordinates of the place in West, South, East, North | Type them, press **Use this area** | The map frames the ink outline |
 | 4 | 0:40 to 1:05 | The calendar of the place | Hover an old cell, then a recent one | The line under the grid reads each cell |
 | 5 | 1:05 to 1:30 | A month with a diamond; the strip under the calendar | Point at the diamond, then the bar and its blue band | The sentence under the strip ends in "Unusual." |
@@ -84,7 +83,7 @@ uploading: 30.0 seconds at most.
 - [x] Save every video **outside git** in two places, and write here where they are and their length. Today both
       places are on Axel's laptop; a copy on the team's drive or a USB stick is still to do.
 - [ ] Upload the animated film where the form can link it, public, no login, and open the link in a private window.
-- [ ] Say in its description that an AI tool made it (`submission.md`), and settle the watermark question above.
+- [ ] Declare the AI's part in the submission form (`submission.md`, "Use of Super Intelligence").
 
 | File | Length | Saved in | Saved in | Link |
 |---|---|---|---|---|

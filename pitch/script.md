@@ -19,7 +19,7 @@ Two cuts of the same story:
    worker has stored the page.
 2. Type the bounds of south-east Australia (West 147, South −38, East 151, North −34), press **Use this area**, then **Pin for offline use**; wait for "Pinned N tiles".
    Turn the network off, reload, press **Use this area**: the line under the calendar must say "From the core, on N
-   pinned tiles". Turn the network back on.
+   tiles (N pinned)". Turn the network back on.
 3. The browser is full screen, zoom 100%, the window large enough for the whole calendar. Notifications off.
 4. Mode starts on **count**. The date range is set to the whole history. No area drawn yet.
 5. The Wi-Fi switch is visible on screen (menu bar or system tray), because the judges must **see** it go off.

@@ -61,7 +61,7 @@ against history" until someone downloads its past; it has the current season and
   window), so the calendar will look sparse next to a continental fire season. Energy mode matters more here.
 - **Open:** which season. Do not pick it from memory. Pick the month that, in the real tiles, clears the band
   and has at least three analog years that differ in what happened next. Biggie checks that once tiles exist.
-- **For:** the README names the event as "NASA Space Apps 2026 (Uruguay)", so the room and the judges are likely to
+- **For:** the team enters NASA Space Apps 2026 in Uruguay, so the room and the judges are likely to
   know the place. A person should confirm that is how the team wants to be seen.
 - **Needs from a person:** confirm the team can speak about Uruguay with authority on stage.
 
