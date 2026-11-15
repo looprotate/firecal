@@ -14,7 +14,6 @@ import {
   polygonFromSelectionEvent,
   type AreaBoundsText,
 } from './area-input.ts';
-import { startBoil } from './boil.ts';
 import { degreesText, latitudeLabel, longitudeLabel } from './degrees.ts';
 import { drawFrames } from './frames.ts';
 import { pinRegion } from './offline.ts';
@@ -29,7 +28,6 @@ if (!root) throw new Error('The app root is missing');
 const sampleSeries = parseSeries(sample);
 const shell = renderShell(root);
 drawFrames(root);
-startBoil(root);
 
 /** Everything on screen comes from this object; `render` draws it. */
 const state: {
