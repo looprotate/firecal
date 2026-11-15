@@ -48,3 +48,29 @@ test('the image saved for the pitch carries its colors, since the tokens are not
   assert.match(svg, /^<svg[^>]*xmlns="http:\/\/www.w3.org\/2000\/svg"/);
   assert.match(svg, /<style>:root, svg \{ --activity: #d77656; --text: #232321; \}<\/style>/);
 });
+
+const SPAN = `tile_row,tile_col,year,month,month_index,modis_satellite,viirs_satellite,split,raw_modis_count,raw_viirs_count,harmonized_viirs_count
+12,32,2018,12,227,0,2,training,10,120,10.000000
+12,33,2018,12,227,0,2,training,20,250,20.000000
+12,32,2019,12,239,0,2,held_out,5000,60000,3900.000000
+12,33,2019,12,239,0,2,held_out,100,1300,95.000000
+`;
+
+test('a report over many months says its span and tiles, and the fit and the held-out totals apart', () => {
+  const svg = renderOverlapSvg(parseOverlapCsv(SPAN));
+  assert.match(svg, />December 2018 to December 2019, 2 tiles\.</);
+  assert.match(svg, />Fit months: MODIS 30, raw VIIRS 370, harmonized 30, equal by construction\.</);
+  assert.match(svg, />Held out of the fit: MODIS 5,100, raw VIIRS 61,300, harmonized 3,995\.</);
+});
+
+test('held-out tile-months are squares after harmonization, so the test of the method stands apart', () => {
+  const svg = renderOverlapSvg(parseOverlapCsv(SPAN));
+  assert.equal(svg.match(/<circle class="after activity"/g)?.length, 2);
+  assert.equal(svg.match(/<rect class="after held-out activity"/g)?.length, 2);
+});
+
+test('the labels of an axis never sit closer than 28 units, however large the counts', () => {
+  const svg = renderOverlapSvg(parseOverlapCsv(SPAN));
+  const across = [...svg.matchAll(/<text class="axis" x="([\d.]+)" y="[\d.]+" text-anchor="middle">[\d,]+</g)].map((m) => Number(m[1]));
+  for (let at = 1; at < across.length; at += 1) assert.ok(across[at] - across[at - 1] >= 28, `${across}`);
+});
