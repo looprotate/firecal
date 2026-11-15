@@ -22,7 +22,7 @@ export interface PinReport {
   missing: number;
 }
 
-/** A pinned tile's bytes with the months its header says it holds. */
+/** A tile's bytes, pinned or read from the host, with the months its header says it holds. */
 export interface CachedTile extends RegionTile {
   bytes: Uint8Array;
   firstMonth: number;
@@ -86,21 +86,38 @@ export function tileMonths(bytes: Uint8Array): { firstMonth: number; months: num
   return { firstMonth, months };
 }
 
-/** Reads and validates all cached tiles that overlap an area. */
-export async function readPinnedRegion(
+/** The tiles of an area this device can read, and how many of them are pinned. */
+export interface RegionTiles {
+  tiles: CachedTile[];
+  pinned: number;
+}
+
+/**
+ * Reads every tile that overlaps an area: a pinned tile from the cache, any other from the host, without storing
+ * it. A tile the host does not have, or cannot send because there is no network, is left out.
+ */
+export async function readRegionTiles(
   area: Area,
   storage: Pick<CacheStorage, 'open'> = globalThis.caches,
-): Promise<CachedTile[]> {
+  fetchTile: typeof fetch = fetch,
+): Promise<RegionTiles> {
   const cache = await storage.open(REGION_CACHE);
-  const result: CachedTile[] = [];
+  const result: RegionTiles = { tiles: [], pinned: 0 };
   for (const tile of regionTiles(area)) {
-    const response = await cache.match(tile.path);
-    if (!response) continue;
+    const cached = await cache.match(tile.path);
+    if (cached) {
+      const bytes = new Uint8Array(await cached.arrayBuffer());
+      const held = tileMonths(bytes);
+      if (held === null) throw new Error(`Cached tile ${tile.path} is not a valid FCT1 tile.`);
+      result.tiles.push({ ...tile, bytes, ...held });
+      result.pinned += 1;
+      continue;
+    }
+    const response = await fetchTile(tile.path).catch(() => null);
+    if (!response?.ok) continue;
     const bytes = new Uint8Array(await response.arrayBuffer());
     const held = tileMonths(bytes);
-    if (held === null) throw new Error(`Cached tile ${tile.path} is not a valid FCT1 tile.`);
-    const { firstMonth, months } = held;
-    result.push({ ...tile, bytes, firstMonth, months });
+    if (held !== null) result.tiles.push({ ...tile, bytes, ...held });
   }
   return result;
 }

@@ -42,7 +42,7 @@ const host = await serve(dist, { '/tiles/t_7_18.bin': fixtureTile(), '/firecal.w
 const { page, close } = await openPage();
 try {
   await page.navigate(host.origin);
-  await page.waitFor(`document.querySelector('#runtime-status')?.textContent.includes('No pinned tiles')`);
+  await page.waitFor(`document.querySelector('#runtime-status')?.textContent.includes('hand-made sample')`);
   await page.waitFor(`navigator.serviceWorker.ready.then(() => Boolean(navigator.serviceWorker.controller))`);
 
   await page.evaluate(useArea(0, 10, 0.25, 10.25));
@@ -51,7 +51,7 @@ try {
 
   await host.stop();
   await page.navigate(host.origin);
-  await page.waitFor(`document.querySelector('#runtime-status')?.textContent.includes('No pinned tiles')`);
+  await page.waitFor(`document.querySelector('#runtime-status')?.textContent.includes('hand-made sample')`);
   const network = await page.evaluate(`fetch('/not-stored-' + Date.now()).then(() => 'up', () => 'down')`);
   assert.equal(network, 'down', 'the host is stopped');
   await page.evaluate(useArea(0, 10, 0.2, 10.2));

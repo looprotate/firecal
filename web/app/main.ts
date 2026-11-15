@@ -16,7 +16,7 @@ import {
 } from './area-input.ts';
 import { degreesText, latitudeLabel, longitudeLabel } from './degrees.ts';
 import { pinRegion } from './offline.ts';
-import { pinnedSeries } from './pinned-series.ts';
+import { regionSeries } from './region-series.ts';
 import { csvFiles } from './wasm-series.ts';
 import { parseSeries, type Area, type Series } from './series.ts';
 import { renderShell } from './shell.ts';
@@ -73,8 +73,9 @@ root.addEventListener(AREA_SELECTED_EVENT, (event) => {
   state.bounds = boundsFromArea(area);
   state.error = '';
   areaMap.showSelection({ area, ...(state.polygon ? { polygon: state.polygon } : {}) });
+  shell.pinStatus.textContent = '';
   render();
-  void answerFromPinnedTiles();
+  void answerFromTiles();
 });
 
 shell.pinRegionButton.addEventListener('click', () => void pinSelectedRegion());
@@ -126,8 +127,8 @@ async function loadRuntime(): Promise<void> {
     const response = await fetch('/firecal.wasm');
     if (!response.ok) throw new Error('Run `cargo xtask build-wasm` from the repository root first.');
     firecal = await loadFirecal(await response.arrayBuffer());
-    shell.runtimeStatus.textContent = 'Core loaded. The calendar shows the hand-made sample until a region is pinned.';
-    await answerFromPinnedTiles();
+    shell.runtimeStatus.textContent = 'Core loaded.';
+    await answerFromTiles();
   } catch (error) {
     shell.runtimeStatus.textContent = error instanceof Error ? error.message : 'The core could not be loaded.';
   }
@@ -140,9 +141,9 @@ async function pinSelectedRegion(): Promise<void> {
     const report = await pinRegion(state.area);
     const absent = report.missing === 0
       ? ''
-      : `; ${plural(report.missing, 'tile')} without fire ${report.missing === 1 ? 'is' : 'are'} not published`;
+      : `; ${plural(report.missing, 'tile')} ${report.missing === 1 ? 'is' : 'are'} not published here`;
     shell.pinStatus.textContent = `Pinned ${plural(report.tiles, 'tile')}, ${formatBytes(report.bytes)}${absent}.`;
-    await answerFromPinnedTiles();
+    await answerFromTiles();
   } catch (error) {
     shell.pinStatus.textContent = error instanceof Error ? error.message : 'The region could not be pinned.';
   } finally {
@@ -150,13 +151,13 @@ async function pinSelectedRegion(): Promise<void> {
   }
 }
 
-async function answerFromPinnedTiles(): Promise<void> {
+async function answerFromTiles(): Promise<void> {
   const question = ++asked;
   if (!firecal) return;
   try {
     const core = firecal;
     const about = { area: state.area, plane: state.plane, ...(state.polygon ? { polygon: state.polygon } : {}) };
-    const answer = await pinnedSeries(core, about);
+    const answer = await regionSeries(core, about);
     if (question !== asked) return;
     if (answer === null) {
       state.series = sampleSeries;
@@ -164,7 +165,7 @@ async function answerFromPinnedTiles(): Promise<void> {
       state.fromCore = false;
       state.actions = {};
       render();
-      shell.runtimeStatus.textContent = 'No pinned tiles here. The calendar shows the hand-made sample.';
+      shell.runtimeStatus.textContent = 'No tiles cover this area, pinned or published here. The calendar shows the hand-made sample.';
       return;
     }
     state.series = answer.series;
@@ -172,15 +173,15 @@ async function answerFromPinnedTiles(): Promise<void> {
     state.actions = {
       choosePlane: (plane) => {
         state.plane = plane;
-        void answerFromPinnedTiles();
+        void answerFromTiles();
       },
       csv: csvFiles(core, answer.query, state.polygon !== undefined),
     };
     render();
-    shell.runtimeStatus.textContent = `From the core, on ${plural(answer.tiles, 'pinned tile')}, ${plural(answer.series.months.length, 'month')}.`;
+    shell.runtimeStatus.textContent = `From the core, on ${plural(answer.tiles, 'tile')} (${answer.pinned} pinned), ${plural(answer.series.months.length, 'month')}.`;
   } catch (error) {
     if (question !== asked) return;
-    shell.runtimeStatus.textContent = error instanceof Error ? error.message : 'The pinned tiles could not be read.';
+    shell.runtimeStatus.textContent = error instanceof Error ? error.message : 'The tiles could not be read.';
   }
 }
 
