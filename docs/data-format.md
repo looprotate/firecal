@@ -88,6 +88,25 @@ holds. `index.json` is the pipeline's record of provenance (calibration, planes,
 the tiles of one build, and the page does not read it. It does not yet know `nrt_from_month` either, so a series from
 pinned tiles has `provisional_from` null.
 
+### What a host has: `tiles/coverage.json`
+
+Optional, beside the tiles. The browser still needs no catalog to answer; this file only lets the page show where
+the host has data and offer a way there.
+
+```json
+{
+  "region": "Australia",
+  "tiles": ["t_10_29", "t_12_32"],
+  "example": { "name": "south-east Australia", "west": 147, "south": -38, "east": 151, "north": -34 }
+}
+```
+
+- `region`: the name the page says ("This host has tiles for Australia").
+- `tiles`: every tile file the host publishes, by name without `.bin`; the map outlines their union.
+- `example`: an area inside them worth opening first, with the name its button says ("Show south-east Australia").
+
+A host without it gets no outline, and an area with no tiles is said to have no data, with no way offered.
+
 ### Tile file (little-endian)
 
 | Offset | Type | Field |
