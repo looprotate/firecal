@@ -21,7 +21,7 @@ export function renderLegend(): string {
   ).join('');
   return '<div class="calendar-legend" role="list" aria-label="Legend">'
     + `<span role="listitem">None <svg viewBox="0 0 ${width} ${SWATCH}" width="${width}" height="${SWATCH}" aria-hidden="true">${steps}</svg> Most</span>`
-    + `<span role="listitem">${glyph(unusualDiamond(0, 0))}Unusual: outside the band and the past years</span>`
+    + `<span role="listitem">${glyph(unusualDiamond(0, 0))}Unusual: above the band and every past year</span>`
     + `<span role="listitem">${glyph(provisionalTriangle(0, 0))}Provisional: near-real-time data</span>`
     + '</div>';
 }

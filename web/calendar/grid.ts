@@ -19,7 +19,7 @@ export interface Cell {
   median: number;
   /** `(value - median) / max(median, 1)` from the core; NaN when there is no median. */
   anomaly: number;
-  /** Flagged by the core: outside the sensor band and outside the baseline years' range. */
+  /** Flagged by the core: a rise past the sensor band and above every baseline year. */
   unusual: boolean;
 }
 

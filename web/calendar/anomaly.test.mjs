@@ -47,7 +47,7 @@ test('a month of the strip is read with its median, its change and its estimated
 });
 
 test('the legend names the diamond in words', () => {
-  assert.match(renderLegend(), />Unusual: outside the band and the past years</);
+  assert.match(renderLegend(), />Unusual: above the band and every past year</);
   assert.match(renderLegend(), /class="unusual"/);
 });
 
