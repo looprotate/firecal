@@ -63,3 +63,11 @@ test('a change of thousands of percent is written with its thousands separated',
   const cell = { ...buildGrid(stubSeries).rows[1]?.[8], value: 7112, median: 7, anomaly: 1015, sigma: 88 };
   assert.match(describeSeasonMonth(cell, 'count'), /against a median of 7, \+101,500%, ±176 at two sigma/);
 });
+
+test('against a median under one there is no percent: the core divides by one there, not by the median', () => {
+  const cell = { ...buildGrid(stubSeries).rows[1]?.[11], value: 2, median: 0, anomaly: 2, sigma: 2, unusual: false };
+  assert.equal(
+    describeSeasonMonth(cell, 'count'),
+    'December 2024: 2 hotspots against a median of 0, ±4 at two sigma (estimated). Within the usual range.',
+  );
+});
