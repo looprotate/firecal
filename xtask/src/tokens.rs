@@ -17,10 +17,12 @@ use std::fs;
 type Writer = fn(&Identity) -> String;
 
 /// Every file the identity is written as, with what writes it.
-const TARGETS: [(&str, Writer); 3] = [
+const TARGETS: [(&str, Writer); 5] = [
     ("web/tokens/tokens.css", files::tokens_css),
     ("web/tokens/logo.svg", files::logo_svg),
     ("pitch/figures/title-card.svg", files::title_card_svg),
+    ("site/tokens.css", files::tokens_css),
+    ("site/logo.svg", files::logo_svg),
 ];
 
 /// Writes every file of the identity.

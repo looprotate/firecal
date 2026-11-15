@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>firecal: a burning-activity calendar from MODIS and VIIRS</title>
+  <meta name="description" content="A burning-activity calendar for any area, from NASA's MODIS and VIIRS hotspots made to agree, with how sure every number is. NASA Space Apps 2026.">
+  <link rel="icon" href="logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="js/main.js"></script>
+</head>
+<body>
+  <header class="bar">
+    <a class="brand" href="#top" aria-label="firecal, back to the top"><span class="mark-slot" id="nav-slot"></span><span class="brand-name">firecal</span></a>
+    <nav aria-label="Main">
+      <a href="#film">The film</a>
+      <a href="https://github.com/looprotate/firecal">Code</a>
+      <a class="button" href="app/">Open the calendar</a>
+    </nav>
+  </header>
+
+  <svg class="mark" id="mark" viewBox="-240 -600 480 620" aria-hidden="true"></svg>
+
+  <main>
+    <section class="hero" id="top">
+      <div class="pin">
+        <div class="hero-grid">
+          <div class="mark-slot hero-slot" id="hero-slot"></div>
+          <div class="hero-copy">
+            <h1>firecal</h1>
+            <p class="lede">A burning-activity calendar from two generations of NASA satellites, made to agree.</p>
+            <p class="lede strong">Every number says how sure it is.</p>
+            <p class="meta">NASA Space Apps 2026 · Harmonization of MODIS and VIIRS Hot Spots</p>
+          </div>
+        </div>
+        <p class="cue" aria-hidden="true">Scroll</p>
+      </div>
+    </section>
+
+    <section class="story" data-scene="satellites" aria-labelledby="satellites-title">
+      <div class="pin">
+        <div class="copy">
+          <div class="step" data-from="0" data-to="60">
+            <h2 id="satellites-title">Two generations of satellites, one record that did not add up.</h2>
+            <p>MODIS has watched since 2000, VIIRS since 2012. Over south-east Australia in 2019 they counted 50,497 and 631,751 hotspots: 12.5 times apart.</p>
+          </div>
+          <div class="step" data-from="60" data-to="101">
+            <h2>firecal makes them agree.</h2>
+            <p>VIIRS is mapped onto MODIS tile by tile, fitted on the years both saw. On 2019, a year the fit never saw, the gap falls from 12.5 times to 0.77.</p>
+          </div>
+        </div>
+        <svg class="stage" viewBox="0 0 1000 760" role="img" aria-label="MODIS and VIIRS over the Earth: 50,497 against 631,751 hotspots in 2019, then 38,910 once VIIRS is harmonized"></svg>
+      </div>
+    </section>
+
+    <section class="story" data-scene="calendar" aria-labelledby="calendar-title">
+      <div class="pin">
+        <div class="copy">
+          <div class="step" data-from="0" data-to="47">
+            <h2 id="calendar-title">The burning calendar.</h2>
+            <p>Months across, years down: south-east Australia from November 2000 to December 2019, from NASA FIRMS. The darker the cell, the more hotspots.</p>
+          </div>
+          <div class="step" data-from="47" data-to="64">
+            <h2>December 2019: 7,112 hotspots, ± 88.</h2>
+            <p>A median December here has 7. The month rises past its uncertainty and past every year before it, so it carries the diamond: unusual, and not a change of sensor.</p>
+          </div>
+          <div class="step" data-from="64" data-to="101">
+            <h2>The years most like 2019.</h2>
+            <p>2009, 2001 and 2002, compared by rank within each month, so a quiet place and a busy one are judged the same way. History, not a forecast.</p>
+          </div>
+        </div>
+        <svg class="stage" viewBox="0 0 1000 760" role="img" aria-label="The calendar of south-east Australia, 2000 to 2019, with December 2019 ringed and the years 2009, 2001 and 2002 outlined"></svg>
+      </div>
+    </section>
+
+    <section class="story" data-scene="season" aria-labelledby="season-title">
+      <div class="pin">
+        <div class="copy">
+          <div class="step" data-from="0" data-to="62">
+            <h2 id="season-title">Every number says how sure it is.</h2>
+            <p>Each dot is a month of 2019, each black tick its median over the years before, each blue line its uncertainty at two sigma. Most months sit near their past.</p>
+          </div>
+          <div class="step" data-from="62" data-to="101">
+            <h2>Unusual means above both.</h2>
+            <p>A month is flagged only when it rises past its band and past every year before it. In 2019 that is November and December.</p>
+          </div>
+        </div>
+        <svg class="stage" viewBox="0 0 1000 760" role="img" aria-label="2019 month by month against its median on a log scale, with uncertainty bands; November and December flagged"></svg>
+      </div>
+    </section>
+
+    <section class="story" data-scene="offline" aria-labelledby="offline-title">
+      <div class="pin">
+        <div class="copy">
+          <div class="step" data-from="0" data-to="38">
+            <h2 id="offline-title">Pin a region before you go.</h2>
+            <p>firecal is a static site. Pinning keeps the tiles of a region in the browser: 4.21 MiB for this one.</p>
+          </div>
+          <div class="step" data-from="38" data-to="101">
+            <h2>Then lose the signal.</h2>
+            <p>Draw a new area and it still answers, in under a millisecond: the same Rust core that harmonized twenty years of satellites runs in the browser.</p>
+          </div>
+        </div>
+        <svg class="stage" viewBox="0 0 1000 760" role="img" aria-label="A map of the region, the network switched off, a new area drawn, and its calendar answering"></svg>
+      </div>
+    </section>
+
+    <section class="story" data-scene="built" aria-labelledby="built-title">
+      <div class="pin">
+        <div class="copy">
+          <div class="step" data-from="0" data-to="56">
+            <h2 id="built-title">One core, built to not fall over.</h2>
+            <p>The science is one Rust core. On a laptop it ingests and harmonizes twenty years of FIRMS; compiled to WebAssembly, the same code answers in your browser. There is no server: the site is static files.</p>
+          </div>
+          <div class="step" data-from="56" data-to="101">
+            <h2>It agrees with itself.</h2>
+            <p>The browser build and the laptop build give identical bytes on 8,968 test calls, and every change is checked on macOS, Windows and Linux before it is merged.</p>
+          </div>
+        </div>
+        <svg class="stage" viewBox="0 0 1000 760" role="img" aria-label="How firecal is built: NASA FIRMS, ingest, harmonize, static tiles, one Rust core, your browser"></svg>
+      </div>
+    </section>
+
+    <section class="film" id="film" aria-labelledby="film-title">
+      <h2 id="film-title">Thirty seconds.</h2>
+      <div class="film-frame">
+        <video controls playsinline preload="metadata" poster="poster.jpg">
+          <source src="firecal-demo.mp4" type="video/mp4">
+          <source src="https://github.com/looprotate/firecal/releases/download/space-apps-2026/firecal-demo.mp4" type="video/mp4">
+        </video>
+        <svg class="frame-art" viewBox="0 0 1600 900" aria-hidden="true"></svg>
+      </div>
+    </section>
+
+    <section class="reveal" data-reveal aria-labelledby="claims-title">
+      <h2 id="claims-title">What it does not claim.</h2>
+      <ul class="cards">
+          <li><svg class="card-art" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" data-art="card"></svg><strong>A hotspot is not a fire.</strong><span>It is a thermal anomaly seen from orbit: not a fire, and not a burned area.</span></li>
+          <li><svg class="card-art" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" data-art="card"></svg><strong>Harmonized, not identical.</strong><span>VIIRS counts are mapped to MODIS-equivalent counts, fitted on the years both sensors saw.</span></li>
+          <li><svg class="card-art" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" data-art="card"></svg><strong>The uncertainty is an estimate.</strong><span>It adds cell errors as if they were independent, which is optimistic where neighbours share a bias.</span></li>
+          <li><svg class="card-art" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" data-art="card"></svg><strong>History, not a forecast.</strong><span>The years most like this one say what happened before, not what will happen next.</span></li>
+          <li><svg class="card-art" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" data-art="card"></svg><strong>The newest months are provisional.</strong><span>They come from near-real-time data until the standard product replaces it.</span></li>
+      </ul>
+    </section>
+
+    <section class="reveal" data-reveal aria-labelledby="next-title">
+      <h2 id="next-title">What comes next.</h2>
+      <ul class="cards">
+          <li><svg class="card-art" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" data-art="card"></svg><strong>Uruguay, our home.</strong><span>Its archive is cut at the border, so the harmonizer needs a regional mode before Uruguay can have its calendar.</span></li>
+          <li><svg class="card-art" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" data-art="card"></svg><strong>Every tile of the world.</strong><span>The tiles are the same 10° grid everywhere; what is missing is the full FIRMS archive, behind a NASA Earthdata login.</span></li>
+          <li><svg class="card-art" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" data-art="card"></svg><strong>The phone in the truck.</strong><span>It is one static page, so it should open on a phone with no signal; we have not measured it on one yet.</span></li>
+      </ul>
+    </section>
+
+    <section class="reveal team" data-reveal aria-labelledby="team-title">
+      <h2 id="team-title">Six of us, from Uruguay.</h2>
+      <ul class="people">
+          <li><svg class="person-art" viewBox="0 0 120 120" aria-hidden="true" data-art="person" data-initial="A"></svg><strong>Axel</strong><span>Lead. The core, the contracts and the design.</span></li>
+          <li><svg class="person-art" viewBox="0 0 120 120" aria-hidden="true" data-art="person" data-initial="K"></svg><strong>Kevin</strong><span>The web app, the map and offline; the design.</span></li>
+          <li><svg class="person-art" viewBox="0 0 120 120" aria-hidden="true" data-art="person" data-initial="S"></svg><strong>Santiago</strong><span>Ingest: every FIRMS file, fast.</span></li>
+          <li><svg class="person-art" viewBox="0 0 120 120" aria-hidden="true" data-art="person" data-initial="B"></svg><strong>Bayron</strong><span>Harmonization, with its uncertainty.</span></li>
+          <li><svg class="person-art" viewBox="0 0 120 120" aria-hidden="true" data-art="person" data-initial="B"></svg><strong>Brandon</strong><span>The calendar and the years most like this one.</span></li>
+          <li><svg class="person-art" viewBox="0 0 120 120" aria-hidden="true" data-art="person" data-initial="A"></svg><strong>Americo</strong><span>The story, the film and the submission.</span></li>
+      </ul>
+    </section>
+
+    <section class="closing" data-scene="closing" aria-labelledby="closing-title">
+      <div class="closing-copy">
+        <h2 id="closing-title">Any area you draw. Any season.</h2>
+        <p>In the field, with no signal.</p>
+        <p class="actions">
+          <a class="button" href="app/">Open the calendar</a>
+          <a class="button quiet" href="https://github.com/looprotate/firecal">Read the code</a>
+        </p>
+      </div>
+      <svg class="stage" viewBox="0 330 1000 430" aria-hidden="true"></svg>
+      <footer>
+        <p>Data: NASA FIRMS active-fire hotspots, MODIS Collection 6.1 and VIIRS 375 m. A hotspot is a thermal anomaly seen from orbit, not a fire or a burned area.</p>
+        <p>NASA Space Apps 2026. Six of us, from Uruguay. Apache-2.0.</p>
+      </footer>
+    </section>
+  </main>
+
+</body>
+</html>

@@ -91,6 +91,8 @@ fn the_committed_files_are_what_the_generator_writes() {
         include_str!("../../../web/tokens/tokens.css"),
         include_str!("../../../web/tokens/logo.svg"),
         include_str!("../../../pitch/figures/title-card.svg"),
+        include_str!("../../../site/tokens.css"),
+        include_str!("../../../site/logo.svg"),
     ];
     for ((path, make), file) in TARGETS.iter().zip(committed) {
         assert_eq!(make(&id), file, "{path} differs: run `cargo xtask tokens`");

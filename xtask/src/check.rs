@@ -45,6 +45,7 @@ pub(crate) fn run(full: bool) -> Result<(), String> {
     )?;
     shell("node", &["--test", "wasm/firecal.test.ts"])?;
     shell("node", &["--test", "web/stub/series.test.mjs"])?;
+    shell("node", &["--test", "site/js/site.test.mjs"])?;
     if full {
         shell(
             &cargo,

@@ -6,3 +6,5 @@ dist/
 .env
 web/public/firecal.wasm
 .DS_Store
+# The film is published as a release asset, not in git; a host may put a copy beside the site.
+site/firecal-demo.mp4
