@@ -24,9 +24,10 @@ test('a chosen analog is pressed and its row is outlined in the calendar, once',
   const grid = buildGrid(stubSeries);
   assert.match(renderAnalogs(stubSeries.analogs, grid, 'count', 2023), /data-year="2023" aria-pressed="true"/);
   const svg = renderCalendarSvg(grid, 'count', 2023);
-  const rings = [...svg.matchAll(/<rect class="analog-ring" aria-hidden="true" x="([\d.]+)" y="([\d.]+)"/g)];
+  const rings = [...svg.matchAll(/<path class="analog-ring" [^>]*d="([^"]+)"/g)];
   assert.equal(rings.length, 1);
-  assert.equal(Number(rings[0][2]), 20 - 3, 'around the first row, 2023');
+  const top = Math.min(...rings[0][1].match(/-?[\d.]+/g).map(Number).filter((_, at) => at % 2 === 1));
+  assert.ok(Math.abs(top - (20 - 3)) < 3, `around the first row, 2023, not at ${top}`);
   assert.doesNotMatch(renderCalendarSvg(grid, 'count', null), /analog-ring/);
 });
 

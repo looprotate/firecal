@@ -9,9 +9,13 @@ import { describeSeasonMonth, renderStripSvg } from './strip.ts';
 
 test('exactly the stub months the core flags as unusual carry the diamond: August to November 2024', () => {
   const svg = renderCalendarSvg(buildGrid(stubSeries), 'count');
-  const diamonds = [...svg.matchAll(/<path class="unusual" aria-hidden="true" d="M([\d.]+) /g)].map((found) => Number(found[1]));
-  // Diamonds sit at x = 40 + column * 34 + 22, top right of their cell.
-  assert.deepEqual(diamonds.map((x) => (x - 62) / 34), [7, 8, 9, 10]);
+  const diamonds = [...svg.matchAll(/<path class="unusual" [^>]*d="([^"]+)"/g)].map((found) => {
+    const xs = found[1].match(/-?[\d.]+/g).map(Number).filter((_, at) => at % 2 === 0);
+    return (Math.min(...xs) + Math.max(...xs)) / 2;
+  });
+  // Diamonds are centred at x = 40 + column * 34 + 21.5, top right of their cell; the hand moves them under a unit.
+  assert.deepEqual(diamonds.map((x) => Math.round((x - 61.5) / 34)), [7, 8, 9, 10]);
+  for (const x of diamonds) assert.ok(Math.abs((x - 61.5) % 34) < 1 || Math.abs((x - 61.5) % 34) > 33);
 });
 
 test('an unusual month says so in its label, and a month that is not does not', () => {

@@ -2,6 +2,7 @@ import type { Cell, Grid } from './grid.ts';
 import { CELL, GRID_WIDTH, columnX } from './layout.ts';
 import { formatNumber, monthTitle } from './labels.ts';
 import { diamondAt } from './marks.ts';
+import { sketch, sketchLine, sketchRect } from './sketch.ts';
 import type { CalendarSeries } from './series.ts';
 
 const HEIGHT = 96;
@@ -9,6 +10,8 @@ const MIDDLE = HEIGHT / 2;
 /** Room above and below the tallest bar for its diamond. */
 const HEADROOM = 12;
 const BAR = 12;
+/** The bars grow out of the median line one after another, this many milliseconds apart. */
+const WAVE = 45;
 
 /** How far `cell` is from its median, as the core's anomaly, and its sensor band at two sigma in the same units. */
 function reach(cell: Cell): { anomaly: number; band: number } {
@@ -54,13 +57,18 @@ export function renderStripSvg(grid: Grid, plane: CalendarSeries['plane']): stri
     const top = Math.min(MIDDLE, end);
     const height = Math.max(Math.abs(end - MIDDLE), 1);
     const reachOut = anomaly >= 0 ? end - band * scale - 7 : end + band * scale + 7;
+    const seed = 400 + cell.monthIndex;
+    const high = end - band * scale;
+    const low = end + band * scale;
+    const at = ` style="--d:${column * WAVE}ms"`;
+    const wing = (y: number, part: number): string => sketchLine([center - 4, y], [center + 4, y], seed + part, 0.3);
     return `<g role="listitem" aria-label="${describeSeasonMonth(cell, plane)}">`
-      + `<rect class="anomaly-bar activity" x="${center - BAR / 2}" y="${top}" width="${BAR}" height="${height}" rx="2"/>`
-      + `<path class="sigma-band uncertainty" d="M${center} ${end - band * scale}V${end + band * scale}M${center - 4} ${end - band * scale}H${center + 4}M${center - 4} ${end + band * scale}H${center + 4}"/>`
-      + (cell.unusual ? diamondAt(center, reachOut) : '')
+      + `<path class="anomaly-bar activity"${at}${anomaly < 0 ? ' data-below=""' : ''} d="${sketchRect(center - BAR / 2, top, BAR, height, Math.min(2, height / 2), seed, 0.5)}"/>`
+      + `<path class="sigma-band uncertainty"${at} pathLength="1" d="${sketch([[center, high], [center, low]], false, seed + 1, 0.4)}${wing(high, 2)}${wing(low, 3)}"/>`
+      + (cell.unusual ? diamondAt(center, reachOut, seed, 12 * WAVE + 200) : '')
       + '</g>';
   }).join('');
   return `<svg class="anomaly-strip" role="list" aria-label="${year} against the median of past years" viewBox="0 0 ${GRID_WIDTH} ${HEIGHT}" width="${GRID_WIDTH}" height="${HEIGHT}">`
     + `<text class="axis" x="0" y="${MIDDLE + 4}">Median</text>`
-    + `<path class="median-line" d="M${columnX(0) - 4} ${MIDDLE}H${GRID_WIDTH}"/>${columns}</svg>`;
+    + `<path class="median-line" pathLength="1" d="${sketchLine([columnX(0) - 4, MIDDLE], [GRID_WIDTH, MIDDLE], year, 0.8)}"/>${columns}</svg>`;
 }
