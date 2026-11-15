@@ -1,6 +1,7 @@
 import { describeOverlap, overlapFacts } from './figure-words.ts';
 import { formatNumber } from './labels.ts';
 import type { OverlapRow } from './overlap.ts';
+import { sketch, sketchLine } from './sketch.ts';
 
 const PANEL = 240;
 const MARGIN = { left: 56, top: 40, bottom: 44 };
@@ -32,8 +33,8 @@ export function renderOverlapSvg(rows: readonly OverlapRow[]): string {
       `<text class="axis" x="${left - 6}" y="${bottom - at(tick) + 4}" text-anchor="end">${formatNumber(tick)}</text>`
       + (tick === 0 ? '' : `<text class="axis" x="${left + at(tick)}" y="${bottom + 16}" text-anchor="middle">${formatNumber(tick)}</text>`)).join('');
     return `<g data-origin="${left} ${bottom}"><text class="figure-title" x="${left}" y="${MARGIN.top - 14}">${title}</text>`
-      + `<path class="frame" d="M${left} ${MARGIN.top}V${bottom}H${left + PANEL}"/>`
-      + `<path class="diagonal" d="M${left} ${bottom}L${left + PANEL} ${MARGIN.top}"/>${grid}`
+      + `<path class="frame" d="${sketch([[left, MARGIN.top], [left, bottom], [left + PANEL, bottom]], false, left, 1)}"/>`
+      + `<path class="diagonal" d="${sketchLine([left, bottom], [left + PANEL, MARGIN.top], left + 1, 1)}"/>${grid}`
       + rows.map((row) => points(row).replace('{x}', `${left + at(row.modis)}`)).join('') + '</g>';
   };
   const bottom = MARGIN.top + PANEL;
@@ -60,8 +61,8 @@ const FIGURE_STYLE = [
   '.overlap-figure { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--bg); }',
   '.overlap-figure .axis { fill: var(--text-secondary); font-size: 11px; }',
   '.overlap-figure .figure-title { fill: var(--text-strong); font-size: 14px; font-weight: 600; }',
-  '.overlap-figure .frame { fill: none; stroke: var(--disabled); stroke-width: 1px; }',
-  '.overlap-figure .diagonal { fill: none; stroke: var(--line); stroke-width: 1px; }',
+  '.overlap-figure .frame { fill: none; stroke: var(--text-strong); stroke-width: 2.5px; stroke-linecap: round; stroke-linejoin: round; }',
+  '.overlap-figure .diagonal { fill: none; stroke: var(--disabled); stroke-width: 1.5px; stroke-linecap: round; stroke-dasharray: 2 5; }',
   '.overlap-figure .before { fill: var(--bg); stroke: var(--text-strong); stroke-width: 1.5px; }',
   '.overlap-figure .after { fill: var(--activity); stroke: var(--text-strong); stroke-width: 1px; }',
 ].join(' ');

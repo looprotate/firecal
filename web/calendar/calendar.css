@@ -1,42 +1,32 @@
+/* The calendar in firecal's hand-drawn style: paper, ink, the measured ramp for the data, and shapes that pop in
+   month by month and undraw before the next area draws. The buttons are the page's. */
 .calendar {
   overflow-x: auto;
 }
 
-.calendar-grid {
+.calendar-grid, .anomaly-strip {
   display: block;
   max-width: 100%;
   height: auto;
+  overflow: visible;
   font-family: var(--font-ui);
 }
 
-.calendar-legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--margin) 16px;
-  margin-top: var(--margin);
-  color: var(--text-secondary);
-  font-family: var(--font-ui);
-  font-size: var(--text-size-small);
-}
-
-.calendar-legend span { align-items: center; display: inline-flex; gap: 6px; }
-.calendar-legend svg { display: block; flex: none; }
-.calendar-legend .legend-glyph { height: 20px; width: 20px; }
-
-.calendar-grid .axis {
+.calendar-grid .axis, .anomaly-strip .axis {
   fill: var(--text-secondary);
   font-size: var(--text-size-small);
+  font-weight: 500;
 }
 
-.calendar-grid .cell {
-  stroke: none;
-  outline: none;
-}
+.calendar-grid .cell { stroke: none; outline: none; cursor: default; }
+.calendar-grid .cell:not(.absent):hover { stroke: var(--text-strong); stroke-width: 2px; stroke-linejoin: round; }
 
 .calendar-grid .cell.absent {
   fill: none;
   stroke: var(--line);
-  stroke-width: var(--hairline);
+  stroke-width: 1.5px;
+  stroke-dasharray: 3 4;
+  stroke-linecap: round;
 }
 
 .calendar-grid .provisional,
@@ -53,49 +43,31 @@
 .anomaly-strip .unusual {
   fill: var(--mark-fill);
   stroke: var(--mark-edge);
-  stroke-width: 1px;
+  stroke-width: 1.2px;
+  stroke-linejoin: round;
   pointer-events: none;
-}
-
-.anomaly-strip {
-  display: block;
-  max-width: 100%;
-  height: auto;
-  font-family: var(--font-ui);
-}
-
-.anomaly-strip .axis { fill: var(--text-secondary); font-size: var(--text-size-small); }
-.anomaly-strip .median-line { stroke: var(--disabled); stroke-width: 1px; }
-.anomaly-strip .activity { fill: var(--activity); }
-.anomaly-strip .uncertainty { fill: none; stroke: var(--uncertainty); stroke-width: 2px; }
-
-.calendar-season {
-  border-top: var(--hairline) solid var(--line);
-  margin-top: 16px;
-  padding-top: 12px;
-}
-
-.calendar-season-title {
-  margin: 0 0 var(--margin);
-  color: var(--text-strong);
-  font-family: var(--font-ui);
-  font-size: var(--text-size-row);
-  font-weight: 600;
-}
-
-.calendar-season-current {
-  margin: var(--margin) 0 0;
-  color: var(--text);
-  font-family: var(--font-ui);
-  font-size: var(--text-size-row);
 }
 
 .calendar-grid .focus-ring {
   fill: none;
   stroke: var(--focus-ring);
-  stroke-width: 2px;
+  stroke-width: 2.5px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
   pointer-events: none;
 }
+
+.calendar-grid .analog-ring {
+  fill: none;
+  stroke: var(--text-strong);
+  stroke-width: 2.5px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.anomaly-strip .median-line { fill: none; stroke: var(--disabled); stroke-width: 1.5px; stroke-linecap: round; }
+.anomaly-strip .activity { fill: var(--activity); }
+.anomaly-strip .uncertainty { fill: none; stroke: var(--uncertainty); stroke-width: 2.5px; stroke-linecap: round; }
 
 :is(.calendar-grid, .calendar-legend) .ramp-0 { fill: var(--ramp-0); }
 :is(.calendar-grid, .calendar-legend) .ramp-1 { fill: var(--ramp-1); }
@@ -106,12 +78,44 @@
 :is(.calendar-grid, .calendar-legend) .ramp-6 { fill: var(--ramp-6); }
 :is(.calendar-grid, .calendar-legend) .ramp-7 { fill: var(--ramp-7); }
 
+.calendar-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--margin) 18px;
+  margin-top: 12px;
+  color: var(--text-secondary);
+  font-family: var(--font-ui);
+  font-size: var(--text-size-small);
+}
+.calendar-legend span { align-items: center; display: inline-flex; gap: 6px; }
+.calendar-legend svg { display: block; flex: none; overflow: visible; }
+.calendar-legend .legend-glyph { height: 20px; width: 20px; }
+
 .calendar-readout {
-  min-height: 1.4em;
-  margin: var(--margin) 0 0;
+  min-height: 1.5em;
+  margin: 12px 0 0;
+  color: var(--text-strong);
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.calendar-season { margin-top: 28px; }
+.calendar-season-title {
+  margin: 0 0 12px;
+  color: var(--text-strong);
+  font-family: var(--font-ui);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.calendar-season-current {
+  margin: 12px 0 0;
+  max-width: 62ch;
   color: var(--text);
   font-family: var(--font-ui);
   font-size: var(--text-size-row);
+  line-height: 1.5;
 }
 
 .calendar-toolbar {
@@ -119,83 +123,65 @@
   flex-wrap: wrap;
   gap: var(--margin);
   justify-content: space-between;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
   font-family: var(--font-ui);
   font-size: var(--text-size-small);
 }
-
-.calendar-planes, .calendar-files { align-items: center; display: flex; gap: 4px; }
-
-.calendar-toolbar button {
-  height: 30px;
-  padding: 0 10px;
-  border: var(--hairline) solid var(--line);
-  border-radius: var(--radius-row);
-  background: var(--surface);
-  color: var(--text-strong);
-  cursor: pointer;
-}
-
-.calendar-toolbar button[aria-pressed="true"] {
-  border-color: var(--text-strong);
-  background: var(--text-strong);
-  color: var(--bg);
-}
-
-.calendar-files button { font-family: var(--font-code); }
+.calendar-planes, .calendar-files { align-items: center; display: flex; gap: 6px; }
+.calendar-toolbar button, .calendar-analogs button { height: 32px; padding: 0 12px; font-size: var(--text-size-small); }
+.calendar-files button, .calendar-analogs button { font-family: var(--font-code); }
 .calendar-note { color: var(--text-secondary); }
-
-.calendar-grid .analog-ring {
-  fill: none;
-  stroke: var(--text-strong);
-  stroke-width: 1.5px;
-}
 
 .calendar-analogs {
   display: grid;
-  gap: 6px;
+  gap: 10px;
   margin: 0;
   padding: 0;
   list-style: none;
   font-family: var(--font-ui);
   font-size: var(--text-size-row);
 }
-
-.calendar-analogs li { align-items: baseline; display: flex; gap: 10px; }
-.calendar-analogs span { color: var(--text-secondary); font-size: var(--text-size-small); }
-
-.calendar-analogs button {
-  flex: none;
-  height: 30px;
-  padding: 0 10px;
-  border: var(--hairline) solid var(--line);
-  border-radius: var(--radius-row);
-  background: var(--surface);
-  color: var(--text-strong);
-  font-family: var(--font-code);
-  cursor: pointer;
-}
-
-.calendar-analogs button[aria-pressed="true"] {
-  border-color: var(--text-strong);
-  background: var(--text-strong);
-  color: var(--bg);
-}
-
-.calendar-season .calendar-note { margin: var(--margin) 0 0; font-family: var(--font-ui); font-size: var(--text-size-small); }
+.calendar-analogs li { align-items: baseline; display: flex; gap: 12px; }
+.calendar-analogs button { flex: none; }
+.calendar-analogs span { color: var(--text-secondary); font-size: var(--text-size-small); line-height: 1.5; }
+.calendar-season .calendar-note { margin: 12px 0 0; font-family: var(--font-ui); font-size: var(--text-size-small); }
 
 .overlap { margin: 0; }
-.overlap svg { display: block; max-width: 100%; height: auto; }
+.overlap svg { display: block; width: 100%; max-width: 840px; height: auto; overflow: visible; }
 .overlap figcaption { margin-top: var(--margin); color: var(--text-secondary); font-family: var(--font-ui); font-size: var(--text-size-small); }
+.overlap-save { margin-top: 12px; height: 32px; padding: 0 12px; font-size: var(--text-size-small); }
 
-.overlap-save {
-  margin-top: var(--margin);
-  height: 30px;
-  padding: 0 10px;
-  border: var(--hairline) solid var(--line);
-  border-radius: var(--radius-row);
-  background: var(--surface);
-  color: var(--text-strong);
-  font-family: var(--font-ui);
-  cursor: pointer;
+/* Drawing in: each month pops from its centre on a short spring, row by row (`--d`, from render.ts); the marks
+   follow; the labels rise; a ring traces itself. Leaving: the months shrink back, a little faster. */
+@media (prefers-reduced-motion: no-preference) {
+  .entering :is(.cell, .provisional, .unusual, .swatch, .sample, .anomaly-bar) {
+    animation: calendar-pop 420ms cubic-bezier(0.2, 0.9, 0.3, 1.25) both;
+    animation-delay: var(--d, 0ms);
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .entering .anomaly-bar { transform-origin: center bottom; animation-name: calendar-grow; }
+  .entering .anomaly-bar[data-below] { transform-origin: center top; }
+  .entering :is(.axis, .calendar-readout, .calendar-season-title, .calendar-season-current, .calendar-legend span) {
+    animation: calendar-rise 400ms ease-out both;
+    animation-delay: var(--d, 0ms);
+  }
+  .entering :is(.sigma-band, .median-line), .analog-ring {
+    stroke-dasharray: 1;
+    animation: calendar-trace 600ms ease-in-out both;
+    animation-delay: var(--d, 0ms);
+  }
+  .leaving :is(.cell, .provisional, .unusual, .anomaly-bar, .sigma-band) {
+    animation: calendar-unpop 220ms ease-in both;
+    animation-delay: calc(var(--d, 0ms) / 6);
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .leaving :is(.axis, .calendar-readout, .calendar-season-current) { opacity: 0; transition: opacity 200ms ease-in; }
 }
+
+@keyframes calendar-pop { from { transform: scale(0); } }
+@keyframes calendar-grow { from { transform: scaleY(0); } }
+@keyframes calendar-unpop { to { transform: scale(0); } }
+@keyframes calendar-rise { from { opacity: 0; transform: translateY(14px); } }
+@keyframes calendar-trace { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }

@@ -29,14 +29,18 @@ test('a provisional month says so in words, so it does not rely on the mark', ()
 
 test('each provisional month gets one triangle, drawn in the bottom left corner inside its cell', () => {
   const svg = renderCalendarSvg(buildGrid(stubSeries), 'count');
-  const triangles = [...svg.matchAll(/<path class="provisional" aria-hidden="true" d="M([\d.]+) ([\d.]+)V([\d.]+)H([\d.]+)Z"\/>/g)];
+  const triangles = [...svg.matchAll(/<path class="provisional" [^>]*d="([^"]+)"/g)];
   assert.equal(triangles.length, 2);
-  // December 2024: column 11, row 1. Cells are 28 apart by 34, from x 40 and y 20.
-  const [, left, top, bottom, right] = triangles[1].map(Number);
+  // December 2024: column 11, row 1. Cells are 28 apart by 34, from x 40 and y 20. The hand moves the corners of the
+  // triangle by under a unit, so its box is its size within one.
+  const numbers = triangles[1][1].match(/-?[\d.]+/g).map(Number);
+  const xs = numbers.filter((_, at) => at % 2 === 0);
+  const ys = numbers.filter((_, at) => at % 2 === 1);
+  const [left, right, top, bottom] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)];
   const cellX = 40 + 11 * 34;
   const cellY = 20 + 34;
-  assert.ok(left > cellX && right - left === PROVISIONAL_SIZE && bottom - top === PROVISIONAL_SIZE);
-  assert.ok(bottom < cellY + 28 && left < cellX + 6, 'inside the cell, against its bottom left');
+  assert.ok(Math.abs(right - left - PROVISIONAL_SIZE) < 1 && Math.abs(bottom - top - PROVISIONAL_SIZE) < 1);
+  assert.ok(left > cellX && bottom < cellY + 28 && left < cellX + 6, 'inside the cell, against its bottom left');
 });
 
 test('the triangle is the size the tokens give it', () => {

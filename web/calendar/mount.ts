@@ -3,14 +3,15 @@ import { buildGrid, type Grid } from './grid.ts';
 import { describeCell } from './labels.ts';
 import { latestPosition, nextPosition, type Position } from './keyboard.ts';
 import { renderLegend } from './legend.ts';
-import { FOCUS_RING_OFFSET, renderCalendarSvg } from './render.ts';
+import { renderCalendarSvg, waveDelay } from './render.ts';
 import { describeSeasonMonth, renderStripSvg } from './strip.ts';
 import { download, renderToolbar, toolbarParts, type CalendarActions } from './toolbar.ts';
 import type { CalendarSeries } from './series.ts';
 
 /** A calendar drawn into a page element. */
 export interface Calendar {
-  /** Draws another Series in the same place, with the actions the page offers for it. */
+  /** Draws another Series in the same place, with the actions the page offers for it: a new one undraws the old and
+   * pops in month by month; the same one is redrawn in place, still. */
   update(series: CalendarSeries, actions?: CalendarActions): void;
   /** Removes the calendar and its listeners. */
   destroy(): void;
@@ -22,6 +23,13 @@ function positionOf(target: EventTarget | null): Position | null {
   if (cell === null) return null;
   return { row: Number(cell.dataset.row), column: Number(cell.dataset.column) };
 }
+
+/** How long the old calendar takes to undraw before the new one draws, in milliseconds. */
+const LEAVE_MS = 260;
+/** How long the flags and rings take to draw once the last cell is in. */
+const SETTLE_MS = 900;
+
+const stillMotion = (): boolean => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 function cellAt(root: HTMLElement, at: Position): SVGElement | null {
   return root.querySelector<SVGElement>(`[data-row="${at.row}"][data-column="${at.column}"]`);
@@ -63,6 +71,31 @@ export function mountCalendar(container: HTMLElement, series: CalendarSeries, ac
     readout.textContent = cell === null ? '' : describeCell(cell, current.plane);
   };
 
+  let settle = 0;
+  let leaving = 0;
+  /** Draws the calendar of `current`, popping it in month by month. The class is the page's cue to boil it. */
+  const enter = (): void => {
+    draw();
+    window.clearTimeout(settle);
+    container.classList.add('entering');
+    settle = window.setTimeout(() => container.classList.remove('entering'), waveDelay(grid.rows.length, 12) + SETTLE_MS);
+  };
+  /** Undraws what is on screen, then draws `current`; a second change while it leaves only changes what comes. */
+  const replace = (): void => {
+    if (stillMotion() || host.firstElementChild === null) {
+      enter();
+      return;
+    }
+    if (leaving !== 0) return;
+    container.classList.remove('entering');
+    container.classList.add('leaving');
+    leaving = window.setTimeout(() => {
+      leaving = 0;
+      container.classList.remove('leaving');
+      enter();
+    }, LEAVE_MS);
+  };
+
   const draw = (): void => {
     grid = buildGrid(current);
     toolbar.innerHTML = renderToolbar(current.plane, toolbarParts(offered));
@@ -87,8 +120,7 @@ export function mountCalendar(container: HTMLElement, series: CalendarSeries, ac
       ring.setAttribute('visibility', 'hidden');
       return;
     }
-    ring.setAttribute('x', String(Number(cell.getAttribute('x')) - FOCUS_RING_OFFSET));
-    ring.setAttribute('y', String(Number(cell.getAttribute('y')) - FOCUS_RING_OFFSET));
+    ring.setAttribute('transform', `translate(${cell.dataset.x ?? 0} ${cell.dataset.y ?? 0})`);
     ring.setAttribute('visibility', 'visible');
   };
 
@@ -141,15 +173,19 @@ export function mountCalendar(container: HTMLElement, series: CalendarSeries, ac
   host.addEventListener('mouseover', onFocusOrHover);
   host.addEventListener('mouseleave', onLeave);
   host.addEventListener('keydown', onKeyDown);
-  draw();
+  enter();
 
   return {
     update(next, nextActions = offered) {
+      const same = next === current;
       current = next;
       offered = nextActions;
-      draw();
+      if (same) draw();
+      else replace();
     },
     destroy() {
+      window.clearTimeout(settle);
+      window.clearTimeout(leaving);
       host.removeEventListener('focusin', onFocusIn);
       host.removeEventListener('focusout', onFocusOut);
       host.removeEventListener('mouseover', onFocusOrHover);
