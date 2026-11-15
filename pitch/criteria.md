@@ -18,22 +18,28 @@ guide says teams under-invest in it.
 |---|---|---|---|
 | **Impact** | A real problem, a reach beyond the team | Emergency managers and land managers cannot compare burning across the MODIS and VIIRS eras, and cannot tell a real anomaly from a sensor change. We say how sure each number is. | argue it |
 | **Creativity** | Original, or a meaningful improvement | Four layers that are one argument: uncertainty on every cell, energy and not only counts, analog years, an offline field tool. Most teams will stop at a heatmap. | argue it |
-| **Validity** | Scientifically sound, feasible, usable | Calibration fitted per tile on the overlap years, its residuals shipped as sigma; native equals wasm byte for byte; tests are the review. Usability is checked on Windows (#6). | partly open |
+| **Validity** | Scientifically sound, feasible, usable | Calibration fitted per tile on the overlap years, its residuals shipped as sigma; native equals wasm byte for byte (8,968 calls); tests are the review (393 Rust, 102 web). Accessibility checked by hand (#41). Usability by a person on Windows is open (#6); held-out accuracy is unmeasured. | partly open |
 | **Relevance** | Answers the challenge; NASA data is the core | NASA FIRMS MODIS and VIIRS hotspots are every number on screen. Nothing else is used for the science. | yes |
 | **Presentation** | Clear story, engaging, well organized | A place everyone knows, a three-minute script (`script.md`), a 30-second demo, a backup video, and the airplane-mode moment. | in progress |
 
 ### Evidence checklist
 
-Tick when it can be shown to a judge, not when it is planned.
+Tick when it can be shown to a judge, not when it is planned. Checked against `main` on 2026-11-14.
 
-- [ ] A calendar of one place and season (months across, years down) from real harmonized tiles. Owner: Cube, 2Pac.
-- [ ] Sigma visible on screen, and an anomaly flagged only when it clears the band. Owner: Biggie, 2Pac.
-- [ ] Count and energy (FRP) modes both working.
-- [ ] Analog years shown for the season in progress.
-- [ ] CSV of what the search covers.
-- [ ] A new polygon answered with the network off. Owner: Easy-E.
-- [ ] Before and after of harmonization: MODIS and VIIRS totals diverging, then agreeing. Measured, in `numbers.md`.
-- [ ] Every external resource in `docs/references.md`.
+- [ ] A calendar of one place and season (months across, years down) from real harmonized tiles. **Open:** real
+  tiles exist only for July and August 2026 in South America, with no history to compare; see `story.md` for what
+  each place needs. Today the calendar shows the hand-made sample, and says so.
+- [x] Sigma visible on screen, and an anomaly flagged only when it clears the band: the estimated uncertainty in
+  every cell's words, the band at two sigma under the calendar, a diamond on flagged months (#36). The core decides.
+- [x] Count and energy (FRP) modes both working, from the core (#38). Energy has no sigma, and the page says so.
+- [x] Analog years shown for the season in progress, and the chosen one outlined in the calendar (#39).
+- [x] CSV of what the search covers: `series.csv` and `cells.csv` from the core (#37).
+- [x] A new polygon answered with the network off: tested in Chrome on macOS, Windows and Linux on every pull
+  request (#22), and by hand with the host stopped (#20).
+- [x] Before and after of harmonization, measured, in `numbers.md` and in the app: raw VIIRS 67,025 against MODIS
+  7,000, harmonized 7,000. **On the fit month only**, so it shows the method working, not its accuracy.
+- [x] Every external resource in `docs/references.md`, software included. Still missing: the quantile mapping paper
+  (Cube).
 
 A layer that is half done on Sunday morning comes out of the demo and out of this table.
 

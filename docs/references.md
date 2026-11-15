@@ -29,7 +29,16 @@ Add a line when you use anything from outside the team: data, a library, a metho
 
 - Rust and Cargo: the language and build tool of the core. https://www.rust-lang.org
 - MapLibre GL JS: the renderer for the map in the web app. https://maplibre.org
-- OpenFreeMap Liberty style: the public OpenStreetMap-based vector basemap used by the web area picker. The provider permits bounded offline downloads; use its terms and attribution when implementing pinned map regions. https://openfreemap.org/quick_start/ https://openfreemap.org/tos/
+- OpenFreeMap: the OpenStreetMap vector tiles and the Noto Sans glyphs of the basemap, drawn with firecal's own
+  style (`web/map/style.ts`); attribution "OpenFreeMap © OpenMapTiles, data © OpenStreetMap contributors" is on the
+  map. https://openfreemap.org/quick_start/ https://openfreemap.org/tos/
+- OpenStreetMap contributors and OpenMapTiles: the map data and its schema behind those tiles.
+  https://www.openstreetmap.org/copyright https://openmaptiles.org
+- TerraDraw and `@watergis/maplibre-gl-terradraw`: the rectangle and polygon drawing tools on the map.
+  https://github.com/JamesLMilner/terra-draw https://github.com/watergis/maplibre-gl-terradraw
+- TypeScript and Vite: the language and the build of the web app. https://www.typescriptlang.org https://vite.dev
+- Node.js: runs the web tests, the parity test and the smoke test; the smoke test drives headless Google Chrome over
+  the Chrome DevTools Protocol. https://nodejs.org https://chromedevtools.github.io/devtools-protocol/
 
 ## Method
 
