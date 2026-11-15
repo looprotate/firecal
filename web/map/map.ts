@@ -3,8 +3,8 @@ import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 import { MaplibreTerradrawControl, getDefaultModeOptions } from '@watergis/maplibre-gl-terradraw';
 import { areaFromRectangleCoordinates, selectionFromPolygonCoordinates } from '../app/area-input.ts';
 import type { AreaSelection } from '../app/area-input.ts';
-import type { Area } from '../app/series.ts';
-import { MAP_COLOR_TOKENS, SELECTION, mapStyle, type MapColors } from './style.ts';
+import { selectionOutline } from './outline.ts';
+import { MAP_COLOR_TOKENS, mapStyle, type MapColors } from './style.ts';
 
 setWorkerUrl(workerUrl);
 
@@ -34,20 +34,13 @@ export function createAreaMap(container: HTMLElement, onSelected: (selection: Ar
   map.addControl(drawing, 'top-left');
   nameDrawingButtons(container);
 
-  let pending: AreaSelection | null = null;
-  const outline = (selection: AreaSelection): void => {
-    const source = map.getSource<GeoJSONSource>(SELECTION);
-    if (!source) {
-      pending = selection;
-      return;
-    }
-    source.setData({ type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [ring(selection)] } });
-    const { west, south, east, north } = selection.area;
-    map.fitBounds([[west, south], [east, north]], { padding: 36, maxZoom: 8 });
-  };
+  const outline = selectionOutline({
+    getSource: (id) => map.getSource<GeoJSONSource>(id),
+    fitBounds: (bounds, options) => map.fitBounds(bounds, options),
+  });
 
   map.once('load', () => {
-    if (pending) outline(pending);
+    outline.ready();
     const terraDraw = drawing.getTerraDrawInstance();
     terraDraw?.on('finish', (id, context) => {
       const feature = terraDraw.getSnapshotFeature(id);
@@ -58,7 +51,7 @@ export function createAreaMap(container: HTMLElement, onSelected: (selection: Ar
       if (selection) onSelected(selection);
     });
   });
-  return { map, showSelection: outline };
+  return { map, showSelection: outline.show };
 }
 
 /** The drawing buttons carry only a title; give them the names a screen reader says. */
@@ -73,17 +66,6 @@ function nameDrawingButtons(container: HTMLElement): void {
 function rectangleSelection(drawn: readonly (readonly number[])[]): AreaSelection | null {
   const area = areaFromRectangleCoordinates(drawn);
   return area ? { area } : null;
-}
-
-/** The closed ring of a selection, longitude first, as GeoJSON wants it. */
-export function ring(selection: AreaSelection): [number, number][] {
-  if (selection.polygon) {
-    const corners = selection.polygon.map(([latitude, longitude]): [number, number] => [longitude, latitude]);
-    const first = corners[0];
-    return first ? [...corners, first] : corners;
-  }
-  const { west, south, east, north }: Area = selection.area;
-  return [[west, south], [east, south], [east, north], [west, north], [west, south]];
 }
 
 function tokenColors(): MapColors {
