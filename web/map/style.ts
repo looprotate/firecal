@@ -8,6 +8,7 @@ export interface MapColors {
   region: string;
   label: string;
   selection: string;
+  coverage: string;
 }
 
 /** Where a map color comes from: a token, mixed with the paper (`--bg`) when `share` is under one. */
@@ -28,6 +29,7 @@ export const MAP_COLOR_SOURCES: Record<keyof MapColors, MapColorSource> = {
   region: { token: '--healthy', share: 0.7 },
   label: { token: '--text', share: 1 },
   selection: { token: '--text-strong', share: 1 },
+  coverage: { token: '--activity', share: 1 },
 };
 
 /** `color` mixed with `paper`, `share` of the first, as CSS `color-mix(in srgb, …)` does: per channel, rounded. */
@@ -39,6 +41,8 @@ export function mixWithPaper(color: string, paper: string, share: number): strin
 
 /** The id of the layer that outlines the selected area, and of its GeoJSON source. */
 export const SELECTION = 'firecal-selection';
+/** The id of the layer that outlines the region the host has tiles for, and of its GeoJSON source. */
+export const COVERAGE = 'firecal-coverage';
 
 const OPENFREEMAP = 'https://tiles.openfreemap.org';
 
@@ -57,6 +61,7 @@ export function mapStyle(colors: MapColors): StyleSpecification {
         url: `${OPENFREEMAP}/planet`,
         attribution: 'OpenFreeMap © OpenMapTiles, data © OpenStreetMap contributors',
       },
+      [COVERAGE]: { type: 'geojson', data: { type: 'FeatureCollection', features: [] } },
       [SELECTION]: { type: 'geojson', data: { type: 'FeatureCollection', features: [] } },
     },
     layers: [
@@ -66,6 +71,13 @@ export function mapStyle(colors: MapColors): StyleSpecification {
       border('countries', 2, colors.border, 0),
       placeNames('country-names', ['==', ['get', 'class'], 'country'], 12, 0, colors.label, colors.land),
       placeNames('city-names', ['==', ['get', 'class'], 'city'], 11, 5, colors.label, colors.land),
+      {
+        id: COVERAGE,
+        type: 'line',
+        source: COVERAGE,
+        paint: { 'line-color': colors.coverage, 'line-width': 2.5, 'line-dasharray': [2, 2] },
+        layout: { 'line-cap': 'round', 'line-join': 'round' },
+      },
       { id: SELECTION, type: 'line', source: SELECTION, paint: { 'line-color': colors.selection, 'line-width': 3 }, layout: { 'line-cap': 'round', 'line-join': 'round' } },
     ],
   };

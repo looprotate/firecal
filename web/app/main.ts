@@ -14,6 +14,7 @@ import {
   polygonFromSelectionEvent,
   type AreaBoundsText,
 } from './area-input.ts';
+import { coverageEdges, parseCoverage, type Coverage } from './coverage.ts';
 import { degreesText, latitudeLabel, longitudeLabel } from './degrees.ts';
 import { drawFrames } from './frames.ts';
 import { pinRegion } from './offline.ts';
@@ -53,6 +54,7 @@ const areaMap = createAreaMap(shell.mapHost, (selection) => emitAreaSelected(roo
 areaMap.showSelection({ area: state.area });
 let firecal: Firecal | undefined;
 let asked = 0;
+let coverage: Coverage | null = null;
 
 shell.areaForm.addEventListener('submit', (event) => {
   event.preventDefault();
@@ -81,10 +83,16 @@ root.addEventListener(AREA_SELECTED_EVENT, (event) => {
 });
 
 shell.pinRegionButton.addEventListener('click', () => void pinSelectedRegion());
+shell.coverageButton.addEventListener('click', () => {
+  if (!coverage) return;
+  const { west, south, east, north } = coverage.example;
+  emitAreaSelected(root, { west, south, east, north });
+});
 
 render();
 void loadRuntime();
 void showOverlapReport();
+void showCoverage();
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/service-worker.js').catch((error: unknown) => {
     shell.pinStatus.textContent = `Offline use is unavailable: ${error instanceof Error ? error.message : String(error)}`;
@@ -168,8 +176,10 @@ async function answerFromTiles(): Promise<void> {
       state.actions = {};
       render();
       shell.runtimeStatus.textContent = 'No tiles cover this area, pinned or published here. The calendar shows the hand-made sample.';
+      sayNoData();
       return;
     }
+    shell.coverageNote.hidden = true;
     state.series = answer.series;
     state.fromCore = true;
     state.actions = {
@@ -185,6 +195,29 @@ async function answerFromTiles(): Promise<void> {
     if (question !== asked) return;
     shell.runtimeStatus.textContent = error instanceof Error ? error.message : 'The tiles could not be read.';
   }
+}
+
+/** The region the host has tiles for, outlined on the map, when it publishes `tiles/coverage.json`. */
+async function showCoverage(): Promise<void> {
+  try {
+    const response = await fetch('/tiles/coverage.json');
+    if (!response.ok) return;
+    coverage = parseCoverage(await response.json());
+    areaMap.showCoverage(coverageEdges(coverage.tiles));
+    if (!shell.coverageNote.hidden) sayNoData();
+  } catch {
+    // No list and no network, or a list that is not one: no outline, and the note says only that there is no data.
+  }
+}
+
+/** Says, above the sample, that the area has no data, where the host has some, and offers to go there. */
+function sayNoData(): void {
+  shell.coverageText.textContent = coverage
+    ? `No harmonized data here yet. This host has tiles for ${coverage.region}, outlined on the map; below is the hand-made sample, not data.`
+    : 'No tiles cover this area on this host; below is the hand-made sample, not data.';
+  shell.coverageButton.hidden = coverage === null;
+  shell.coveragePlace.textContent = coverage ? `Show ${coverage.example.name}` : '';
+  shell.coverageNote.hidden = false;
 }
 
 /** The harmonization figure, when the host publishes Cube's overlap report next to the tiles. */

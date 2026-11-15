@@ -135,6 +135,13 @@ button.primary:hover > .frame-art path { fill: var(--text); }
 }
 
 .calendar-mount { min-height: 120px; }
+
+/* Said when the host has no tiles for the area: where it has them, and a way there. */
+.coverage-note { align-items: center; display: flex; flex-wrap: wrap; gap: 12px 16px; justify-content: space-between; padding: 14px 16px; position: relative; }
+.coverage-note[hidden] { display: none; }
+.coverage-note p { color: var(--ink); flex: 1 1 260px; font-size: 15px; line-height: 1.45; position: relative; z-index: 1; }
+[data-frame="note"] > .frame-art path { fill: color-mix(in srgb, var(--activity) 14%, var(--bg)); stroke: var(--activity); }
+.coverage-note button { flex: none; }
 .harmonization { margin-top: 28px; }
 .runtime-status { color: var(--text-secondary); display: block; font-size: var(--text-size-small); }
 .page-footer { color: var(--text-secondary); display: flex; flex-wrap: wrap; font-size: var(--text-size-small); gap: var(--margin); justify-content: space-between; padding: 28px 2px 0; }

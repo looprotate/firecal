@@ -16,6 +16,11 @@ export interface AppShell {
   dataSource: HTMLElement;
   harmonization: HTMLElement;
   overlapHost: HTMLElement;
+  coverageNote: HTMLElement;
+  coverageText: HTMLElement;
+  coverageButton: HTMLButtonElement;
+  /** The button's words, apart from it, so writing them keeps the button's hand-drawn frame. */
+  coveragePlace: HTMLElement;
 }
 
 /** A section marker drawn by hand: a pastel shape with an ink outline, 20 pixels square. */
@@ -71,6 +76,10 @@ export function renderShell(root: HTMLElement): AppShell {
           <div class="panel-heading">
             <h2 id="calendar-title">${MARKER.calendar}Calendar</h2>
           </div>
+          <div class="coverage-note" id="coverage-note" data-frame="note" role="status" hidden>
+            <p id="coverage-text"></p>
+            <button type="button" id="coverage-go" hidden><span id="coverage-place"></span></button>
+          </div>
           <div class="calendar-mount" id="calendar"></div>
           <output class="runtime-status" id="runtime-status" aria-live="polite">Loading the core…</output>
         </section>
@@ -103,6 +112,10 @@ export function renderShell(root: HTMLElement): AppShell {
     dataSource: required(root, '#data-source', HTMLElement),
     harmonization: required(root, '#harmonization', HTMLElement),
     overlapHost: required(root, '#overlap', HTMLElement),
+    coverageNote: required(root, '#coverage-note', HTMLElement),
+    coverageText: required(root, '#coverage-text', HTMLElement),
+    coverageButton: required(root, '#coverage-go', HTMLButtonElement),
+    coveragePlace: required(root, '#coverage-place', HTMLElement),
   };
 }
 
