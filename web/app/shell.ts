@@ -36,8 +36,8 @@ export function renderShell(root: HTMLElement): AppShell {
     </header>
     <main class="workspace">
       <section class="intro" aria-labelledby="page-title">
-        <h1 id="page-title">Fire activity, month by month.</h1>
-        <p class="intro-copy">Pick an area. The calendar shows how much burned each month, how sure that number is, and how it compares with past years.</p>
+        <h1 id="page-title">Burning activity, month by month.</h1>
+        <p class="intro-copy">Pick an area. The calendar shows the hotspots seen each month, how sure that number is, and how it compares with past years.</p>
       </section>
       <div class="workspace-grid">
         <section class="panel" aria-labelledby="area-title">
@@ -46,7 +46,7 @@ export function renderShell(root: HTMLElement): AppShell {
             <span class="area-label" id="area-label"></span>
           </div>
           <div class="map-frame" id="map" role="region" aria-label="Map: draw a rectangle or a polygon"></div>
-          <form class="area-form" id="area-form" aria-label="Area by coordinates">
+          <form class="area-form" id="area-form" aria-label="Area by coordinates" novalidate>
             <div class="coordinate-fields">
               ${field('west', 'West', 180)}${field('south', 'South', 90)}${field('east', 'East', 180)}${field('north', 'North', 90)}
             </div>

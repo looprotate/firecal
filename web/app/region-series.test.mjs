@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { loadFirecal } from '../../wasm/load.ts';
-import { pinnedSeries } from './pinned-series.ts';
+import { regionSeries } from './region-series.ts';
 
 const wasmPath = fileURLToPath(new URL('../../target/wasm32-unknown-unknown/debug/firecal_wasm.wasm', import.meta.url));
 const firecal = await loadFirecal(readFileSync(wasmPath));
@@ -26,6 +26,8 @@ function fixtureTile() {
   return bytes;
 }
 
+const offline = async () => { throw new TypeError('Failed to fetch'); };
+
 function pinned(tiles) {
   return { open: async () => ({ match: async (path) => (tiles[path] ? new Response(tiles[path]) : undefined) }) };
 }
@@ -35,15 +37,27 @@ test('a pinned region answers from the core, and a polygon over the same cell an
   const area = { west: 0, south: 10, east: 0.25, north: 10.25 };
   const square = [[10, 0], [10, 0.25], [10.25, 0.25], [10.25, 0]];
 
-  const rectangle = await pinnedSeries(firecal, { area, plane: 'count' }, storage);
-  const polygon = await pinnedSeries(firecal, { area, polygon: square, plane: 'count' }, storage);
+  const rectangle = await regionSeries(firecal, { area, plane: 'count' }, storage, offline);
+  const polygon = await regionSeries(firecal, { area, polygon: square, plane: 'count' }, storage, offline);
 
   assert.equal(rectangle.tiles, 1);
+  assert.equal(rectangle.pinned, 1);
   assert.equal(rectangle.series.value[36], 13, 'January 2003 is 10 + 3');
   assert.equal(rectangle.series.median[0], 11, 'the January median of 2000, 2001 and 2002: 10, 11, 12');
   assert.deepEqual(polygon.series.value, rectangle.series.value);
 });
 
-test('an area with no pinned tile has no answer, not a zero series', async () => {
-  assert.equal(await pinnedSeries(firecal, { area: { west: 0, south: 10, east: 1, north: 11 }, plane: 'count' }, pinned({})), null);
+test('an area with no tile, pinned or published, has no answer, not a zero series', async () => {
+  const area = { west: 0, south: 10, east: 1, north: 11 };
+  assert.equal(await regionSeries(firecal, { area, plane: 'count' }, pinned({}), offline), null);
+});
+
+test('before anything is pinned, an area answers from the tiles its host publishes', async () => {
+  const area = { west: 0, south: 10, east: 0.25, north: 10.25 };
+  const host = async (path) => path === '/tiles/t_7_18.bin' ? new Response(fixtureTile()) : new Response('', { status: 404 });
+  const answer = await regionSeries(firecal, { area, plane: 'count' }, pinned({}), host);
+
+  assert.equal(answer.tiles, 1);
+  assert.equal(answer.pinned, 0);
+  assert.equal(answer.series.value[36], 13, 'January 2003 is 10 + 3');
 });
