@@ -86,6 +86,7 @@ button.primary:hover { background: var(--text); }
 }
 
 .calendar-mount { min-height: 120px; }
+.harmonization { margin-top: 16px; }
 .runtime-status { border-top: var(--hairline) solid var(--line); color: var(--text-secondary); display: block; font-size: var(--text-size-small); padding-top: 12px; }
 .page-footer { color: var(--text-secondary); display: flex; flex-wrap: wrap; font-size: var(--text-size-tiny); gap: var(--margin); justify-content: space-between; padding: 16px 2px 0; }
 

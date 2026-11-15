@@ -3,7 +3,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import '../tokens/tokens.css';
 import './style.css';
 import sample from '../stub/series.json';
-import { mountCalendar, type CalendarActions } from '../calendar/index.ts';
+import { mountCalendar, mountOverlapFigure, type CalendarActions } from '../calendar/index.ts';
 import { loadFirecal, type Firecal } from '../../wasm/load.ts';
 import { createAreaMap } from '../map/map.ts';
 import {
@@ -81,6 +81,7 @@ shell.pinRegionButton.addEventListener('click', () => void pinSelectedRegion());
 
 render();
 void loadRuntime();
+void showOverlapReport();
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/service-worker.js').catch((error: unknown) => {
     shell.pinStatus.textContent = `Offline use is unavailable: ${error instanceof Error ? error.message : String(error)}`;
@@ -180,6 +181,19 @@ async function answerFromPinnedTiles(): Promise<void> {
   } catch (error) {
     if (question !== asked) return;
     shell.runtimeStatus.textContent = error instanceof Error ? error.message : 'The pinned tiles could not be read.';
+  }
+}
+
+/** The harmonization figure, when the host publishes Cube's overlap report next to the tiles. */
+async function showOverlapReport(): Promise<void> {
+  try {
+    const response = await fetch('/tiles/overlap.csv');
+    const text = response.ok ? await response.text() : '';
+    if (!text.startsWith('tile_row,')) return;
+    mountOverlapFigure(shell.overlapHost, text);
+    shell.harmonization.hidden = false;
+  } catch {
+    // No report and no network: the panel stays hidden, as on a host that does not publish one.
   }
 }
 

@@ -13,12 +13,15 @@ export interface AppShell {
   pinRegionButton: HTMLButtonElement;
   pinStatus: HTMLOutputElement;
   dataSource: HTMLElement;
+  harmonization: HTMLElement;
+  overlapHost: HTMLElement;
 }
 
 /** The section markers: a rectangle for the area you draw, an arch for the calendar. */
 const MARKER = {
   area: '<svg class="marker" viewBox="0 0 10 10" aria-hidden="true"><rect x="0" y="2" width="10" height="7"/></svg>',
   calendar: '<svg class="marker" viewBox="0 0 10 10" aria-hidden="true"><path d="M0 10V5a5 5 0 0 1 10 0v5z"/></svg>',
+  harmonization: '<svg class="marker" viewBox="0 0 10 10" aria-hidden="true"><path d="M0 8a5 5 0 0 1 10 0z"/></svg>',
 };
 
 const field = (name: keyof AreaBoundsText, label: string, limit: number): string =>
@@ -65,6 +68,12 @@ export function renderShell(root: HTMLElement): AppShell {
           <output class="runtime-status" id="runtime-status" aria-live="polite">Loading the core…</output>
         </section>
       </div>
+      <section class="panel harmonization" id="harmonization" aria-labelledby="harmonization-title" hidden>
+        <div class="panel-heading">
+          <h2 id="harmonization-title">${MARKER.harmonization}How the sensors were made to agree</h2>
+        </div>
+        <div id="overlap"></div>
+      </section>
       <footer class="page-footer"><span>NASA FIRMS hotspots, MODIS and VIIRS</span><span id="data-source"></span></footer>
     </main>
   `;
@@ -85,6 +94,8 @@ export function renderShell(root: HTMLElement): AppShell {
     pinRegionButton: required(root, '#pin-region', HTMLButtonElement),
     pinStatus: required(root, '#pin-status', HTMLOutputElement),
     dataSource: required(root, '#data-source', HTMLElement),
+    harmonization: required(root, '#harmonization', HTMLElement),
+    overlapHost: required(root, '#overlap', HTMLElement),
   };
 }
 
