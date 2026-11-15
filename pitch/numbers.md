@@ -24,6 +24,17 @@ coast).
 | **December 2019: 7,112 hotspots, median 7** | The core flags November and December 2019 as unusual; January 2003 (8,470, the alpine fires) is still the largest January, so January 2020 would not be flagged in this area | The app on the real tiles | A cause, or burned area: hotspots are thermal anomalies |
 | **2009, 2001, 2002** | The three past years the core finds most like 2019, by rank within each month | The app | A forecast: they are history |
 
+## All of Australia, November 2000 to December 2019
+
+The tiles the hosted app serves, built by Biggie's agent on 2026-11-15 on an Apple M4 at `main` 57dd1bd, from the
+same aggregates and the same fit as the story above. Published as the `tiles-australia-2019` release and at
+https://firecal.pages.dev/tiles/.
+
+| Number | What it is | Measured by, how | It does not show |
+|---|---|---|---|
+| **20 tiles in 0.44 s; 15 with hotspots, 33,120,240 bytes** | `firecal-harmonize build` over rows 10 to 13 and columns 29 to 33 (10° to 50° south, 110° to 160° east), 2,208,016 bytes a tile | Median of three runs (0.477, 0.439, 0.443 s), the tiles byte-identical across runs; the seven south-east tiles byte-identical to the story's | Tiles with land outside Australia: the country files leave out Indonesia and Papua New Guinea, so the 0° to 10° south row is not built |
+| **December 2019: 384 and 505 hotspots, both unusual** | South-west Western Australia (west 116, south −34, east 120, north −30) and the Top End (130, −15, 134, −12), one tile each | The hosted app at https://firecal.pages.dev/app/ on 2026-11-15 | Why those months were busy |
+
 ## The pipeline
 
 | Number | What it is | Measured by, how | It does not show |
