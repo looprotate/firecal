@@ -22,7 +22,7 @@ export const MAP_COLOR_TOKENS: Record<keyof MapColors, string> = {
   border: '--disabled',
   region: '--line',
   label: '--text-secondary',
-  selection: '--text-strong',
+  selection: '--map-selection',
   forest: '--map-forest',
   park: '--map-park',
   farmland: '--map-farmland',
@@ -63,7 +63,7 @@ export function mapStyle(colors: MapColors): StyleSpecification {
       placeNames('country-names', ['==', ['get', 'class'], 'country'], 12, 0, colors.label, colors.land),
       placeNames('city-names', ['==', ['get', 'class'], 'city'], 11, 5, colors.label, colors.land),
       { id: SELECTION_FILL, type: 'fill', source: SELECTION, paint: { 'fill-color': colors.selection, 'fill-opacity': 0 } },
-      { id: SELECTION, type: 'line', source: SELECTION, paint: { 'line-color': colors.selection, 'line-width': 2 } },
+      { id: SELECTION, type: 'line', source: SELECTION, paint: { 'line-color': colors.selection, 'line-width': 3 } },
     ],
   };
 }

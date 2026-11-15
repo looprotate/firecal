@@ -156,6 +156,7 @@ button.primary:hover { background: #c6d9b6; }
   .intro-help { font-size: 11px; }
 }
 :root {
+  --map-selection: #243c2b;
   --map-land: #f3efe5;
   --map-water: #a9cee5;
   --map-forest: #bfd4ae;

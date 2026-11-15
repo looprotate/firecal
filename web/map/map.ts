@@ -46,7 +46,7 @@ export function createAreaMap(container: HTMLElement, onSelected: (selection: Ar
   const paintActivity = (): void => {
     if (!loaded) return;
     map.setPaintProperty(SELECTION_FILL, 'fill-color', activity ?? colors.selection);
-    map.setPaintProperty(SELECTION_FILL, 'fill-opacity', activity === null ? 0 : 0.38);
+    map.setPaintProperty(SELECTION_FILL, 'fill-opacity', activity === null ? 0 : 0.58);
   };
   map.once('load', () => {
     loaded = true;
