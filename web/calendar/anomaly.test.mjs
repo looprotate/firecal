@@ -50,3 +50,11 @@ test('the legend names the diamond in words', () => {
   assert.match(renderLegend(), />Unusual: outside the band and the past years</);
   assert.match(renderLegend(), /class="unusual"/);
 });
+
+test('a month with no sigma, as on the energy plane, is not called usual: the core cannot judge it', () => {
+  const cell = { ...buildGrid(stubSeries).rows[1]?.[6], sigma: Number.NaN, unusual: false };
+  assert.equal(
+    describeSeasonMonth(cell, 'energy'),
+    'July 2024: 90 MW against a median of 60, +50%. No uncertainty to judge it by.',
+  );
+});

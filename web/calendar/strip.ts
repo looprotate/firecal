@@ -25,9 +25,10 @@ export function describeSeasonMonth(cell: Cell, plane: CalendarSeries['plane']):
   const head = `${monthTitle(cell.year, cell.month)}: ${formatNumber(cell.value)} ${unit}`;
   if (!Number.isFinite(cell.median)) return `${head}. No past years to compare with.`;
   const change = `${cell.anomaly >= 0 ? '+' : '−'}${Math.round(Math.abs(cell.anomaly) * 100)}%`;
-  const band = Number.isFinite(cell.sigma) ? `, ±${formatNumber(2 * cell.sigma)} at two sigma (estimated)` : '';
+  const against = `${head} against a median of ${formatNumber(cell.median)}, ${change}`;
+  if (!Number.isFinite(cell.sigma)) return `${against}. No uncertainty to judge it by.`;
   const verdict = cell.unusual ? 'Unusual.' : 'Within the usual range.';
-  return `${head} against a median of ${formatNumber(cell.median)}, ${change}${band}. ${verdict}`;
+  return `${against}, ±${formatNumber(2 * cell.sigma)} at two sigma (estimated). ${verdict}`;
 }
 
 /**
