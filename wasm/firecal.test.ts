@@ -238,15 +238,15 @@ test("a polygon selects the cells whose center it contains and refuses a bow tie
   assert.equal(bowTie.status, 9);
 });
 
-test("the comparison flags a month only when it clears the sensor band and the baseline range", () => {
+test("the comparison flags a month only when it rises past the sensor band and the baseline range", () => {
   const answer = firecal.comparison(history({}));
   assert.equal(answer.status, 0);
   assert.deepEqual([...answer.median.slice(24, 27)], [20, 30, 100]);
   assert.equal(answer.anomaly[24], -0.75); // (5 - 20) / 20
   assert.equal(answer.anomaly[26], 0);
-  // January 5: below the baseline range 10 to 30 and 15 from the median. February 22: 8 from the median, over
-  // 2 * sigma = 4, but inside the range 20 to 40. March: the median.
-  assert.deepEqual([...answer.unusual.slice(24, 27)], [1, 0, 0]);
+  // January 5: below the baseline range 10 to 30 and 15 under the median, a drop, not flagged. February 22: 8
+  // under the median, over 2 * sigma = 4, but inside the range 20 to 40. March: the median.
+  assert.deepEqual([...answer.unusual.slice(24, 27)], [0, 0, 0]);
 });
 
 test("a month with no baseline has no median and is not unusual", () => {
@@ -276,7 +276,7 @@ test("series.csv is the series with its median, anomaly and flag", () => {
   assert.equal(answer.status, 0);
   const lines = new TextDecoder().decode(answer.text).split("\n");
   assert.equal(lines[0], "year,month,value,sigma,median,anomaly,unusual");
-  assert.equal(lines[25], "2003,1,5,2.000,20.0,-0.750,true");
+  assert.equal(lines[25], "2003,1,5,2.000,20.0,-0.750,false");
   assert.equal(lines[27], "2003,3,100,2.000,100.0,0.000,false");
   assert.equal(lines.length, 38); // header, 36 rows, and the empty text after the last newline
 });
