@@ -1,5 +1,7 @@
-import logo from '../tokens/logo.svg';
+import { arc, archPoints, path, resample, rough, rrect } from '../../site/js/draw.js';
 import type { AreaBoundsText } from './area-input.ts';
+import { BOIL_FILTER } from './boil.ts';
+import { drawnLogo } from './logo.ts';
 
 /** The parts of the page the app reads and writes. */
 export interface AppShell {
@@ -17,21 +19,28 @@ export interface AppShell {
   overlapHost: HTMLElement;
 }
 
-/** The section markers: a rectangle for the area you draw, an arch for the calendar. */
+/** A section marker drawn by hand: a pastel shape with an ink outline, 20 pixels square. */
+const marker = (kind: string, points: number[][], seed: number): string => {
+  const d = path(rough(resample(points, true), seed, 0.45, 0, 0), true);
+  return `<svg class="marker marker-${kind}" viewBox="0 0 20 20" aria-hidden="true"><path class="marker-fill" d="${d}"/><path class="marker-line" pathLength="1" d="${d}"/></svg>`;
+};
+
+/** The section markers: a rectangle for the area you draw, an arch for the calendar, a half sun for the sensors. */
 const MARKER = {
-  area: '<svg class="marker" viewBox="0 0 10 10" aria-hidden="true"><rect x="0" y="2" width="10" height="7"/></svg>',
-  calendar: '<svg class="marker" viewBox="0 0 10 10" aria-hidden="true"><path d="M0 10V5a5 5 0 0 1 10 0v5z"/></svg>',
-  harmonization: '<svg class="marker" viewBox="0 0 10 10" aria-hidden="true"><path d="M0 8a5 5 0 0 1 10 0z"/></svg>',
+  area: marker('area', rrect(2, 4, 16, 12, 2), 11),
+  calendar: marker('calendar', archPoints(13 / 440).map(([x, y]) => [(x ?? 0) + 10, (y ?? 0) + 18.5]), 13),
+  harmonization: marker('harmonization', arc(10, 15, 8, 8, Math.PI, Math.PI * 2, 12), 17),
 };
 
 const field = (name: keyof AreaBoundsText, label: string, limit: number): string =>
-  `<label>${label}<input name="${name}" type="number" inputmode="decimal" min="${-limit}" max="${limit}" step="any" required autocomplete="off"></label>`;
+  `<label>${label}<span class="field" data-frame="field"><input name="${name}" type="number" inputmode="decimal" min="${-limit}" max="${limit}" step="any" required autocomplete="off"></span></label>`;
 
 /** Writes the page: the area panel with the map and the coordinates, and the calendar panel. */
 export function renderShell(root: HTMLElement): AppShell {
   root.innerHTML = `
+    ${BOIL_FILTER}
     <header class="topbar">
-      <a class="brand" href="/"><img src="${logo}" alt="" width="24" height="24"><span>firecal</span></a>
+      <a class="brand" href="/" aria-label="firecal, about the project">${drawnLogo()}<span>firecal</span></a>
       <p class="topbar-caption">Burning activity from MODIS and VIIRS, harmonized</p>
     </header>
     <main class="workspace">
@@ -40,12 +49,12 @@ export function renderShell(root: HTMLElement): AppShell {
         <p class="intro-copy">Pick an area. The calendar shows the hotspots seen each month, how sure that number is, and how it compares with past years.</p>
       </section>
       <div class="workspace-grid">
-        <section class="panel" aria-labelledby="area-title">
+        <section class="panel" data-frame="panel" aria-labelledby="area-title">
           <div class="panel-heading">
             <h2 id="area-title">${MARKER.area}Area</h2>
             <span class="area-label" id="area-label"></span>
           </div>
-          <div class="map-frame" id="map" role="region" aria-label="Map: draw a rectangle or a polygon"></div>
+          <div class="map-frame" data-frame="map"><div class="map" id="map" role="region" aria-label="Map: draw a rectangle or a polygon"></div></div>
           <form class="area-form" id="area-form" aria-label="Area by coordinates" novalidate>
             <div class="coordinate-fields">
               ${field('west', 'West', 180)}${field('south', 'South', 90)}${field('east', 'East', 180)}${field('north', 'North', 90)}
@@ -60,7 +69,7 @@ export function renderShell(root: HTMLElement): AppShell {
             <output class="pin-status" id="pin-status" aria-live="polite"></output>
           </div>
         </section>
-        <section class="panel" aria-labelledby="calendar-title">
+        <section class="panel" data-frame="panel" aria-labelledby="calendar-title">
           <div class="panel-heading">
             <h2 id="calendar-title">${MARKER.calendar}Calendar</h2>
           </div>
@@ -68,7 +77,7 @@ export function renderShell(root: HTMLElement): AppShell {
           <output class="runtime-status" id="runtime-status" aria-live="polite">Loading the core…</output>
         </section>
       </div>
-      <section class="panel harmonization" id="harmonization" aria-labelledby="harmonization-title" hidden>
+      <section class="panel harmonization" data-frame="panel" id="harmonization" aria-labelledby="harmonization-title" hidden>
         <div class="panel-heading">
           <h2 id="harmonization-title">${MARKER.harmonization}How the sensors were made to agree</h2>
         </div>
