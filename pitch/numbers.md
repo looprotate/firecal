@@ -6,6 +6,24 @@ placeholder (`[MEASURED: ...]` in `script.md`) and stays unsaid.
 
 Measured on 2026-11-14 at `main` f706aec unless the row says otherwise.
 
+## The story: south-east Australia, November 2000 to December 2019
+
+The demo's history, run end to end by Biggie's agent on 2026-11-14 on an Apple M4. Region: the nine 10° tiles from
+20° to 50° south and 130° to 160° east, which hold only Australia and sea, so the public country files cover them
+completely. The demo area is west 147, south −38, east 151, north −34 (East Gippsland and the New South Wales south
+coast).
+
+| Number | What it is | Measured by, how | It does not show |
+|---|---|---|---|
+| **30 files, 1.3 GB** | The public FIRMS country archive for Australia: MODIS 2000 to 2020, VIIRS S-NPP 2012 to 2020 | Downloaded from `firms.modaps.eosdis.nasa.gov/data/country/`; SHA-256 of each file kept with the data, outside git | A uniform MODIS collection: the public files carry versions 6.2 and 6.03 |
+| **16,605,720 rows in 7.3 s** (2.26 million rows/s) | `firecal-ingest` over those files: 15,076,666 detections kept, 572 aggregate files | One run, eight workers, release build; it needed #116 first, because 159 rows have a negative FRP | A median of repeated runs, or a cold disk |
+| **9 tiles of 230 months in 0.23 s** | `firecal-harmonize build`, fitted on 2012 to 2018 (Terra and S-NPP); 7 tiles with hotspots, 2,208,016 bytes each | Median of three runs (0.254, 0.217, 0.232 s), the tiles byte-identical across runs | The world |
+| **Raw VIIRS 12.5 times MODIS; harmonized 0.77 times** | **2019, held out of the fit**: MODIS 50,497 hotspots over the 9 tiles, raw VIIRS 631,751, harmonized VIIRS 38,910. In the fit years, harmonized equals MODIS by construction (144,592) | `firecal-harmonize report`, 864 tile-months; the figure is `figures/harmonization-before-after.svg` | That 0.77 holds for a quiet year: 2019 was the most extreme year in the record, past the fit's largest counts, where the mapping holds its last value and so undercounts |
+| **0.75 ms** | The demo's query: series, comparison and analog years over 230 months, for the demo area on its 2 tiles; a polygon inside it, 0.42 ms | Chrome 156, `performance.now`, median of seven batches of 20 | A phone |
+| **4.21 MiB** | What pinning the demo area stores: 2 tiles of 230 months | The app's "Pinned 2 tiles, 4.21 MiB" | The size after gzip |
+| **December 2019: 7,112 hotspots, median 7** | The core flags November and December 2019 as unusual; January 2003 (8,470, the alpine fires) is still the largest January, so January 2020 would not be flagged in this area | The app on the real tiles | A cause, or burned area: hotspots are thermal anomalies |
+| **2009, 2001, 2002** | The three past years the core finds most like 2019, by rank within each month | The app | A forecast: they are history |
+
 ## The pipeline
 
 | Number | What it is | Measured by, how | It does not show |
@@ -41,8 +59,7 @@ Measured on 2026-11-14 at `main` f706aec unless the row says otherwise.
 
 ## Not measured yet
 
-- Any calendar of **many years** from real data: the downloads are a 2026 season for South America and a country
-  archive for Uruguay that the tile builder cannot use yet (it accepts only complete tiles; see `story.md`).
-- Harmonization agreement on a **held-out** standard month.
-- Query time on a phone, and over 25 years of months.
-- The size of the whole world offline.
+- Query time on a phone.
+- The world: no world archive was downloaded (the FIRMS archive download needs an Earthdata login and an emailed
+  link); the size of the whole world offline is therefore unmeasured too.
+- Held-out agreement in a quiet year: the only held-out year, 2019, is the most extreme one.

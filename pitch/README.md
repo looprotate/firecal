@@ -23,7 +23,7 @@ Images in `figures/` are generated, never drawn by hand:
 | File | Made by | Again with |
 |---|---|---|
 | `title-card.svg` | `title_card()` in Axel's `theme/firecal.py`, the same generator as the tokens | `python3 theme/palette.py --write` in `~/dev/me` |
-| `harmonization-before-after.svg` | the app's own figure (`web/calendar/figure.ts`) on Cube's overlap report of July 2026, 24 South American tiles, saved with "Save as SVG" | the app's harmonization panel, or `firecal-harmonize report` then the panel |
+| `harmonization-before-after.svg` | the app's own figure (`web/calendar/figure.ts`) on the overlap report of south-east Australia, 2012 to 2019, fitted on 2012 to 2018 with 2019 held out (squares) | `firecal-harmonize report` on the Australia aggregates (see `numbers.md`), then the panel's "Save as SVG" |
 
-The figure shows the month the calibration was fitted on, so its agreement is by construction, and it says so in
-its own text. Do not crop that line off.
+The figure says in its own text which months were fitted (agreement by construction) and which were held out
+(the test). Do not crop those lines off.
