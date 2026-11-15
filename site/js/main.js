@@ -15,11 +15,18 @@ const INTRO_UNITS_PER_SECOND = 11;
 const still = matchMedia('(prefers-reduced-motion: reduce)');
 const builders = { built, calendar, closing, offline, satellites, season };
 
-const mark = document.querySelector('#mark');
-const markScene = new Scene(mark);
-logo.build(markScene, 1, 0);
+// Three copies of the same drawing: one sitting in the hero, one sitting in the bar, and one fixed to the window that
+// is placed by script only while it flies between them. A copy that sits in the page moves with it, so the
+// logo stays put when the browser bounces past either end of the page.
 const heroSlot = document.querySelector('#hero-slot');
 const navSlot = document.querySelector('#nav-slot');
+const mark = document.querySelector('#mark');
+const marks = [mark, sittingMark(heroSlot), sittingMark(navSlot)].map((svg) => {
+  const scene = new Scene(svg);
+  logo.build(scene, 1, 0);
+  return { svg, scene };
+});
+const [flying, inHero, inBar] = marks;
 const hero = document.querySelector('#top');
 const heroCopy = document.querySelector('.hero-copy');
 const started = performance.now();
@@ -64,7 +71,26 @@ function onScreen(section) {
   return box.bottom > -50 && box.top < innerHeight + 50;
 }
 
+function sittingMark(slot) {
+  const svg = slot.appendChild(document.createElementNS('http://www.w3.org/2000/svg', 'svg'));
+  svg.setAttribute('viewBox', mark.getAttribute('viewBox'));
+  svg.setAttribute('aria-hidden', 'true');
+  svg.classList.add('mark-sitting');
+  return svg;
+}
+
+/** The copy of the logo that shows: the hero's before the flight, the bar's after it, the flying one between. */
+function markFor(flight) {
+  if (flight <= 0) return inHero;
+  if (flight >= 1) return inBar;
+  return flying;
+}
+
 function placeMark(flight) {
+  heroCopy.style.opacity = String(1 - clamp(flight * 1.4));
+  heroCopy.style.transform = `translateY(${-flight * 60}px)`;
+  document.body.classList.toggle('arrived', flight >= 1);
+  if (markFor(flight) !== flying) return;
   const from = heroSlot.getBoundingClientRect();
   const to = navSlot.getBoundingClientRect();
   const lerp = (a, b) => a + (b - a) * flight;
@@ -72,17 +98,16 @@ function placeMark(flight) {
   mark.style.width = `${width}px`;
   mark.style.height = `${width * (620 / 480)}px`;
   mark.style.transform = `translate(${lerp(from.left, to.left)}px, ${lerp(from.top, to.top)}px)`;
-  heroCopy.style.opacity = String(1 - clamp(flight * 1.4));
-  heroCopy.style.transform = `translateY(${-flight * 60}px)`;
-  document.body.classList.toggle('arrived', flight > 0.97);
 }
 
 function frame(now) {
   const quiet = still.matches;
   const boil = Math.floor(((now - started) / 1000) * BOIL_PER_SECOND);
   const intro = quiet ? 100 : ((now - started) / 1000) * INTRO_UNITS_PER_SECOND;
-  markScene.render(Math.min(intro, 100), boil, quiet);
   const flight = inOut(clamp((progress(hero, true) - 0.04) / 0.6));
+  const shown = markFor(flight);
+  for (const copy of marks) copy.svg.style.visibility = copy === shown ? 'visible' : 'hidden';
+  shown.scene.render(Math.min(intro, 100), boil, quiet);
   placeMark(flight);
   document.body.classList.toggle('intro-done', intro > 14);
 

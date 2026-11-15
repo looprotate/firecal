@@ -72,6 +72,8 @@ body.arrived .brand-name, body.arrived .bar nav, body.intro-done .bar nav { opac
 .button:focus-visible, .bar a:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 3px; }
 
 /* The flying logo: placed every frame by main.js between the hero's slot and the bar's. */
+.mark-sitting { display: block; width: 100%; height: 100%; overflow: visible; }
+
 .mark {
   position: fixed;
   top: 0;
