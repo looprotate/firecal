@@ -4,7 +4,7 @@ import { MaplibreTerradrawControl, getDefaultModeOptions } from '@watergis/mapli
 import { areaFromRectangleCoordinates, selectionFromPolygonCoordinates } from '../app/area-input.ts';
 import type { AreaSelection } from '../app/area-input.ts';
 import { selectionOutline } from './outline.ts';
-import { MAP_COLOR_TOKENS, mapStyle, type MapColors } from './style.ts';
+import { MAP_COLOR_SOURCES, mapStyle, mixWithPaper, type MapColors } from './style.ts';
 
 setWorkerUrl(workerUrl);
 
@@ -70,14 +70,19 @@ function rectangleSelection(drawn: readonly (readonly number[])[]): AreaSelectio
 
 function tokenColors(): MapColors {
   const style = getComputedStyle(document.documentElement);
-  const read = (name: string): string => style.getPropertyValue(name).trim();
+  const read = (name: string): string => hexColor(style.getPropertyValue(name).trim());
+  const paper = read('--bg');
+  const color = (name: keyof MapColors): string => {
+    const { token, share } = MAP_COLOR_SOURCES[name];
+    return mixWithPaper(read(token), paper, share);
+  };
   return {
-    land: read(MAP_COLOR_TOKENS.land),
-    water: read(MAP_COLOR_TOKENS.water),
-    border: read(MAP_COLOR_TOKENS.border),
-    region: read(MAP_COLOR_TOKENS.region),
-    label: read(MAP_COLOR_TOKENS.label),
-    selection: read(MAP_COLOR_TOKENS.selection),
+    land: color('land'),
+    water: color('water'),
+    border: color('border'),
+    region: color('region'),
+    label: color('label'),
+    selection: color('selection'),
   };
 }
 
@@ -88,7 +93,7 @@ function inkModes(color: string): ReturnType<typeof getDefaultModeOptions> {
   const styles = {
     fillOpacity: 0,
     outlineColor: ink,
-    outlineWidth: 2,
+    outlineWidth: 3,
     coordinatePointColor: ink,
     coordinatePointOutlineColor: ink,
     closingPointColor: ink,

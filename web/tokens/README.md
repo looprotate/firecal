@@ -73,13 +73,16 @@ color that means fire. `logo.svg` takes its colors from the same generator, and 
 ## Shape, type, size, motion
 
 Flat and opaque: no gradient, blur, glow or translucency. One soft neutral shadow (`--shadow-float`, ink at 12%)
-for what floats. Borders are one physical pixel: `--hairline` is `1 / scale` (1px, 0.5px at 2x, 0.34px at 3x).
+for what floats. Panels, fields and buttons are outlined in ink by hand (`web/app/frames.ts`, with the site's
+`site/js/draw.js`); a rule between parts is one physical pixel: `--hairline` is `1 / scale` (1px, 0.5px at 2x,
+0.34px at 3x). The app's pastels (land, sea, fire) are these tokens mixed with paper, as on the site.
 Corners 10 on panels and fields, 6 on rows, buttons and thumbnails, 5 on tags; no pills, and a circle only where the
 thing is a point. The geometry is the identity: arches, circles, half circles and rectangles.
 
 SF Pro (the system face; Segoe UI on Windows) for the interface, Monaspace Neon for code and for numbers that must
 line up. Sizes 17, 14, 12 and 11; hierarchy by size and by grey, never by color. Rows 38, fields 52, icons 24,
-margins 8. Motion is a short spring (280 ms) and turns off under `prefers-reduced-motion`.
+margins 8. Motion is a short spring (280 ms); drawings trace and pop in as `docs/style.md` says; all of it turns
+off under `prefers-reduced-motion`.
 
 Light only. A dark mode, if one is ever made, is derived from these same tokens, never picked by hand.
 

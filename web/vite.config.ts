@@ -16,6 +16,8 @@ export default defineConfig({
       this.emitFile({ type: 'asset', fileName: 'service-worker.js', source: serviceWorkerSource(shell) });
     },
   }],
+  // The app draws with the site's hand (`site/js/draw.js`), one folder up.
+  server: { fs: { allow: ['..'] } },
   build: {
     outDir: 'dist',
     emptyOutDir: true,

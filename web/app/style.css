@@ -1,4 +1,15 @@
+/* The app in firecal's hand-drawn style, the same as the site (`site/style.css`) and the film: paper, ink outlines
+   traced by hand (frames.ts), pastel fills from the identity mixed with paper, and the measured ramp for the data. */
 :root {
+  --paper: var(--bg);
+  --ink: var(--text-strong);
+  --land: color-mix(in srgb, var(--healthy) 40%, var(--bg));
+  --sea: color-mix(in srgb, var(--uncertainty) 18%, var(--bg));
+  --panel: color-mix(in srgb, var(--uncertainty) 45%, var(--bg));
+  --fire: color-mix(in srgb, var(--activity) 55%, var(--bg));
+  --bar-height: 64px;
+  --gutter: clamp(16px, 4vw, 56px);
+
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-ui);
@@ -8,75 +19,115 @@
 }
 
 * { box-sizing: border-box; }
-body { margin: 0; min-width: 320px; min-height: 100vh; }
+body { margin: 0; min-width: 320px; min-height: 100vh; background: var(--bg); }
 button, input { font: inherit; color: inherit; }
 h1, h2, p { margin: 0; }
 
-:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+:focus-visible { outline: 2.5px solid var(--focus-ring); outline-offset: 3px; border-radius: var(--radius-row); }
 
+.boil-defs { position: absolute; }
+
+/* The bar, as the site's once its logo has landed. */
 .topbar {
   align-items: center;
+  background: var(--bg);
   border-bottom: var(--hairline) solid var(--line);
   display: flex;
-  gap: 16px;
-  height: 56px;
-  padding: 0 24px;
+  gap: 18px;
+  height: var(--bar-height);
+  justify-content: space-between;
+  padding: 0 var(--gutter);
 }
-.brand { align-items: center; color: var(--text-strong); display: flex; font-size: var(--text-size-input); font-weight: 600; gap: var(--margin); text-decoration: none; }
-.brand img { display: block; height: var(--icon-size); width: var(--icon-size); }
-.topbar-caption { color: var(--text-secondary); font-size: var(--text-size-small); }
+.brand { align-items: center; color: var(--ink); display: flex; font-size: 20px; font-weight: 600; gap: 10px; letter-spacing: -0.3px; text-decoration: none; }
+.drawn-logo { display: block; overflow: visible; }
+.drawn-logo .logo-fill { fill: var(--ink); }
+.drawn-logo .logo-line { fill: none; stroke: var(--ink); stroke-width: 1.4px; stroke-linejoin: round; }
+.drawn-logo .logo-dot { fill: var(--activity); }
+.topbar-caption { color: var(--text-secondary); font-size: 14px; }
 
-.workspace { margin: 0 auto; max-width: 1280px; padding: 32px 24px 24px; }
-.intro { display: grid; gap: var(--margin); margin-bottom: 24px; max-width: 640px; }
-h1 { color: var(--text-strong); font-size: 28px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.15; }
-.intro-copy { color: var(--text-secondary); line-height: 1.45; }
+.workspace { margin: 0 auto; max-width: 1320px; padding: 44px var(--gutter) 32px; }
+.intro { display: grid; gap: 14px; margin-bottom: 36px; max-width: 760px; }
+h1 { color: var(--ink); font-size: clamp(30px, 3.6vw, 50px); font-weight: 600; letter-spacing: -0.02em; line-height: 1.08; }
+.intro-copy { font-size: clamp(16px, 1.4vw, 19px); line-height: 1.5; max-width: 52ch; }
 
-.workspace-grid { display: grid; gap: 16px; grid-template-columns: minmax(320px, 0.85fr) minmax(440px, 1.15fr); }
-.panel { background: var(--bg); border: var(--hairline) solid var(--line); border-radius: var(--radius-panel); display: grid; align-content: start; gap: 16px; min-width: 0; padding: 16px; }
+.workspace-grid { display: grid; gap: 28px; grid-template-columns: minmax(320px, 0.85fr) minmax(460px, 1.15fr); align-items: start; }
+
+/* A panel is paper inside an ink outline the hand traced. */
+.panel { align-content: start; display: grid; gap: 18px; min-width: 0; padding: 22px; position: relative; }
 .panel-heading { align-items: baseline; display: flex; gap: var(--margin); justify-content: space-between; min-height: 24px; }
-h2 { align-items: center; color: var(--text-strong); display: flex; font-size: var(--text-size-input); font-weight: 600; gap: var(--margin); }
-.marker { fill: var(--text-strong); height: 10px; width: 10px; }
+h2 { align-items: center; color: var(--ink); display: flex; font-size: 20px; font-weight: 600; gap: 10px; letter-spacing: -0.01em; }
 .area-label { color: var(--text-secondary); font: var(--text-size-tiny) var(--font-code); text-align: right; }
 
-.map-frame { background: var(--bg-deep); border: var(--hairline) solid var(--line); border-radius: var(--radius-row); height: min(52vh, 460px); min-height: 300px; overflow: hidden; }
+.marker { flex: none; height: 20px; overflow: visible; width: 20px; }
+.marker .marker-line { fill: none; stroke: var(--ink); stroke-linejoin: round; stroke-width: 1.8px; }
+.marker-area .marker-fill { fill: var(--sea); }
+.marker-calendar .marker-fill { fill: var(--fire); }
+.marker-harmonization .marker-fill { fill: var(--panel); }
+
+/* Frames: an SVG behind the element, the size of it, its outline drawn by hand (frames.ts). */
+.frame-art { height: 100%; inset: 0; overflow: visible; pointer-events: none; position: absolute; width: 100%; z-index: 0; }
+.frame-art path { fill: none; stroke: var(--ink); stroke-linecap: round; stroke-linejoin: round; stroke-width: 2.5px; }
+[data-frame="field"] > .frame-art path { stroke: var(--text-secondary); stroke-width: 1.5px; }
+[data-frame="map"] > .frame-art { z-index: 3; }
+[data-frame="map"] > .frame-art path { stroke-width: 2.5px; }
+.panel > :not(.frame-art) { position: relative; z-index: 1; }
+
+.map-frame { height: min(52vh, 460px); min-height: 300px; position: relative; }
+.map { border-radius: 8px; height: 100%; inset: 2px; overflow: hidden; position: absolute; width: auto; }
 .maplibregl-canvas { outline: none; }
-.maplibregl-ctrl-group { background: var(--bg); border-radius: var(--radius-row); box-shadow: var(--shadow-float); }
+.maplibregl-ctrl-group { background: var(--bg); border-radius: var(--radius-row); box-shadow: none; border: 2px solid var(--ink); }
+.maplibregl-ctrl-group button + button { border-top: 1.5px solid var(--line); }
 .maplibregl-ctrl-attrib.maplibregl-compact { background: var(--bg); color: var(--text-secondary); }
 
-.area-form { display: grid; gap: 12px; }
-.coordinate-fields { display: grid; gap: var(--margin); grid-template-columns: repeat(4, minmax(0, 1fr)); }
-.coordinate-fields label { color: var(--text-secondary); display: grid; font-size: var(--text-size-tiny); gap: 4px; }
-.coordinate-fields input {
-  background: var(--surface);
-  border: var(--hairline) solid var(--line);
-  border-radius: var(--radius-row);
-  color: var(--text-strong);
+.area-form { display: grid; gap: 14px; }
+.coordinate-fields { display: grid; gap: 10px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.coordinate-fields label { color: var(--text-secondary); display: grid; font-size: var(--text-size-small); font-weight: 500; gap: 6px; }
+.field { display: block; position: relative; }
+.field input {
+  appearance: textfield;
+  background: transparent;
+  border: 0;
+  color: var(--ink);
   font-family: var(--font-code);
   font-size: var(--text-size-row);
   height: var(--row-height);
   min-width: 0;
-  padding: 0 10px;
+  padding: 0 11px;
+  position: relative;
+  width: 100%;
+  z-index: 1;
 }
-.coordinate-fields input { appearance: textfield; }
-.coordinate-fields input::-webkit-inner-spin-button, .coordinate-fields input::-webkit-outer-spin-button { appearance: none; margin: 0; }
+.field input:focus-visible { outline: none; }
+.field:focus-within > .frame-art path { stroke: var(--ink); stroke-width: 2.5px; }
+.field input::-webkit-inner-spin-button, .field input::-webkit-outer-spin-button { appearance: none; margin: 0; }
 .form-actions, .pin-region { align-items: center; display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; }
-.pin-region { border-top: var(--hairline) solid var(--line); padding-top: 16px; }
+.pin-region { padding-top: 4px; }
 .area-status { color: var(--error); font-size: var(--text-size-small); }
 .pin-status { color: var(--text-secondary); flex: 1 1 200px; font-size: var(--text-size-small); }
 
+/* Buttons: paper inside a traced outline; the primary one, and a pressed one, filled with ink. */
 button {
-  background: var(--surface);
-  border: var(--hairline) solid var(--line);
-  border-radius: var(--radius-row);
-  color: var(--text-strong);
+  background: transparent;
+  border: 0;
+  color: var(--ink);
   cursor: pointer;
+  font-weight: 600;
   height: var(--row-height);
-  padding: 0 14px;
+  isolation: isolate;
+  padding: 0 16px;
+  position: relative;
 }
-button:hover { background: var(--raised); }
+button > .frame-art { z-index: -1; }
+button > .frame-art path { fill: var(--bg); stroke-width: 2px; }
+button:hover > .frame-art path { fill: var(--bg-deep); }
 button:disabled { color: var(--disabled); cursor: default; }
-button.primary { background: var(--text-strong); border-color: var(--text-strong); color: var(--bg); margin-left: auto; }
-button.primary:hover { background: var(--text); }
+button:disabled > .frame-art path { stroke: var(--disabled); }
+button:focus-visible { outline: none; }
+button:focus-visible > .frame-art path { stroke-width: 3.5px; }
+:is(button.primary, button[aria-pressed="true"]) { color: var(--bg); }
+:is(button.primary, button[aria-pressed="true"]) > .frame-art path { fill: var(--ink); }
+button.primary { margin-left: auto; padding: 0 20px; }
+button.primary:hover > .frame-art path { fill: var(--text); }
 
 .refused { animation: refused var(--motion-duration) var(--motion-ease); }
 @keyframes refused {
@@ -86,20 +137,37 @@ button.primary:hover { background: var(--text); }
 }
 
 .calendar-mount { min-height: 120px; }
-.harmonization { margin-top: 16px; }
-.runtime-status { border-top: var(--hairline) solid var(--line); color: var(--text-secondary); display: block; font-size: var(--text-size-small); padding-top: 12px; }
-.page-footer { color: var(--text-secondary); display: flex; flex-wrap: wrap; font-size: var(--text-size-tiny); gap: var(--margin); justify-content: space-between; padding: 16px 2px 0; }
+.harmonization { margin-top: 28px; }
+.runtime-status { color: var(--text-secondary); display: block; font-size: var(--text-size-small); }
+.page-footer { color: var(--text-secondary); display: flex; flex-wrap: wrap; font-size: var(--text-size-small); gap: var(--margin); justify-content: space-between; padding: 28px 2px 0; }
 
-@media (max-width: 900px) {
+/* Drawing in: the intro rises, frames trace themselves, a marker fills after its outline. The boil (boil.ts) moves
+   whatever is drawing a pixel or two until it settles. */
+@media (prefers-reduced-motion: no-preference) {
+  .intro > * { animation: rise 400ms ease-out both; }
+  .intro > :nth-child(2) { animation-delay: 80ms; }
+  .frame-drawing > .frame-art path { stroke-dasharray: 1; animation: trace 650ms ease-in-out both; }
+  button.frame-drawing > .frame-art path { animation: trace 650ms ease-in-out both, fill-in 650ms ease-in both; }
+  .marker .marker-line, .drawn-logo .logo-line { stroke-dasharray: 1; animation: trace 600ms ease-in-out both 150ms; }
+  .marker .marker-fill, .drawn-logo :is(.logo-fill, .logo-dot) { animation: pop 380ms cubic-bezier(0.2, 0.9, 0.3, 1.25) both 550ms; transform-box: fill-box; transform-origin: center; }
+  .drawn-logo .logo-dot { animation-delay: 750ms; }
+  :is(.frame-drawing > .frame-art, .entering svg, .leaving svg) { filter: url(#boil); }
+}
+
+@keyframes trace { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes fill-in { from { fill-opacity: 0; } }
+@keyframes pop { from { transform: scale(0); } }
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } }
+
+@media (max-width: 960px) {
   .workspace-grid { grid-template-columns: 1fr; }
   .map-frame { height: 42vh; }
 }
 
 @media (max-width: 560px) {
-  .topbar { padding: 0 16px; }
   .topbar-caption { display: none; }
-  .workspace { padding: 20px 16px 16px; }
-  h1 { font-size: 22px; }
+  .workspace { padding-top: 28px; }
+  .panel { padding: 16px; }
   .coordinate-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .panel-heading { align-items: start; flex-direction: column; }
   .area-label { text-align: left; }
