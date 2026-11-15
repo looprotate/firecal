@@ -57,6 +57,9 @@ Record: `cell: u32`, `count: u32` (detections kept), `frp_mw_sum: f32` (fire rad
   0, 1, 2 scale in raster products). MODIS is a number from 0 to 100; FIRMS groups it as low below 30, nominal 30
   to 79 and high from 80 (confirm against the MODIS C6/C6.1 user guide).
 - **Kept detections:** nominal and high for both sensors; low is dropped. Day and night are both kept.
+- **Negative FRP:** a few rows of the public files have a negative `frp` (159 of 16.6 million in the Australia
+  archive, 2000 to 2020). The detection is kept and its power counts as 0 MW: below zero has no physical meaning,
+  and dropping the row would also drop a count.
 - **Type:** keep presumed vegetation fire (`type` 0). Volcanoes (1) and offshore sources (3) are dropped. Other
   static land sources (2, such as gas flares) are an open question for the team; the default is to drop them.
 - **Standard versus near real time.** Use the **standard** (science quality) product for every month it covers.
