@@ -32,6 +32,23 @@ Months across, years down, one cell per month of a Series. It draws; every numbe
 - **Legend** under the readout: the empty cell and the seven steps from none to most, then a cell with each mark and
   what it means in words. It is drawn from the same classes as the cells.
 
+## Accessibility, checked by hand (2026-11-14)
+
+- **Keyboard:** Tab reaches the map, its two drawing tools and zoom, the four coordinates, "Use this area", "Pin for
+  offline use", the plane switch and the files when the core answers, one cell of the calendar (the newest), the
+  analog years and "Save as SVG", in that order. Arrows, Home, End, PageUp and PageDown move inside the calendar; the
+  focus ring is ink, offset from the cell, and shows on every step.
+- **Screen readers:** every cell is a grid cell whose label says the month, the value, the estimated uncertainty, and
+  "provisional" or "unusual" when it is; the strip is a list whose items are sentences; the legend is a list of words.
+  The readout under the grid is not a live region: it repeats what the focused cell already says.
+- **Contrast:** every visible text measured against its real background reaches 4.5:1 (smallest, error text on a
+  field, 4.51:1); the ramp, the marks and the meaning colors are proven at 3:1 by `web/tokens/ramp.test.mjs`.
+- **Without color:** in grayscale the ramp keeps its order and both marks stand out on every step; unusual and
+  provisional are shapes in fixed corners and words in the labels; before and after in the figure are rings and dots.
+- **Motion:** the only animation, the shake of a refused entry, turns off under `prefers-reduced-motion`.
+- **Not tested:** VoiceOver, NVDA and Windows High Contrast; drawing on the map needs a pointer, and typed coordinates
+  are the keyboard path to the same area.
+
 ```
 node --test web/calendar
 ```

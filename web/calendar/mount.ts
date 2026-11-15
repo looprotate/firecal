@@ -40,7 +40,6 @@ export function mountCalendar(container: HTMLElement, series: CalendarSeries, ac
   let grid: Grid = buildGrid(series);
   const readout = document.createElement('p');
   readout.className = 'calendar-readout';
-  readout.setAttribute('aria-live', 'polite');
   const host = document.createElement('div');
   host.className = 'calendar';
   const legend = document.createElement('div');
