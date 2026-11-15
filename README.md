@@ -10,6 +10,9 @@ counts or fire radiative power. A month is flagged unusual only when it clears i
 years; the past years most like this one are listed; the numbers download as CSV; and a pinned region keeps
 answering with no network.
 
+The 30-second demo is the film attached to the
+[space-apps-2026 release](https://github.com/looprotate/firecal/releases/tag/space-apps-2026).
+
 The data is NASA FIRMS: MODIS Collection 6.1 and VIIRS 375 m active-fire hotspots. A hotspot is a thermal anomaly
 seen from orbit, not a fire or a burned area.
 
