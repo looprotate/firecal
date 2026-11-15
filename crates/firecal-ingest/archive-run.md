@@ -102,8 +102,9 @@ were changed. Existing tests and the mandatory `cargo xtask ready` gate apply.
 
 ## Deliverables
 
-The Uruguay 2023–2025 aggregates are attached to the draft data release
-`data-uruguay-2023-2025-20261114`; the measured numbers above are in `pitch/numbers.md`.
+The Uruguay 2023–2025 aggregates are in Dre's ignored `data/handoffs/uruguay-2023-2025-aggregates.tar.gz`; the
+draft release `data-uruguay-2023-2025-20261114` has no files attached (checked 2026-11-15), so they are rebuilt from
+the public files with the commands above. The measured numbers are in `pitch/numbers.md`.
 The shared checkout has `data/aggregates/` and `data/handoffs/` ready locally.
 
 The remote regional handoff is stored in a draft data release:
