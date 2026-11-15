@@ -1,3 +1,4 @@
+import { filterCsvPeriod, type MonthRange } from './period.ts';
 import type { AnalysisQuery, Firecal, TileFile } from '../../wasm/load.ts';
 import type { Area, Series } from './series.ts';
 
@@ -47,7 +48,8 @@ export function seriesForArea(firecal: Firecal, area: Area, options: WasmHistory
   assertOk(values.status, 'area series');
   const comparison = firecal.comparison(query);
   assertOk(comparison.status, 'comparison');
-  const analogs = firecal.analogs(query, ANALOG_LIMIT);
+  const canFindAnalogs = options.baselineLast < options.seasonYear && (options.seasonYear - 2000) * 12 >= options.firstMonth;
+  const analogs = canFindAnalogs ? firecal.analogs(query, ANALOG_LIMIT) : { status: 0, analogs: [] };
   assertOk(analogs.status, 'analogs');
 
   const median = Array.from({ length: 12 }, () => Number.NaN);
@@ -77,11 +79,12 @@ export function csvFiles(
   firecal: Firecal,
   query: AnalysisQuery,
   polygon: boolean,
+  period?: MonthRange,
 ): { series(): Uint8Array; cells?(): Uint8Array } {
   const series = (): Uint8Array => {
     const answer = firecal.seriesCsv(query);
     assertOk(answer.status, 'series.csv');
-    return answer.text;
+    return period ? filterCsvPeriod(answer.text, period) : answer.text;
   };
   if (polygon) return { series };
   return {
@@ -89,7 +92,7 @@ export function csvFiles(
     cells: () => {
       const answer = firecal.cellsCsv(query);
       assertOk(answer.status, 'cells.csv');
-      return answer.text;
+      return period ? filterCsvPeriod(answer.text, period) : answer.text;
     },
   };
 }

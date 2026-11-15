@@ -22,7 +22,7 @@ export interface ToolbarParts {
   cells: boolean;
 }
 
-const PLANES: [Plane, string][] = [['count', 'Count'], ['energy', 'Energy']];
+const PLANES: [Plane, string][] = [['count', 'Hotspot count'], ['energy', 'Radiative power']];
 
 /** The controls above the calendar, or nothing when the page offers no action. */
 export function renderToolbar(plane: Plane, parts: ToolbarParts): string {
@@ -31,10 +31,10 @@ export function renderToolbar(plane: Plane, parts: ToolbarParts): string {
       `<button type="button" data-plane="${name}" aria-pressed="${name === plane}">${label}</button>`).join('')}</div>`
     : '';
   const cells = parts.cells
-    ? '<button type="button" data-file="cells" aria-label="Download cells.csv">cells.csv</button>'
+    ? '<button type="button" data-file="cells" aria-label="Download cells.csv">Grid CSV ↓</button>'
     : '<span class="calendar-note">cells.csv is for rectangles</span>';
   const files = parts.csv
-    ? `<div class="calendar-files"><button type="button" data-file="series" aria-label="Download series.csv">series.csv</button>${cells}</div>`
+    ? `<div class="calendar-files"><button type="button" data-file="series" aria-label="Download series.csv">Monthly CSV ↓</button>${cells}</div>`
     : '';
   return planes || files ? `<div class="calendar-toolbar">${planes}${files}</div>` : '';
 }

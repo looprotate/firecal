@@ -139,6 +139,7 @@ export function mountCalendar(container: HTMLElement, series: CalendarSeries, ac
   host.addEventListener('focusin', onFocusIn);
   host.addEventListener('focusout', onFocusOut);
   host.addEventListener('mouseover', onFocusOrHover);
+  host.addEventListener('click', onFocusOrHover);
   host.addEventListener('mouseleave', onLeave);
   host.addEventListener('keydown', onKeyDown);
   draw();
@@ -153,6 +154,7 @@ export function mountCalendar(container: HTMLElement, series: CalendarSeries, ac
       host.removeEventListener('focusin', onFocusIn);
       host.removeEventListener('focusout', onFocusOut);
       host.removeEventListener('mouseover', onFocusOrHover);
+      host.removeEventListener('click', onFocusOrHover);
       host.removeEventListener('mouseleave', onLeave);
       host.removeEventListener('keydown', onKeyDown);
       toolbar.removeEventListener('click', onToolbarClick);

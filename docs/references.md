@@ -91,3 +91,43 @@ Add a line when you use anything from outside the team: data, a library, a metho
   NASA FIRMS source requests and retrieval timestamps are retained in the release
   manifests; no credentials or raw records are copied into git.
   https://github.com/looprotate/firecal/releases/tag/data-south-america-2026-20261114
+
+## Site photography
+
+- Nathan Stephenson / USGS Western Ecological Research Center, “Fire at Night”: real photograph of a forest wildfire in the western United States, used without a watermark only behind the Site title. Public Domain. The photograph is illustrative; the calendar demo is south-east Australia. https://www.usgs.gov/media/images/fire-night
+
+## Continent shortcuts
+
+- United Nations Statistics Division M49: country grouping for the continent picker. Russia is assigned once to Europe; China is the largest country by area in the resulting Asia group. Canada, Brazil, Algeria and Australia are the largest countries by area in the other selected groups. Central America is excluded; Antarctica has no national capital. https://unstats.un.org/unsd/methodology/m49/overview/
+- Capital-city shortcuts: Ottawa, Brasília, Beijing, Moscow, Algiers and Canberra; each opens a four-degree box around a rounded city-center coordinate. Location shortcuts do not imply data coverage.
+
+## Donation destinations
+
+Official pages checked on 2026-11-15, linked once each from the Site. These are external contribution pages; firecal does not collect donations or process payments.
+
+- One Tree Planted Wildfire Fund: post-fire reforestation where natural regeneration is not possible. https://onetreeplanted.org/products/wildfire-fund
+- Direct Relief wildfire response: emergency medical support in the United States. https://www.directrelief.org/emergency/wildfire/
+- National Forest Foundation: broader forest conservation including wildfire recovery, reforestation and watershed restoration. https://www.nationalforests.org/donate-support/
+- Fundación Bomberos de Argentina: general support for volunteer firefighter programs; not restricted to wildfires. https://fundacionbomberos.org.ar/dona
+
+## Tree-and-flame brand mark
+
+- AI-assisted original logo generated with OpenAI image generation in this conversation. The user selected concept 3 (pine and terracotta flame). An isolated transparent PNG is used as the header logo and favicon, and the same header image travels from the center of the welcome screen to its final slot. Source contact sheet and original isolated output are retained outside the source repository; the shipped asset is web/public/branding/firecal-tree.png. No NASA branding is used.
+
+## Six capital regions: published historical tiles
+
+- NASA FIRMS public country archive, retrieved 2026-11-15: https://firms.modaps.eosdis.nasa.gov/data/country/
+- Added 208 MODIS and VIIRS Suomi NPP country/year CSVs for 2012–2019 (3,362,513,202 bytes), covering Canada, United States, Brazil, Russia, China, Mongolia, Belarus, Ukraine, Algeria, Tunisia, Libya, Spain and Italy. Neighboring-country inputs fill the same ten-degree tiles as the target capitals; they are not separate countrywide coverage promises.
+- Six new tiles: (4,10), (10,13), (4,29), (5,29), (3,21), (5,18). Together with seven Australian tiles they support four-degree boxes around Ottawa, Brasília, Beijing, Moscow, Algiers and Canberra. The published coverage catalog identifies exact tile boundaries and shared month spans; unknown neighbors are rejected rather than treated as zero observations.
+- Native firecal ingestion and harmonization use MODIS Terra and Suomi NPP; calibration fits through 2018-12 and excludes 2019. Added archives span 2012-01–2019-12; Australian data retains 2000-11–2019-12. These are historical records, not current wildfire tracking. Product versions vary across MODIS country archives; harmonized values and estimated uncertainty are exploratory. No observation-effort correction is applied.
+- Deployment DATA-PROVENANCE.json records generated-file hashes and SOURCE-ARCHIVES.json records raw input checksums. Large raw files and runtime tile binaries are excluded from source Git.
+- Period selection retains earlier records for historical context, truncates all analysis at the chosen end month, and exports only the displayed interval. Comparison uses a shared interval, reference years and color scale; absolute totals are not area-normalized. The first available year has no historical baseline and explicitly says so.
+
+## Team visual reference
+
+- User-supplied firecal.rar (received 2026-11-15), HTML/CSS visual mockup attributed by the user to a teammate's Figma. Used only for the forest-dark palette, larger editorial typography, card geometry and spacing. The original application, real data, scientific ramp, routes, translations and controls are retained; mockup statistics, stylized map, download handlers and page structure are not imported. Existing USGS public-domain photography and the approved transparent logo are retained.
+
+## Screen structure and supplied photograph
+
+- The user clarified that the supplied firecal.rar controls screen structure, layout and the single background photograph; existing Firecal information and working tools take priority. Six public screens follow index.html, explorer.html, approach.html, data.html, about.html and support.html. Screen navigation preserves the mounted scientific application and its query state. Direct static entry pages and offline navigation use the same built application.
+- The supplied assets/forest-hero.png is used unchanged as web/public/photography/forest-hero.png, replacing the previous USGS photograph. Its source is the user-supplied archive, not the former USGS credit. The footer is plain as in the supplied design. The original file remains in the received archive; the previous image is retained outside the published build.

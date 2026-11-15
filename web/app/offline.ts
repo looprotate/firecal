@@ -121,3 +121,12 @@ export async function readRegionTiles(
   }
   return result;
 }
+
+/** Reads pinned tiles only, retaining the field calendar's offline-only query API. */
+export async function readPinnedRegion(
+  area: Area,
+  storage: Pick<CacheStorage, 'open'> = globalThis.caches,
+): Promise<CachedTile[]> {
+  const result = await readRegionTiles(area, storage, async () => new Response(null, { status: 404 }));
+  return result.tiles;
+}

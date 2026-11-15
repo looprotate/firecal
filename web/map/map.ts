@@ -4,7 +4,7 @@ import { MaplibreTerradrawControl, getDefaultModeOptions } from '@watergis/mapli
 import { areaFromRectangleCoordinates, selectionFromPolygonCoordinates } from '../app/area-input.ts';
 import type { AreaSelection } from '../app/area-input.ts';
 import { selectionOutline } from './outline.ts';
-import { MAP_COLOR_TOKENS, mapStyle, type MapColors } from './style.ts';
+import { MAP_COLOR_TOKENS, SELECTION_FILL, mapStyle, type MapColors } from './style.ts';
 
 setWorkerUrl(workerUrl);
 
@@ -13,6 +13,8 @@ export interface AreaMap {
   map: Map;
   /** Outlines the area (or the polygon inside it) and frames it. */
   showSelection(selection: AreaSelection): void;
+  /** Tints the selection only when a real monthly query is available. */
+  setActivity(color: string | null): void;
 }
 
 /** Creates the map, the rectangle and polygon tools, and the outline of the selected area. */
@@ -39,7 +41,16 @@ export function createAreaMap(container: HTMLElement, onSelected: (selection: Ar
     fitBounds: (bounds, options) => map.fitBounds(bounds, options),
   });
 
+  let activity: string | null = null;
+  let loaded = false;
+  const paintActivity = (): void => {
+    if (!loaded) return;
+    map.setPaintProperty(SELECTION_FILL, 'fill-color', activity ?? colors.selection);
+    map.setPaintProperty(SELECTION_FILL, 'fill-opacity', activity === null ? 0 : 0.38);
+  };
   map.once('load', () => {
+    loaded = true;
+    paintActivity();
     outline.ready();
     const terraDraw = drawing.getTerraDrawInstance();
     terraDraw?.on('finish', (id, context) => {
@@ -51,7 +62,7 @@ export function createAreaMap(container: HTMLElement, onSelected: (selection: Ar
       if (selection) onSelected(selection);
     });
   });
-  return { map, showSelection: outline.show };
+  return { map, showSelection: outline.show, setActivity(color) { activity = color; paintActivity(); } };
 }
 
 /** The drawing buttons carry only a title; give them the names a screen reader says. */
@@ -78,6 +89,11 @@ function tokenColors(): MapColors {
     region: read(MAP_COLOR_TOKENS.region),
     label: read(MAP_COLOR_TOKENS.label),
     selection: read(MAP_COLOR_TOKENS.selection),
+    forest: read(MAP_COLOR_TOKENS.forest),
+    park: read(MAP_COLOR_TOKENS.park),
+    farmland: read(MAP_COLOR_TOKENS.farmland),
+    road: read(MAP_COLOR_TOKENS.road),
+    highway: read(MAP_COLOR_TOKENS.highway),
   };
 }
 

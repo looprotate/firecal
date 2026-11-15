@@ -1,0 +1,11 @@
+/** Distinct official destinations for donations; contributions happen directly with the organizations. */
+export const SUPPORT_INFO = `
+<section class="project-section support-section" id="support" aria-labelledby="support-title">
+  <div class="project-heading"><p class="eyebrow">HELP BEYOND THE MAP</p><h2 id="support-title">Support wildfire recovery.</h2><p class="support-intro">Choose the kind of help you want to support: forest recovery, medical response or volunteer firefighters.</p></div>
+  <div class="support-grid">
+    <article class="support-card"><span class="support-category">Reforestation</span><h3>One Tree Planted</h3><p>Its Wildfire Fund supports reforestation in fire-affected forests where natural regeneration is not possible.</p><a href="https://onetreeplanted.org/products/wildfire-fund" target="_blank" rel="noopener noreferrer">Support the Wildfire Fund ↗</a></article>
+    <article class="support-card"><span class="support-category">Emergency medical aid · United States</span><h3>Direct Relief</h3><p>Supports health providers responding to wildfires with medicines, protective equipment and emergency supplies.</p><a href="https://www.directrelief.org/emergency/wildfire/" target="_blank" rel="noopener noreferrer">Support wildfire response ↗</a></article>
+    <article class="support-card"><span class="support-category">Forest restoration · United States</span><h3>National Forest Foundation</h3><p>Supports national forest conservation, including wildfire recovery, reforestation and watershed restoration. Donations support its broader conservation work.</p><a href="https://www.nationalforests.org/donate-support/" target="_blank" rel="noopener noreferrer">Support forest restoration ↗</a></article>
+    <article class="support-card"><span class="support-category">Volunteer fire services · Argentina</span><h3>Fundación Bomberos de Argentina</h3><p>Supports volunteer firefighters through prevention and support programs. This is general support for firefighters, not a wildfire-only fund.</p><a href="https://fundacionbomberos.org.ar/dona" target="_blank" rel="noopener noreferrer">Support volunteer firefighters ↗</a></article>
+  </div><p class="support-note">Donations are completed on each organization’s own website. firecal does not collect payments.</p>
+</section>`;

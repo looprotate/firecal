@@ -38,21 +38,29 @@ const useArea = (west, south, east, north) => `(() => {
 })()`;
 const januaryCell = `document.querySelector('.calendar-grid [aria-label^="January 2003"]')?.getAttribute('aria-label')`;
 
-const host = await serve(dist, { '/tiles/t_7_18.bin': fixtureTile(), '/firecal.wasm': wasm });
+const fixtureCoverage = Buffer.from(JSON.stringify({version:1,tiles:[{row:7,col:18,firstMonth:0,months:MONTHS}]}));
+const host = await serve(dist, { '/tiles/t_7_18.bin': fixtureTile(), '/tiles/coverage.json': fixtureCoverage, '/firecal.wasm': wasm });
+const entry = host.origin + '/explorer.html?v=1&box=0,10,0.25,10.25';
 const { page, close } = await openPage();
 try {
-  await page.navigate(host.origin);
-  await page.waitFor(`document.querySelector('#runtime-status')?.textContent.includes('hand-made sample')`);
+  await page.navigate(entry);
+  await page.waitFor(`document.querySelector('#data-source')?.hasAttribute('data-real') || document.querySelector('#pin-status')?.textContent.startsWith('Pinned')`);
   await page.waitFor(`navigator.serviceWorker.ready.then(() => Boolean(navigator.serviceWorker.controller))`);
 
   await page.evaluate(useArea(0, 10, 0.25, 10.25));
-  assert.equal(await page.waitFor(januaryCell), EXPECTED, 'online, from the published tile');
   await page.evaluate(`document.querySelector('#pin-region').click()`);
-  await page.waitFor(`document.querySelector('#pin-status')?.textContent.startsWith('Pinned 1 tile')`);
+  assert.equal(await page.waitFor(januaryCell), EXPECTED, 'online, after pinning');
+
+  for (const [language, expected] of [['es', 'Elige tu zona'], ['de', 'Gebiet auswählen'], ['fr', 'Choisissez votre zone'], ['zh', '选择区域'], ['en', 'Choose your area']]) {
+    await page.evaluate(`(() => { const select = document.querySelector('#language-select'); select.value = '${language}'; select.dispatchEvent(new Event('change')); })()`);
+    assert.ok((await page.evaluate(`document.querySelector('#area-title').textContent`)).includes(expected), language + ' heading');
+    assert.equal(await page.evaluate(`document.documentElement.lang`), language === 'zh' ? 'zh-CN' : language);
+  }
+  assert.equal(await page.waitFor(januaryCell), EXPECTED, 'language changes preserve and restore the scientific description');
 
   await host.stop();
-  await page.navigate(host.origin);
-  await page.waitFor(`document.querySelector('#runtime-status')?.textContent.includes('hand-made sample')`);
+  await page.navigate(entry);
+  await page.waitFor(`document.querySelector('#data-source')?.hasAttribute('data-real') || document.querySelector('#pin-status')?.textContent.startsWith('Pinned')`);
   const network = await page.evaluate(`fetch('/not-stored-' + Date.now()).then(() => 'up', () => 'down')`);
   assert.equal(network, 'down', 'the host is stopped');
   await page.evaluate(useArea(0, 10, 0.2, 10.2));

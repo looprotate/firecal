@@ -1,0 +1,5 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {sharedUrl,parseSharedQuery} from './share-query.ts';
+const area={west:147,south:-38,east:151,north:-34};
+test('shared rectangles preserve area, period, month and measurement mode',()=>{const query={area,plane:'energy',period:{first:144,last:239},month:230};const url=new URL(sharedUrl('https://example.org/?old=1#support',query));assert.equal(url.hash,'');assert.ok(!url.searchParams.has('old'));assert.deepEqual(parseSharedQuery(url.search),query);});
+test('polygons keep their exact vertices and bounding box',()=>{const polygon=[[-38,147],[-34,149],[-38,151]];const query={area:{...area},polygon,plane:'count'};assert.deepEqual(parseSharedQuery(new URL(sharedUrl('https://example.org',query)).search),query);});
+test('malformed or oversized shared parameters are rejected',()=>{for(const input of ['?v=1&box=0,0,1,1&mode=bad','?v=1&box=1,0,0,1&mode=count','?v=1&box=0,0,1,1&mode=count&from=2020-01&to=2019-01','?v=1&box=0,0,1,1&mode=count&poly=[]','x'.repeat(13000)])assert.equal(parseSharedQuery(input),null);});

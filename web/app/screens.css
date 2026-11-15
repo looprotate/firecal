@@ -1,0 +1,76 @@
+/* Shared page proportions and separate screens follow the team's supplied archive. */
+.screen { min-height: calc(100dvh - 200px); }
+.screen-head { padding: 145px max(7%, calc((100% - 1216px) / 2)) 60px; background: #252e28; border-bottom: 1px solid var(--line); }
+.screen-head .eyebrow { color: var(--text-secondary); }
+.screen-head h1 { font-size: clamp(38px, 4.4vw, 64px); line-height: 1.05; letter-spacing: -.045em; max-width: 900px; margin-bottom: 0; }
+.screen > .project-section, .screen > .method, .screen > .harmonization, .screen > .workspace-grid,
+.screen > .explorer-topline, .home-overview, .screen-home > .quick-steps { width: calc(100% - 14%); max-width: 1238px; margin-inline: auto; }
+.screen > .project-section, .screen > .method { margin-top: 50px; margin-bottom: 64px; }
+.screen > .harmonization { margin-bottom: 60px; }
+.screen > .workspace-grid { margin-top: 0; margin-bottom: 65px; }
+.screen > .explorer-topline { margin-top: 25px; }
+.screen-home { min-height: 0; }
+.home-overview { display: grid; grid-template-columns: 1fr 1fr; align-items: start; gap: 60px; padding: 60px 0 90px; }
+.home-overview h2 { display: block; font-size: clamp(36px,4vw,56px); font-weight: 450; letter-spacing: -.045em; margin: 18px 0 24px; }
+.home-overview p:not(.eyebrow) { font-size: 16px; color: var(--text-secondary); line-height: 1.8; margin-top: 12px; }
+.home-feature-grid { display: grid; gap: 20px; }
+.home-feature-grid article { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 28px; }
+.home-feature-grid h3 { font-size: 19px; font-weight: 550; }
+.home-feature-grid p:not(.eyebrow) { font-size: 13px; }
+.screen > .project-section > .project-heading { display: none; }
+.page-footer { width: 100%; margin: 0; border-radius: 0; padding: 42px 7%; background: #172019; }
+.page-footer::before { display: none; }
+.screen-approach .method { display: block; background: var(--raised); }
+.screen-approach .method-intro { max-width: 800px; }
+.screen-approach .method-intro > p:not(.eyebrow) { max-width: 700px; font-size: 15px; }
+.screen-approach .method-notes { grid-template-columns: repeat(3,minmax(0,1fr)); margin-top: 35px; }
+.screen-approach .method-notes article { grid-template-columns: 1fr; }
+.screen-data .project-columns, .screen-about .project-columns { gap: 30px; }
+.screen-about .project-columns article { padding: 25px; border: 1px solid var(--line); border-radius: 16px; background: var(--bg); }
+.topbar nav a[aria-current=page] { color: #ffffff; }
+.topbar nav a[aria-current=page]::after { content: ''; position: absolute; left: 0; right: 0; bottom: -12px; height: 2px; background: var(--activity); }
+.topbar nav { column-gap: 26px; }
+.explorer-guide { display: inline-block; margin: 10px 0 18px; font-size: 12px; }
+@media(max-width:1100px) { .screen-head { padding-top: 160px; padding-bottom: 45px; } .home-overview { gap: 30px; } .topbar nav a[aria-current=page]::after { bottom: -5px; } }
+@media(max-width:760px) {
+  .screen > .project-section, .screen > .method, .screen > .harmonization, .screen > .workspace-grid, .screen > .explorer-topline, .home-overview, .screen-home > .quick-steps { width: 90%; }
+  .screen-head { padding-inline: 5%; } .screen-head h1 { font-size: 42px; }
+  .home-overview { grid-template-columns: 1fr; padding: 35px 0 60px; }
+  .screen-approach .method-notes { grid-template-columns: 1fr; }
+  .screen > .project-section, .screen > .method { margin-top: 30px; margin-bottom: 40px; }
+}
+.menu-toggle { display: none; }
+.home-context { background: var(--field-green); padding: 65px max(7%, calc((100% - 1216px) / 2)); display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 65px; }
+.home-context h2 { font-size: clamp(34px,4vw,56px); font-weight: 450; line-height: 1.1; letter-spacing: -.04em; display: block; margin: 20px 0; }
+.home-context p:not(.eyebrow) { color: #d4e1d1; font-size: 16px; line-height: 1.8; }
+.home-context blockquote { margin: 0; border: 1px solid #66806a; border-radius: 18px; padding: 36px; font: italic 26px/1.4 Georgia,serif; background: #2a4432; }
+@media(max-width:1100px) {
+  .topbar { height: 76px; grid-template-columns: auto 1fr auto auto; padding-block: 0; }
+  .topbar .language-control { grid-column: 3; }
+  .menu-toggle { display: block; grid-column: 4; grid-row: 1; border: 0; font-size: 23px; padding-inline: 9px; }
+  .topbar nav { display: none; position: absolute; inset: 76px 0 auto; padding: 18px 5%; background: var(--bg-deep); border-bottom: 1px solid var(--line); }
+  .topbar nav a { padding: 12px 0; font-size: 14px; }
+  .topbar nav a[aria-current=page]::after { display: none; }
+  .screen-head { padding-top: 132px; }
+  .home-context { gap: 30px; }
+}
+@media(max-width:760px) { .home-context { grid-template-columns: 1fr; padding: 45px 7%; } }
+
+.navigation-drawer {
+  position: fixed; inset: 0 0 0 auto; margin: 0 0 0 auto;
+  width: min(390px, 88vw); height: 100dvh; max-width: none; max-height: none;
+  padding: 28px; border: 0; border-left: 1px solid var(--line); border-radius: 0;
+  background: var(--bg-deep); color: var(--text); overflow-y: auto;
+  box-shadow: -20px 0 60px rgb(0 0 0 / 24%);
+}
+.navigation-drawer[open] { animation: navigation-enter 240ms ease-out; }
+.navigation-drawer::backdrop { background: rgb(7 15 8 / 65%); }
+.navigation-drawer-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-bottom: 25px; border-bottom: 1px solid var(--line); }
+.navigation-drawer-heading h2 { font-size: 20px; font-weight: 550; }
+.navigation-drawer-close { width: 42px; height: 42px; padding: 0; border-radius: 50%; font-size: 27px; line-height: 1; }
+.navigation-drawer nav { display: flex; flex-direction: column; gap: 8px; margin-top: 25px; }
+.navigation-drawer nav a { padding: 15px 16px; color: var(--text); text-decoration: none; font-size: 16px; border-radius: 9px; }
+.navigation-drawer nav a:hover { background: var(--raised); }
+.navigation-drawer nav a[aria-current=page] { background: var(--field-green); color: #ffffff; }
+@keyframes navigation-enter { from { transform: translateX(100%); } to { transform: translateX(0); } }
+@media(prefers-reduced-motion:reduce) { .navigation-drawer[open] { animation: none; } }

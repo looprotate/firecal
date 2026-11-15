@@ -48,7 +48,8 @@ export function buildGrid(series: CalendarSeries): Grid {
   const firstYear = yearOfMonthIndex(first);
   const lastYear = yearOfMonthIndex(first + count - 1);
   const years = Array.from({ length: lastYear - firstYear + 1 }, (_, at) => firstYear + at);
-  const max = series.value.reduce((largest, value) => Math.max(largest, value), 0);
+  const ownMax = series.value.reduce((largest, value) => Math.max(largest, value), 0);
+  const max = series.scale_max !== undefined && Number.isFinite(series.scale_max) && series.scale_max > 0 ? series.scale_max : ownMax;
   const provisionalFrom = series.provisional_from ?? Number.POSITIVE_INFINITY;
 
   const rows: (Cell | null)[][] = years.map(() => Array.from({ length: 12 }, () => null));

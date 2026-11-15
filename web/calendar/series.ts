@@ -4,6 +4,8 @@
  */
 export interface CalendarSeries {
   plane: 'count' | 'energy';
+  /** Optional shared presentation scale when comparing two areas. */
+  scale_max?: number;
   first_month_index: number;
   value: number[];
   sigma: number[];
