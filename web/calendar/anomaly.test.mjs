@@ -58,3 +58,8 @@ test('a month with no sigma, as on the energy plane, is not called usual: the co
     'July 2024: 90 MW against a median of 60, +50%. No uncertainty to judge it by.',
   );
 });
+
+test('a change of thousands of percent is written with its thousands separated', () => {
+  const cell = { ...buildGrid(stubSeries).rows[1]?.[8], value: 7112, median: 7, anomaly: 1015, sigma: 88 };
+  assert.match(describeSeasonMonth(cell, 'count'), /against a median of 7, \+101,500%, ±176 at two sigma/);
+});

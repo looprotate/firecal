@@ -24,7 +24,7 @@ export function describeSeasonMonth(cell: Cell, plane: CalendarSeries['plane']):
   const unit = plane === 'energy' ? 'MW' : 'hotspots';
   const head = `${monthTitle(cell.year, cell.month)}: ${formatNumber(cell.value)} ${unit}`;
   if (!Number.isFinite(cell.median)) return `${head}. No past years to compare with.`;
-  const change = `${cell.anomaly >= 0 ? '+' : '−'}${Math.round(Math.abs(cell.anomaly) * 100)}%`;
+  const change = `${cell.anomaly >= 0 ? '+' : '−'}${formatNumber(Math.abs(cell.anomaly) * 100)}%`;
   const against = `${head} against a median of ${formatNumber(cell.median)}, ${change}`;
   if (!Number.isFinite(cell.sigma)) return `${against}. No uncertainty to judge it by.`;
   const verdict = cell.unusual ? 'Unusual.' : 'Within the usual range.';
