@@ -127,8 +127,9 @@ never edited by hand.
    Field 52, row 38, icon 24, margin 8.
 7. **Motion** says something (arrived, left, changed) or it is not there, and all of it is off under
    `prefers-reduced-motion`. A control answers with a short spring, about 0.35 s. A drawing (the calendar, a frame)
-   traces itself and pops in on that spring, row by row, and undraws before the next one; while it draws it boils,
-   eight frames a second, as in the film, and at rest it is still.
+   traces itself and pops in on that spring, row by row, and undraws before the next one; a frame boils while it
+   traces, eight frames a second, as in the film, by moving its own points (never a filter over the page, which cost
+   Safari a third of its frames), and at rest everything is still.
 8. **Text on screen:** English, short, no decorative symbols.
 
 ## Git
