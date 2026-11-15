@@ -8,6 +8,8 @@
 //! - `pr-lint`: checks the pull request title and description in `PR_TITLE` and `PR_BODY`.
 //! - `parity`: the same calls through the native build and `firecal.wasm` under Node must give identical bytes.
 //! - `build-wasm`: builds the browser module and copies it to `web/public/firecal.wasm`.
+//! - `tokens [--report]`: writes firecal's identity files (colours, logo, title card), or prints how each colour
+//!   was derived.
 
 mod build_wasm;
 mod check;
@@ -18,6 +20,7 @@ mod parity;
 mod pr_lint;
 mod ready;
 mod shell;
+mod tokens;
 mod worktree;
 
 use std::process::ExitCode;
@@ -36,8 +39,10 @@ fn main() -> ExitCode {
         ["pr-lint"] => pr_lint::run(),
         ["build-wasm"] => build_wasm::run(),
         ["parity"] => parity::run(),
+        ["tokens"] => tokens::write(),
+        ["tokens", "--report"] => tokens::print_report(),
         _ => Err(String::from(
-            "usage: cargo xtask check [--full] | guard [base] | worktree <owner>/<task> | ready | hooks | pr-lint | build-wasm | parity",
+            "usage: cargo xtask check [--full] | guard [base] | worktree <owner>/<task> | ready | hooks | pr-lint | build-wasm | parity | tokens [--report]",
         )),
     };
     match result {
