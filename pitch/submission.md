@@ -31,8 +31,8 @@ Nobody under 18 may appear. A video in another language needs English subtitles.
 
 ## Link to Final Project
 
-`[PUBLIC LINK]` to the repository and, if hosted, to the live app. The repository must be public and open at
-submission (the README says it is private until then: **someone must change that**). If a new website hosts the
+https://github.com/looprotate/firecal (public since 2026-11-14, Apache-2.0) and, if hosted, `[PUBLIC LINK]` to the
+live app. If a new website hosts the
 app, the guide recommends requesting a FortiGuard web filter classification so judges can open it.
 
 ## Detailed Project Description
@@ -65,10 +65,18 @@ Harmonized counts are MODIS-equivalent and validated only on the overlap years. 
 forecast. The newest months come from near-real-time data and are provisional. Sigma adds cell errors as if
 they were independent, which is optimistic where neighbors share a bias, so the app says it is estimated.
 
-**Results we can state.** `[MEASURED NUMBERS: only from pitch/numbers.md, each with who measured it. None yet.]`
+**Results we can state.** All from `pitch/numbers.md`, where each has who measured it and what it does not show.
+On the South America season of July and August 2026, the pipeline harmonized 24 complete 10° tiles in 0.06 seconds
+on a laptop, into 346 kilobytes of static files. In the fitted month, raw VIIRS saw 67,025 hotspots where MODIS saw
+7,000; harmonized, VIIRS gives 7,000 (agreement by construction on the month it was fitted on; no held-out month
+yet). In the browser, the same Rust core answers an area query in about 13 microseconds over those tiles, and gives
+byte-identical results to the native build on 8,968 test calls. With the network off, a pinned region still
+answers, checked in Chrome on macOS, Windows and Linux on every change. Ingest read the whole public Uruguay
+archive, 97,392 rows, in 79 milliseconds.
 
 **Tools.** Rust (a Cargo workspace, no third-party dependencies in the core crates), WebAssembly, TypeScript, Vite,
-MapLibre GL JS; Node for the parity test.
+MapLibre GL JS with OpenFreeMap's OpenStreetMap tiles, TerraDraw for drawing; Node for the tests and headless Chrome
+for the offline test.
 
 **What we hope to achieve.** A calendar that any land or emergency manager can read, with the honesty to say when it is not sure.
 
@@ -94,17 +102,19 @@ data set is required for a global award; this is the whole scientific input.
 
 Fill this field from `docs/references.md` on the freeze, line by line: that file is the list of record and the
 guide requires every code, text and image resource to appear, open source included. Today it lists FIRMS, the
-MODIS and VIIRS products, Rust and Cargo, MapLibre GL JS, the quantile-mapping method (the paper is not named
-yet), and the sources for the design tokens (OKLab, a color-vision-deficiency model, WCAG 2.2). Missing as of today:
-the **method paper for the quantile mapping** (Cube), any icon or font in the app, and the remaining npm
-packages. A partner agency's data is encouraged, not required; the Argentine and Brazilian agencies are among this
+MODIS and VIIRS products, Rust and Cargo, MapLibre GL JS, OpenFreeMap with OpenStreetMap and OpenMapTiles,
+TerraDraw, TypeScript, Vite, Node and the Chrome DevTools Protocol, the quantile-mapping method, and the sources of
+the identity (the reference image, OKLab, a color-vision-deficiency model, WCAG 2.2). Missing as of today: the
+**method paper for the quantile mapping** (Cube). The app uses no icon set; its only drawing is the logo, generated
+by the team. A partner agency's data is encouraged, not required; the Argentine and Brazilian agencies are among this
 year's partners and `[the team has not looked at their resources]`.
 
 ## Review checklist before pressing "Submit for Judging"
 
 - [ ] Every required field filled, all in English.
 - [ ] Demo link opens in a private window; at most 30 seconds or seven slides.
-- [ ] Repository public, licensed, README reads for a judge (see the request to Biggie).
+- [x] Repository public and licensed (Apache-2.0); the README says so. Whether it reads well for a judge is the
+      request to Biggie, still open.
 - [ ] Every number in the text is in `pitch/numbers.md`; none is bracketed.
 - [ ] The two confirmation boxes read and ticked by a person.
 - [ ] Nobody under 18 in any image or video.
