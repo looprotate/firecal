@@ -8,7 +8,7 @@
 
 ## Project Name
 
-`[NAME]` (the working name is `firecal`; the team has not chosen the final one).
+firecal.
 
 ## High-Level Project Summary
 
@@ -16,7 +16,7 @@
 
 Two generations of NASA fire satellites, MODIS since 2000 and VIIRS since 2012, record burning in ways that
 cannot be compared directly, so nobody has had one consistent picture of when and where burning happens.
-`[NAME]` harmonizes both records from NASA FIRMS into a single burning-activity calendar for any area the user
+firecal harmonizes both records from NASA FIRMS into a single burning-activity calendar for any area the user
 draws: months across, years down. Every harmonized number carries an estimated uncertainty, so a month is
 called unusual only when it clears that band and is not just a change of sensor. The calendar can show hotspot
 counts or fire radiative power, finds the past seasons that most resemble the current one, exports a CSV, and
@@ -25,14 +25,15 @@ look for burning need to know how much to trust a number, not only the number.
 
 ## Link to Project Demo
 
-`[PUBLIC LINK]` to the 30-second video or the seven-slide deck. At most 30 seconds or seven slides, or the
+The 30-second cut, `firecal-demo-30s.webm` (26 s, `video.md`), once a person uploads it where it opens in a private
+window; that link goes here. At most 30 seconds or seven slides, or the
 project is not eligible for global judging. Public, no login; test it in a private window. Beats: `script.md`.
 Nobody under 18 may appear. A video in another language needs English subtitles.
 
 ## Link to Final Project
 
-https://github.com/looprotate/firecal (public since 2026-11-14, Apache-2.0) and, if hosted, `[PUBLIC LINK]` to the
-live app. If a new website hosts the
+https://github.com/looprotate/firecal (public since 2026-11-14, Apache-2.0). The app is a static site run from the
+repository (README, "For the judges"); it is not hosted. If a new website hosts the
 app, the guide recommends requesting a FortiGuard web filter classification so judges can open it.
 
 ## Detailed Project Description
@@ -66,6 +67,12 @@ forecast. The newest months come from near-real-time data and are provisional. S
 they were independent, which is optimistic where neighbors share a bias, so the app says it is estimated.
 
 **Results we can state.** All from `pitch/numbers.md`, where each has who measured it and what it does not show.
+Over south-east Australia, twenty years of public FIRMS records (16.6 million rows) were ingested in 7.3 seconds and
+harmonized into 230 months of tiles in a quarter of a second, on a laptop. Holding 2019 out of the calibration,
+raw VIIRS counted 12.5 times what MODIS counted, and harmonized VIIRS 0.77 times: close to MODIS from a gap of an
+order of magnitude, and low because 2019 went past anything the calibration had seen. The core flags November and
+December 2019 as unusual (December: 7,112 hotspots against a median December of 7) and finds 2009, 2001 and 2002 as
+the most similar past years; in the browser it answers that in under a millisecond, with no network.
 On the South America season of July and August 2026, the pipeline harmonized 24 complete 10° tiles in 0.06 seconds
 on a laptop, into 346 kilobytes of static files. In the fitted month, raw VIIRS saw 67,025 hotspots where MODIS saw
 7,000; harmonized, VIIRS gives 7,000 (agreement by construction on the month it was fitted on; no held-out month
@@ -87,15 +94,16 @@ for the offline test.
 
 Draft, to be confirmed by the team: the team used AI coding agents (Claude Code and Codex, per `AGENTS.md`) to
 write and test code and documentation in this repository, working from a design and rules written by the team.
-The agents did not choose the idea. `[Confirm: whether any image, video or audio in the demo is generated; if so,
-it needs a visible watermark or a note in its description and metadata.]` Generated content may not use NASA
+The agents did not choose the idea. The demo video was recorded by an agent driving the real app; it shows the app's screens
+and adds captions, and nothing in it is generated imagery. Its description says it was recorded by an AI agent. Generated content may not use NASA
 branding.
 
 ## NASA Data
 
 NASA FIRMS (Fire Information for Resource Management System) active-fire hotspots: MODIS Collection 6.1 (Terra,
 Aqua) and VIIRS 375 m (Suomi NPP, NOAA-20, NOAA-21), standard and near-real-time products, downloaded from the
-FIRMS archive and area API `[and the exact regions and dates of the chosen place, once chosen]`. At least one NASA
+FIRMS public country archive (Australia: MODIS 2000 to 2020 and VIIRS S-NPP 2012 to 2020) and the FIRMS area API
+(South America, June to November 2026). At least one NASA
 data set is required for a global award; this is the whole scientific input.
 
 ## Space Agency Partner Data and Other References
@@ -107,7 +115,7 @@ TerraDraw, TypeScript, Vite, Node and the Chrome DevTools Protocol, the quantile
 the identity (the reference image, OKLab, a color-vision-deficiency model, WCAG 2.2). Missing as of today: the
 **method paper for the quantile mapping** (Cube). The app uses no icon set; its only drawing is the logo, generated
 by the team. A partner agency's data is encouraged, not required; the Argentine and Brazilian agencies are among this
-year's partners and `[the team has not looked at their resources]`.
+year's partners and the team did not use their data.
 
 ## Review checklist before pressing "Submit for Judging"
 

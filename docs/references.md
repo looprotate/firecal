@@ -8,6 +8,10 @@ Add a line when you use anything from outside the team: data, a library, a metho
 
 ## Data
 
+- NASA FIRMS public country archive, Australia: MODIS 2000 to 2020 and VIIRS S-NPP 2012 to 2020 (30 files, 1.3 GB),
+  the history of the demo's calendar and of the held-out test of harmonization; 159 rows have a negative FRP, read as
+  0 MW (`docs/data-format.md`). https://firms.modaps.eosdis.nasa.gov/country/
+
 - NASA FIRMS public country archive: all 48 available Uruguay CSVs (MODIS
   2000–2025, VIIRS S-NPP 2012–2025, NOAA-20 2018–2025) used for issue #27
   ingestion and throughput; 2023–2025 selected separately for the regional handoff.

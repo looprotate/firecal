@@ -18,17 +18,16 @@ guide says teams under-invest in it.
 |---|---|---|---|
 | **Impact** | A real problem, a reach beyond the team | Emergency managers and land managers cannot compare burning across the MODIS and VIIRS eras, and cannot tell a real anomaly from a sensor change. We say how sure each number is. | argue it |
 | **Creativity** | Original, or a meaningful improvement | Four layers that are one argument: uncertainty on every cell, energy and not only counts, analog years, an offline field tool. Most teams will stop at a heatmap. | argue it |
-| **Validity** | Scientifically sound, feasible, usable | Calibration fitted per tile on the overlap years, its residuals shipped as sigma; native equals wasm byte for byte (8,968 calls); tests are the review (393 Rust, 102 web). Accessibility checked by hand (#41). Usability by a person on Windows is open (#6); held-out accuracy is unmeasured. | partly open |
+| **Validity** | Scientifically sound, feasible, usable | Calibration fitted per tile on the overlap years, its residuals shipped as sigma; native equals wasm byte for byte (8,968 calls); tests are the review (393 Rust, 102 web). Accessibility checked by hand (#41). Held out of the fit, 2019 harmonizes to 0.77 of MODIS from 12.5 raw. Usability by a person on Windows is checked only by CI (#6). | yes, with its limits said |
 | **Relevance** | Answers the challenge; NASA data is the core | NASA FIRMS MODIS and VIIRS hotspots are every number on screen. Nothing else is used for the science. | yes |
-| **Presentation** | Clear story, engaging, well organized | A place everyone knows, a three-minute script (`script.md`), a 30-second demo, a backup video, and the airplane-mode moment. | in progress |
+| **Presentation** | Clear story, engaging, well organized | The Black Summer, a three-minute script (`script.md`), a 30-second cut and a backup video recorded on the real tiles (`video.md`), and the airplane-mode moment. | ready |
 
 ### Evidence checklist
 
 Tick when it can be shown to a judge, not when it is planned. Checked against `main` on 2026-11-14.
 
-- [ ] A calendar of one place and season (months across, years down) from real harmonized tiles. **Open:** real
-  tiles exist only for July and August 2026 in South America, with no history to compare; see `story.md` for what
-  each place needs. Today the calendar shows the hand-made sample, and says so.
+- [x] A calendar of one place and season from real harmonized tiles: south-east Australia, November 2000 to
+  December 2019, 230 months, pinned and answered offline (`numbers.md`, `story.md`).
 - [x] Sigma visible on screen, and an anomaly flagged only when it clears the band: the estimated uncertainty in
   every cell's words, the band at two sigma under the calendar, a diamond on flagged months (#36). The core decides.
 - [x] Count and energy (FRP) modes both working, from the core (#38). Energy has no sigma, and the page says so.
@@ -36,8 +35,9 @@ Tick when it can be shown to a judge, not when it is planned. Checked against `m
 - [x] CSV of what the search covers: `series.csv` and `cells.csv` from the core (#37).
 - [x] A new polygon answered with the network off: tested in Chrome on macOS, Windows and Linux on every pull
   request (#22), and by hand with the host stopped (#20).
-- [x] Before and after of harmonization, measured, in `numbers.md` and in the app: raw VIIRS 67,025 against MODIS
-  7,000, harmonized 7,000. **On the fit month only**, so it shows the method working, not its accuracy.
+- [x] Before and after of harmonization, measured, in `numbers.md` and in the app, with a held-out year: in 2019,
+  which the fit did not see, raw VIIRS counted 12.5 times MODIS and harmonized VIIRS 0.77 times (low, because 2019
+  went past the fit's largest counts).
 - [x] Every external resource in `docs/references.md`, software included. Still missing: the quantile mapping paper
   (Cube).
 
@@ -80,4 +80,5 @@ Three versions. The team picks one and writes it at the end of this file.
 
 ## Decision
 
-Chosen line: _not chosen yet._ Chosen by: _the team, in the call or in the thread of #43._
+Chosen: **all three, each for its moment, as the table above says**: line 3 opens the live pitch, line 1 closes it
+after airplane mode, line 2 opens the form's summary. Decided on 2026-11-14 by Axel, the lead, who asked his agent to settle every open choice from the evidence; any teammate may reopen it before the freeze.

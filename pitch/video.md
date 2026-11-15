@@ -6,9 +6,9 @@ Two recordings of the same demo, made **before** Sunday's final polish so they e
 - **The submitted cut**, at most 30 seconds (the form's limit; over it, no global judging). Its five beats are at the
   end of `script.md`.
 
-Status on 2026-11-14: **not recorded.** The calendar of the chosen place does not exist yet (`story.md`, #42), and
-an agent cannot record a screen with sound. What is ready is everything below, so a person can record it in one
-sitting. Issue #46 closes when a video file exists and is saved outside git in two places.
+Status on 2026-11-14: **recorded**, silent with captions, on the real south-east Australia tiles, by Biggie's agent:
+headless Chrome driven through the shots below, each frame captured and encoded to WebM in the same browser. It is a
+backup, not the pitch: a person may record the full run again with a voice, from this table.
 
 ## Set up once
 
@@ -30,7 +30,7 @@ sitting. Issue #46 closes when a video file exists and is saved outside git in t
 | 4 | 0:40 to 1:05 | The calendar of the place | Hover an old cell, then a recent one | The line under the grid reads each cell |
 | 5 | 1:05 to 1:30 | A month with a diamond; the strip under the calendar | Point at the diamond, then the bar and its blue band | The sentence under the strip ends in "Unusual." |
 | 6 | 1:30 to 1:50 | **Energy** pressed | Press it | Cells redraw in megawatts |
-| 7 | 1:50 to 2:15 | **Years most like `[YEAR]`** | Press the first year | Its row is outlined in the calendar |
+| 7 | 1:50 to 2:15 | **Years most like 2019** | Press the first year | Its row is outlined in the calendar |
 | 8 | 2:15 to 2:50 | The network switch visible on screen | Turn it off; polygon tool; draw a new area in the region; close it on its first corner | The calendar redraws and the status says "From the core" |
 | 9 | 2:50 to 3:00 | The calendar, network still off | Hold; say the last line | Three seconds of stillness to cut on |
 
@@ -60,4 +60,5 @@ uploading: 30.0 seconds at most.
 
 | File | Length | Saved in | Saved in | Link |
 |---|---|---|---|---|
-| _not recorded_ | | | | |
+| `firecal-demo-full.webm` (1600 × 900, VP9) | 51 s | `~/dev/firecal/data/video/` on Axel's laptop (ignored by git) | `~/Movies/firecal/` on the same laptop | not uploaded |
+| `firecal-demo-30s.webm` | 26 s | the same | the same | not uploaded: uploading publishes it, so a person does |

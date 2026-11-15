@@ -107,6 +107,19 @@ It is fine as a one-slide mention ("the same calendar works for ..."), only if t
 
 ## Decision
 
-Chosen place and season: _not chosen yet._
-Backup: _not chosen yet._
-Chosen by and on: _a person, in the thread of #42._
+Chosen place and season: **south-east Australia, the 2019 season, shown as it stood on the first of January
+2020** (the area west 147, south −38, east 151, north −34: East Gippsland and the New South Wales south coast). It is
+option C, which this file advised against only because nothing was downloaded; the public country archive of
+Australia turned out to cover its tiles completely, so it now runs end to end on real data: twenty years of history,
+the core flags November and December 2019 (December: 7,112 hotspots against a median December of 7), the analog years
+are 2009, 2001 and 2002, and 2019 was held out of the calibration, so the before and after figure tests the method on
+a year it did not see. Everyone in the room knows the Black Summer, and the honest twist is on screen: January 2003,
+the alpine fires, is still the largest January in this area, so the core does not call January 2020 unusual.
+
+Backup: the same tiles and the same story with the hand-typed bounds instead of a drawn area; if the app fails, the
+backup video (`video.md`), recorded on these tiles.
+
+Chosen by and on: Decided on 2026-11-14 by Axel, the lead, who asked his agent to settle every open choice from the evidence; any teammate may reopen it before the freeze.
+
+Uruguay stays the team's home and the opening line can say so; its own history needs a regional mode in
+`firecal-harmonize` or the full-tile archive, which is after the hackathon.
