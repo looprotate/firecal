@@ -94,6 +94,12 @@ byte-identical results to the native build on 8,968 test calls. With the network
 answers, checked in Chrome on macOS, Windows and Linux on every change. Ingest read the whole public Uruguay
 archive, 97,392 rows, in 79 milliseconds.
 
+**Use of AI.** The team designed firecal and wrote its rules; AI coding agents (Claude Code and Codex) wrote and
+tested most of the code and documentation under them: the Rust pipeline and core, the app, the site, and the code
+that draws the demo film. Every number on screen and in the film is computed by that code from NASA FIRMS data. The
+film is drawn as SVG by that code, with no image-generation model, and carries a visible "AI-assisted animation"
+mark and the same in its metadata; the repository's README says all of this too.
+
 **Tools.** Rust (a Cargo workspace, no third-party dependencies in the core crates), WebAssembly, TypeScript, Vite,
 MapLibre GL JS with OpenFreeMap's OpenStreetMap tiles, TerraDraw for drawing; Node for the tests and headless Chrome
 for the offline test; Cloudflare Pages to host the static site. The demo film was drawn as SVG in headless Chrome and
@@ -103,16 +109,16 @@ encoded with Apple's AVFoundation.
 
 ## Use of Super Intelligence (SI)
 
-> The form says this answer is for data collection and judges do not see it, but they see SI watermarks,
-> descriptive text and metadata. Whoever submits must confirm this is true and complete.
+> The form's field is checkboxes only, for data collection; judges do not see it. Tick every kind of use that
+> applies: code, documentation and text, and the video. What judges see is in the project: the "Use of AI"
+> paragraph above, the README's "Use of AI" section, and the film's visible mark and metadata.
 
-The team used AI coding agents (Claude Code and Codex, per `AGENTS.md`) to
+For the record, what the boxes stand for: the team used AI coding agents (Claude Code and Codex, per `AGENTS.md`) to
 write and test code and documentation in this repository, working from a design and rules written by the team.
-The agents did not choose the idea. The demo video is an animation drawn by code that an AI agent wrote, in a style
-the team chose: every frame is an SVG drawing computed from the app's real numbers, with no image-generation model.
-The interface of the app and the project's site were drawn the same way. The backup video was recorded by an agent
-driving the real app. This answer is where the team declares the AI's
-part; the videos carry no notice of their own. Generated content may not use NASA branding, and the film uses none.
+The agents did not choose the idea. The demo film is an animation drawn by code that an AI agent wrote, in a style
+the team chose: every frame is an SVG drawing computed from the app's real numbers, with no image-generation model,
+and it carries a visible "AI-assisted animation" mark. The interface of the app and the project's site were drawn
+the same way. Generated content may not use NASA branding, and the film uses none.
 
 ## NASA Data
 

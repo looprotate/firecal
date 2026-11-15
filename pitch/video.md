@@ -27,9 +27,11 @@ and for the offline area, read from the app on the pinned tiles.
 | 18 to 24 | How it works, offline | A map of the area; the network goes off; a new area is drawn; the calendar redraws with that area's real answer. "In under a millisecond, by the same Rust core." NASA FIRMS named as the data. |
 | 24 to 30 | The future | "Any area you draw. Any season. In the field, with no signal." The logo, the name and the repository's address. |
 
-On screen at all times: "Data: NASA FIRMS". The film carries no AI notice: which AI tools the team used, and what
-for, is declared when the project is submitted (`submission.md`, "Use of Super Intelligence"), as Axel decided on
-2026-11-15.
+On screen at all times, top right: "AI-assisted animation · Data: NASA FIRMS". The Space Apps form, read when
+submitting on 2026-11-15, requires SI-generated video to carry a visible watermark, and the AI question itself is
+only checkboxes that judges do not see; so the mark is back in the film, and its metadata says the same (title
+"firecal", and a description of how it was drawn). Re-rendered from the same source; the earlier file without the
+mark is kept outside git.
 
 ## The screen recordings
 
