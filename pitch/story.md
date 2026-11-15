@@ -20,7 +20,7 @@ cannot give all three is the wrong place for this demo, however good the photogr
 
 ## What data exists today
 
-Read from `crates/firecal-ingest/archive-run.md`, `firms-2026-download.md` and `requests/dre-to-eminem-uruguay-numbers.md`
+Read from `crates/firecal-ingest/archive-run.md`, `firms-2026-download.md` and Dre's numbers (now in `numbers.md`)
 on 2026-11-14.
 
 | Region | History | Current season | Status |
