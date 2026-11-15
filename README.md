@@ -4,6 +4,28 @@ NASA Space Apps 2026 (Uruguay). A burning-activity calendar that harmonizes MODI
 how sure it is, works with no signal, and remembers which past year this one looks like.
 `docs/idea.md` says what it is and why it is different.
 
+## For the judges
+
+Two generations of NASA fire satellites, MODIS since 2000 and VIIRS since 2012, count burning in ways that cannot be
+compared. firecal maps VIIRS onto MODIS per 10° tile, keeps the error of that mapping as an uncertainty on every
+number, and draws a calendar for any area you pick: months across, years down. A month is flagged only when it
+clears that uncertainty and the range of past years. It shows hotspot counts or fire radiative power, the past years
+most like this one, and a CSV, and it keeps answering with no network in a region pinned before.
+
+- **Data:** NASA FIRMS active-fire hotspots, MODIS Collection 6.1 (Terra, Aqua) and VIIRS 375 m (Suomi NPP,
+  NOAA-20, NOAA-21). Nothing else enters the science. Measured results are in [`pitch/numbers.md`](pitch/numbers.md).
+- **Run it:** `cargo xtask build-wasm`, then `npm --prefix web ci` and `npm --prefix web run dev`, and open
+  http://localhost:5173. Without tiles the calendar shows a hand-made sample and says so; tiles written by
+  `firecal-harmonize` go in `web/public/tiles/`.
+- **How it is built:** one Rust core, compiled for the pipeline and to WebAssembly for the browser; a test proves both
+  give identical bytes. The page draws; every number comes from the core. No server.
+- **What we do not claim:** a hotspot is a thermal anomaly seen from orbit, not a fire or a burned area; harmonized
+  counts are MODIS-equivalent and fitted on the years both sensors saw; analog years are history, not a forecast;
+  the newest months are provisional, from near-real-time data; the uncertainty is an estimate.
+- **How AI was used:** the team chose the idea, the design and the rules (`AGENTS.md`); AI coding agents (Claude Code
+  and Codex) wrote and tested the code and docs under those rules, and every change passed the same checks on macOS,
+  Windows and Linux before it was merged.
+
 ## Start (everyone)
 
 1. Install [Rust via rustup](https://rustup.rs), [Node](https://nodejs.org) (the version in `.nvmrc`) and the
