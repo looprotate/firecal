@@ -128,8 +128,8 @@ Fill this field from `docs/references.md` on the freeze, line by line: that file
 guide requires every code, text and image resource to appear, open source included. Today it lists FIRMS, the
 MODIS and VIIRS products, Rust and Cargo, MapLibre GL JS, OpenFreeMap with OpenStreetMap and OpenMapTiles,
 TerraDraw, TypeScript, Vite, Node and the Chrome DevTools Protocol, the quantile-mapping method, and the sources of
-the identity (the reference image, OKLab, a color-vision-deficiency model, WCAG 2.2). Missing as of today: the
-**method paper for the quantile mapping** (Cube). The app uses no icon set; its only drawing is the logo, generated
+the identity (the reference image, OKLab, a color-vision-deficiency model, WCAG 2.2), and the quantile-mapping method
+(Gudmundsson et al. 2012, Hydrology and Earth System Sciences). The app uses no icon set; its only drawing is the logo, generated
 by the team. A partner agency's data is encouraged, not required; the Argentine and Brazilian agencies are among this
 year's partners and the team did not use their data.
 

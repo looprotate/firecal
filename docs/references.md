@@ -48,8 +48,11 @@ Add a line when you use anything from outside the team: data, a library, a metho
 
 ## Method
 
-- Quantile mapping: how VIIRS counts are mapped to MODIS-equivalent counts. Add the paper or text we follow
-  when Cube chooses it.
+- Quantile mapping: how VIIRS counts are mapped to MODIS-equivalent counts, per tile, by matching the empirical
+  quantiles of the two sensors over the months both observed. The method as described and compared in
+  Gudmundsson, L., Bremnes, J. B., Haugen, J. E., and Engen-Skaugen, T. (2012): Technical Note: Downscaling RCM
+  precipitation to the station scale using statistical transformations – a comparison of methods. Hydrology and
+  Earth System Sciences, 16, 3383–3390. https://doi.org/10.5194/hess-16-3383-2012
 
 ## Sources checked for the FIRMS facts
 
