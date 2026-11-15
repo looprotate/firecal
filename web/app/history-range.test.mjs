@@ -4,7 +4,7 @@ import { historyRange } from './history-range.ts';
 
 const tile = (firstMonth, months) => ({ firstMonth, months });
 
-test('the range is the months every pinned tile holds, and the season is the year of the last one', () => {
+test('the range is the months every tile holds, and the season is the year of the last one', () => {
   // Month 0 is January 2000; month 37 is February 2003.
   assert.deepEqual(historyRange([tile(0, 38), tile(0, 38)]), {
     firstMonth: 0,
@@ -36,7 +36,7 @@ test('a season ending in December is the whole year', () => {
 });
 
 test('no tiles, tiles with no months in common, or no complete year before the season are refused', () => {
-  assert.throws(() => historyRange([]), /No pinned tiles/);
+  assert.throws(() => historyRange([]), /No tiles cover this area/);
   assert.throws(() => historyRange([tile(0, 12), tile(24, 12)]), /no months in common/);
   assert.throws(() => historyRange([tile(318, 2)]), /complete year/);
 });
