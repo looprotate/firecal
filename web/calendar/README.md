@@ -15,7 +15,8 @@ Months across, years down, one cell per month of a Series. It draws; every numbe
   its wobble across redraws. The data keeps the measured ramp, never a pastel.
 - **Drawing in and out.** A new Series undraws the old calendar, then pops in row by row on a short spring, its
   flags after it, its rings tracing themselves (`waveDelay` in `render.ts`); the container carries `entering` or
-  `leaving` meanwhile, which is the page's cue to boil it. The same Series is redrawn in place, still.
+  `leaving` meanwhile. It does not boil: at a cell's size the site's boil is under half a pixel, and the filter that
+  did it cost Safari a third of its frames. The same Series is redrawn in place, still.
 - **Focus ring** is a separate hand-drawn rectangle offset from the cell by a gap, so it shows on every step.
 - **Provisional months** (from `provisional_from` of the Series on) carry a triangle in the bottom left corner,
   `--provisional-size` along each side, inside the cell's rounded corner, and say "provisional" in their label. The
