@@ -3,7 +3,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import '../tokens/tokens.css';
 import './style.css';
 import sample from '../stub/series.json';
-import { mountCalendar } from '../calendar/index.ts';
+import { mountCalendar, type CalendarActions } from '../calendar/index.ts';
 import { loadFirecal, type Firecal } from '../../wasm/load.ts';
 import { createAreaMap } from '../map/map.ts';
 import {
@@ -17,6 +17,7 @@ import {
 import { degreesText, latitudeLabel, longitudeLabel } from './degrees.ts';
 import { pinRegion } from './offline.ts';
 import { pinnedSeries } from './pinned-series.ts';
+import { csvFiles } from './wasm-series.ts';
 import { parseSeries, type Area, type Series } from './series.ts';
 import { renderShell } from './shell.ts';
 
@@ -31,13 +32,17 @@ const state: {
   area: Area;
   polygon?: [number, number][];
   series: Series;
+  plane: Series['plane'];
   fromCore: boolean;
+  actions: CalendarActions;
   bounds: AreaBoundsText;
   error: string;
 } = {
   area: sampleSeries.area,
   series: sampleSeries,
+  plane: 'count',
   fromCore: false,
+  actions: {},
   bounds: boundsFromArea(sampleSeries.area),
   error: '',
 };
@@ -92,7 +97,7 @@ function render(): void {
   const shape = state.polygon ? 'Polygon in ' : '';
   shell.areaLabel.textContent = `${shape}${latitudeLabel(south)} to ${latitudeLabel(north)}, ${longitudeLabel(west)} to ${longitudeLabel(east)}`;
   shell.dataSource.textContent = state.fromCore ? 'Harmonized tiles, answered on this device' : 'Hand-made sample, not data';
-  calendar.update(state.series);
+  calendar.update(state.series, state.actions);
 }
 
 /** Moves what was refused, the way a wrong password shakes: the message says why. */
@@ -148,17 +153,28 @@ async function answerFromPinnedTiles(): Promise<void> {
   const question = ++asked;
   if (!firecal) return;
   try {
-    const answer = await pinnedSeries(firecal, state.area, state.polygon);
+    const core = firecal;
+    const about = { area: state.area, plane: state.plane, ...(state.polygon ? { polygon: state.polygon } : {}) };
+    const answer = await pinnedSeries(core, about);
     if (question !== asked) return;
     if (answer === null) {
       state.series = sampleSeries;
+      state.plane = 'count';
       state.fromCore = false;
+      state.actions = {};
       render();
       shell.runtimeStatus.textContent = 'No pinned tiles here. The calendar shows the hand-made sample.';
       return;
     }
     state.series = answer.series;
     state.fromCore = true;
+    state.actions = {
+      choosePlane: (plane) => {
+        state.plane = plane;
+        void answerFromPinnedTiles();
+      },
+      csv: csvFiles(core, answer.query, state.polygon !== undefined),
+    };
     render();
     shell.runtimeStatus.textContent = `From the core, on ${plural(answer.tiles, 'pinned tile')}, ${plural(answer.series.months.length, 'month')}.`;
   } catch (error) {

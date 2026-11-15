@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { loadFirecal } from '../../wasm/load.ts';
-import { seriesForArea } from './wasm-series.ts';
+import { analysisQuery, csvFiles, seriesForArea } from './wasm-series.ts';
 
 function fixtureTile() {
   const firstMonth = 0;
@@ -65,4 +65,36 @@ test('the selected area produces one Series from the wasm history, comparison an
     polygon: [[10, 0], [10, 0.25], [10.25, 0.25], [10.25, 0]],
   });
   assert.deepEqual(polygonSeries.value, series.value);
+});
+
+const options = {
+  firstMonth: 0, months: 38, baselineFirst: 2001, baselineLast: 2002, seasonYear: 2003, seasonMonths: 2,
+};
+
+test('switching to energy changes the plane the core reads and nothing else', () => {
+  const area = { west: 0, south: 10, east: 0.25, north: 10.25 };
+  const tiles = [fixtureTile()];
+  const count = analysisQuery(area, { ...options, tiles, plane: 'count' });
+  const energy = analysisQuery(area, { ...options, tiles, plane: 'energy' });
+  assert.equal(count.plane, 0);
+  assert.equal(energy.plane, 1);
+  assert.deepEqual({ ...energy, plane: 0 }, count);
+});
+
+test('the energy series is the energy plane, in its own unit and without a sigma', () => {
+  const area = { west: 0, south: 10, east: 0.25, north: 10.25 };
+  const series = seriesForArea(firecal, area, { ...options, tiles: [fixtureTile()], plane: 'energy' });
+  assert.equal(series.plane, 'energy');
+  assert.equal(series.value[36], 23, 'January 2003 is 20 + 3 megawatts');
+  assert.ok(Number.isNaN(series.sigma[36]));
+});
+
+test('the CSV files are the core text of the same query, with the headers of docs/data-format.md', () => {
+  const area = { west: 0, south: 10, east: 0.25, north: 10.25 };
+  const query = analysisQuery(area, { ...options, tiles: [fixtureTile()], plane: 'count' });
+  const files = csvFiles(firecal, query, false);
+  const decode = (bytes) => new TextDecoder().decode(bytes);
+  assert.equal(decode(files.series()).split('\n')[0], 'year,month,value,sigma,median,anomaly,unusual');
+  assert.equal(decode(files.cells()).split('\n')[0], 'year,month,cell_lat,cell_lon,value,sigma');
+  assert.equal(csvFiles(firecal, query, true).cells, undefined, 'a polygon has no cells.csv');
 });

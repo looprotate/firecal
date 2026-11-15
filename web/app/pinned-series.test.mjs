@@ -35,8 +35,8 @@ test('a pinned region answers from the core, and a polygon over the same cell an
   const area = { west: 0, south: 10, east: 0.25, north: 10.25 };
   const square = [[10, 0], [10, 0.25], [10.25, 0.25], [10.25, 0]];
 
-  const rectangle = await pinnedSeries(firecal, area, undefined, storage);
-  const polygon = await pinnedSeries(firecal, area, square, storage);
+  const rectangle = await pinnedSeries(firecal, { area, plane: 'count' }, storage);
+  const polygon = await pinnedSeries(firecal, { area, polygon: square, plane: 'count' }, storage);
 
   assert.equal(rectangle.tiles, 1);
   assert.equal(rectangle.series.value[36], 13, 'January 2003 is 10 + 3');
@@ -45,5 +45,5 @@ test('a pinned region answers from the core, and a polygon over the same cell an
 });
 
 test('an area with no pinned tile has no answer, not a zero series', async () => {
-  assert.equal(await pinnedSeries(firecal, { west: 0, south: 10, east: 1, north: 11 }, undefined, pinned({})), null);
+  assert.equal(await pinnedSeries(firecal, { area: { west: 0, south: 10, east: 1, north: 11 }, plane: 'count' }, pinned({})), null);
 });
