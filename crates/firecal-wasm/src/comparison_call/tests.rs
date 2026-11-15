@@ -21,9 +21,9 @@ fn the_current_season_is_compared_with_the_baseline_median() {
     assert_eq!(anomaly[24].to_bits(), (-0.75_f64).to_bits());
     assert_eq!(anomaly[25].to_bits(), (-8.0_f64 / 30.0).to_bits());
     assert_eq!(anomaly[26].to_bits(), 0.0_f64.to_bits());
-    // January 5 is below 10 and 15 from the median: unusual. February 22 is 8 from the median, over the sensor
-    // band, but inside 20 to 40: not unusual. March is the median.
-    assert_eq!(flags[24..27], [1, 0, 0]);
+    // January 5 is below 10 and 15 under the median: a drop, not flagged. February 22 is 8 under the median, over
+    // the sensor band, but inside 20 to 40: not flagged. March is the median.
+    assert_eq!(flags[24..27], [0, 0, 0]);
 }
 
 #[test]

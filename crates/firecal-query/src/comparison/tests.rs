@@ -93,11 +93,17 @@ fn a_value_equal_to_the_baseline_minimum_or_maximum_is_not_unusual() {
 }
 
 #[test]
-fn a_value_just_past_the_baseline_range_is_unusual() {
-    // February 101 is above the maximum 100 and |101 - 8| = 93 against 2 * 1; January 9 is below the minimum 10
-    let (_, february) = compare(month(2004, 2), &[101.0], &[1.0]).unwrap();
-    let (_, january) = compare(month(2004, 1), &[9.0], &[1.0]).unwrap();
-    assert_eq!((february, january), (vec![true], vec![true]));
+fn a_value_just_above_the_baseline_range_is_unusual() {
+    // February 101 is above the maximum 100 and 101 - 8 = 93 against 2 * 1
+    let (_, unusual) = compare(month(2004, 2), &[101.0], &[1.0]).unwrap();
+    assert_eq!(unusual, [true]);
+}
+
+#[test]
+fn a_value_below_the_baseline_range_is_not_unusual() {
+    // January 9 is below the minimum 10 and 20 - 9 = 11 against 2 * 1, but a quieter month is not an alarm
+    let (_, unusual) = compare(month(2004, 1), &[9.0], &[1.0]).unwrap();
+    assert_eq!(unusual, [false]);
 }
 
 #[test]
@@ -108,10 +114,10 @@ fn a_difference_of_exactly_two_sigma_is_not_unusual() {
 }
 
 #[test]
-fn a_drop_below_normal_is_unusual_too() {
-    // |5 - 20| = 15 against 2 * 4 = 8
+fn a_drop_below_normal_keeps_its_anomaly_but_is_not_flagged() {
+    // 5 against median 20: anomaly (5 - 20) / 20, a drop of 15 against 2 * 4 = 8, below the range 10 to 30
     let (anomaly, unusual) = compare(month(2004, 1), &[5.0], &[4.0]).unwrap();
-    assert_eq!((anomaly, unusual), (vec![-0.75], vec![true]));
+    assert_eq!((anomaly, unusual), (vec![-0.75], vec![false]));
 }
 
 #[test]
