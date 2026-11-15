@@ -109,8 +109,9 @@ never edited by hand.
 
 1. **Content rules; the rest barely shows.** Nothing decorative, nothing that needs explaining twice, nothing
    chosen by eye when it can be measured. A shape or a color with no reason goes.
-2. **Flat and opaque.** No gradients, blur, glow or translucency; one soft neutral shadow for what floats. Borders
-   are one physical pixel (`--hairline`).
+2. **Flat, opaque and drawn by hand.** No gradients, blur, glow or translucency. Outlines are ink traced by the
+   hand of the site and the film (`site/js/draw.js`): resampled, with a fixed wobble and smooth curves, so the app,
+   the site and the demo are one drawing. A rule between parts is one physical pixel (`--hairline`).
 3. **The geometry is the identity:** arches (a rectangle with a full round top), circles, half circles,
    rectangles. They make the logo, the empty states, the section markers, the slides and the legend glyphs.
    Corners 10 on panels and fields, 6 on rows, buttons and thumbnails, 5 on tags; no pills; a circle only where the
@@ -124,8 +125,10 @@ never edited by hand.
 6. **Type:** the system face (SF Pro, Segoe UI on Windows) for the interface, Monaspace Neon for code and numbers
    that must line up. Hierarchy by size and grey, never by color: 17 what is typed, 14 rows, 12 and 11 the rest.
    Field 52, row 38, icon 24, margin 8.
-7. **Motion** is a short spring, never longer than about 0.35 s, and off under `prefers-reduced-motion`. An
-   animation says something (arrived, left, no results) or it is not there.
+7. **Motion** says something (arrived, left, changed) or it is not there, and all of it is off under
+   `prefers-reduced-motion`. A control answers with a short spring, about 0.35 s. A drawing (the calendar, a frame)
+   traces itself and pops in on that spring, row by row, and undraws before the next one; while it draws it boils,
+   eight frames a second, as in the film, and at rest it is still.
 8. **Text on screen:** English, short, no decorative symbols.
 
 ## Git
