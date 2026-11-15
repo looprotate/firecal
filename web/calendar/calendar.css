@@ -183,3 +183,19 @@
 }
 
 .calendar-season .calendar-note { margin: var(--margin) 0 0; font-family: var(--font-ui); font-size: var(--text-size-small); }
+
+.overlap { margin: 0; }
+.overlap svg { display: block; max-width: 100%; height: auto; }
+.overlap figcaption { margin-top: var(--margin); color: var(--text-secondary); font-family: var(--font-ui); font-size: var(--text-size-small); }
+
+.overlap-save {
+  margin-top: var(--margin);
+  height: 30px;
+  padding: 0 10px;
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-row);
+  background: var(--surface);
+  color: var(--text-strong);
+  font-family: var(--font-ui);
+  cursor: pointer;
+}

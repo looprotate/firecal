@@ -25,6 +25,10 @@ Months across, years down, one cell per month of a Series. It draws; every numbe
 - **Analog years**, at the bottom: the past years the core ranks most like the season in progress, nearest first.
   Pressing one outlines its row in the calendar; when the season is not a whole year, its words list the months that
   came after it in that year. History, not a forecast, and the page says so.
+- **Before and after harmonization** (`mountOverlapFigure`): Cube's overlap report as two panels on the same
+  square-root axes, one point per tile, MODIS across and VIIRS up: raw VIIRS above the diagonal, harmonized VIIRS on
+  it. A month used for the fit says its agreement is by construction, not a validation. "Save as SVG" writes the
+  figure with the token values inside, so the pitch can use the same drawing.
 - **Legend** under the readout: the empty cell and the seven steps from none to most, then a cell with each mark and
   what it means in words. It is drawn from the same classes as the cells.
 

@@ -40,8 +40,8 @@ export function renderToolbar(plane: Plane, parts: ToolbarParts): string {
 }
 
 /** Saves `bytes` as a file named `name` through the browser's download. */
-export function download(name: string, bytes: Uint8Array): void {
-  const url = URL.createObjectURL(new Blob([bytes.slice()], { type: 'text/csv' }));
+export function download(name: string, bytes: Uint8Array, type = 'text/csv'): void {
+  const url = URL.createObjectURL(new Blob([bytes.slice()], { type }));
   const link = document.createElement('a');
   link.href = url;
   link.download = name;
