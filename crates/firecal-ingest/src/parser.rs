@@ -117,7 +117,7 @@ impl CsvHeader {
         };
         let latitude = number(field("latitude")?, -90.0, 90.0)?;
         let longitude = number(field("longitude")?, -180.0, 180.0)?;
-        let frp_megawatts = number(field("frp")?, 0.0, f64::MAX)?;
+        let frp_megawatts = zero_if_negative(number(field("frp")?, f64::MIN, f64::MAX)?);
         let (month, day) = crate::date::parse(field("acq_date")?)?;
         let satellite = satellite(field("satellite")?, field("instrument")?)?;
         let kept = confidence(field("confidence")?, satellite.is_viirs())?;
@@ -147,6 +147,11 @@ impl CsvHeader {
             daytime,
         })
     }
+}
+
+/// A negative fire radiative power, which public MODIS and VIIRS files hold for a few detections, counts as zero.
+fn zero_if_negative(megawatts: f64) -> f64 {
+    if megawatts <= 0.0 { 0.0 } else { megawatts }
 }
 
 fn number(text: &str, minimum: f64, maximum: f64) -> Result<f64, ParseError> {

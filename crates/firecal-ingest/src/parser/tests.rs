@@ -105,6 +105,19 @@ fn non_vegetation_is_filtered_and_unknown_type_is_rejected() {
 }
 
 #[test]
+fn negative_frp_keeps_the_detection_with_zero_megawatts() {
+    for negative in ["-1", "-0.3", "-0"] {
+        let record = parse(&ROW.replace("12.5", negative)).unwrap();
+        assert_eq!(
+            record.frp_megawatts.to_bits(),
+            0.0_f64.to_bits(),
+            "{negative}"
+        );
+        assert_eq!(record.satellite, Satellite::Terra);
+    }
+}
+
+#[test]
 fn malformed_numeric_fields_are_rejected_even_on_filtered_rows() {
     for (source, bad) in [
         ("-33.5", "91"),
@@ -113,7 +126,6 @@ fn malformed_numeric_fields_are_rejected_even_on_filtered_rows() {
         ("-70.25", "181"),
         ("-70.25", "-180.01"),
         ("-70.25", "inf"),
-        ("12.5", "-1"),
         ("12.5", "NaN"),
         ("12.5", "1e999"),
         ("12.5", "oops"),

@@ -13,6 +13,10 @@ The binary recursively reads CSVs, filters low-confidence and non-vegetation
 rows, and writes FCA1 aggregates per satellite, month and cell. It uses the
 parser from #24 and the aggregator from #25.
 
+A negative `frp`, which the public files hold for a few detections (159 of 16.6 million rows of the Australia
+archive, 2000 to 2020), keeps its detection and counts as 0 MW: a power below zero has no physical meaning, and
+rejecting the row stopped the whole run.
+
 ```text
 cargo run --release -p firecal-ingest -- data/raw data/aggregates 4
 ```
