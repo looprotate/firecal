@@ -102,8 +102,8 @@ were changed. Existing tests and the mandatory `cargo xtask ready` gate apply.
 
 ## Deliverables
 
-Cube's recovery instructions are in `requests/dre-to-cube-uruguay-aggregates.md`.
-Eminem's measured numbers are in `requests/dre-to-eminem-uruguay-numbers.md`.
+The Uruguay 2023–2025 aggregates are attached to the draft data release
+`data-uruguay-2023-2025-20261114`; the measured numbers above are in `pitch/numbers.md`.
 The shared checkout has `data/aggregates/` and `data/handoffs/` ready locally.
 
 The remote regional handoff is stored in a draft data release:

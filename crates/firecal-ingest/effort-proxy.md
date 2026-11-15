@@ -81,7 +81,10 @@ scientific validity. No executable estimator is shipped from this example.
    error and how far it can be interpreted as effort.
 3. Have Biggie own a separate contract change: units, scale, missing-value
    representation, format version and all readers/writers must agree before any
-   extra plane is emitted. See `requests/dre-to-biggie-effort-proxy.md`.
+   extra plane is emitted, and unknown exposure must never become a zero or a
+   denominator for fire counts. Acceptance tests then cover full and partial
+   operational months, leap February, latitude-band boundaries, absent inputs
+   against measured zeros, deterministic order and native/wasm parity.
 4. Then implement deterministic library code with hand-computed tests for
    calendar boundaries, latitude bands, missing inputs and active intervals,
    plus round-trip and native/wasm parity checks for the changed contract.

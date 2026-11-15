@@ -102,4 +102,5 @@ checkout without overwriting the earlier Uruguay handoff.
 
 These are raw satellite aggregates, not harmonized tiles. Per-satellite NRT
 boundaries and partial/unavailable periods must remain visible downstream;
-see `requests/dre-to-cube-south-america-2026.md`. No file-format change is made.
+Cube's use of them is recorded in `crates/firecal-harmonize/south-america-validation.md`. No file-format
+change is made.
