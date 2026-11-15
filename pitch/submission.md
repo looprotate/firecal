@@ -25,10 +25,11 @@ look for burning need to know how much to trust a number, not only the number.
 
 ## Link to Project Demo
 
-The 30-second cut, `firecal-demo-30s.webm` (26 s, `video.md`), once a person uploads it where it opens in a private
-window; that link goes here. At most 30 seconds or seven slides, or the
-project is not eligible for global judging. Public, no login; test it in a private window. Beats: `script.md`.
-Nobody under 18 may appear. A video in another language needs English subtitles.
+The animated film, `firecal-demo-animated.mp4` (29.9 s, 1920 × 1080, `video.md`), once a person uploads it where it
+opens in a private window; that link goes here. The backup is the 26-second screen cut, `firecal-demo-30s.webm`.
+At most 30 seconds or seven slides, or the project is not eligible for global judging. Public, no login; test it in
+a private window. Beats: `video.md`. Nobody under 18 may appear. The film is silent, with all its words on screen in
+English.
 
 ## Link to Final Project
 
@@ -83,7 +84,7 @@ archive, 97,392 rows, in 79 milliseconds.
 
 **Tools.** Rust (a Cargo workspace, no third-party dependencies in the core crates), WebAssembly, TypeScript, Vite,
 MapLibre GL JS with OpenFreeMap's OpenStreetMap tiles, TerraDraw for drawing; Node for the tests and headless Chrome
-for the offline test.
+for the offline test. The demo film was drawn as SVG in headless Chrome and encoded with Apple's AVFoundation.
 
 **What we hope to achieve.** A calendar that any land or emergency manager can read, with the honesty to say when it is not sure.
 
@@ -94,9 +95,12 @@ for the offline test.
 
 Draft, to be confirmed by the team: the team used AI coding agents (Claude Code and Codex, per `AGENTS.md`) to
 write and test code and documentation in this repository, working from a design and rules written by the team.
-The agents did not choose the idea. The demo video was recorded by an agent driving the real app; it shows the app's screens
-and adds captions, and nothing in it is generated imagery. Its description says it was recorded by an AI agent. Generated content may not use NASA
-branding.
+The agents did not choose the idea. The demo video is an animation drawn by code that an AI agent wrote, in a style
+the team chose: every frame is an SVG drawing computed from the app's real numbers, with no image-generation model.
+The backup video was recorded by an agent driving the real app. Each video's description says an AI agent made it.
+The film carries no on-screen AI watermark, by the team's decision; the guide asks for a visible watermark on
+SI-generated images and videos, so confirm with the organizers before submitting, or add one. Generated content
+may not use NASA branding, and the film uses none.
 
 ## NASA Data
 

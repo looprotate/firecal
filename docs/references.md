@@ -43,6 +43,8 @@ Add a line when you use anything from outside the team: data, a library, a metho
 - TypeScript and Vite: the language and the build of the web app. https://www.typescriptlang.org https://vite.dev
 - Node.js: runs the web tests, the parity test and the smoke test; the smoke test drives headless Google Chrome over
   the Chrome DevTools Protocol. https://nodejs.org https://chromedevtools.github.io/devtools-protocol/
+- Swift and Apple AVFoundation (`AVAssetWriter`): encode the demo film's frames, captured in headless Chrome, into
+  an H.264 MP4. https://www.swift.org https://developer.apple.com/documentation/avfoundation/avassetwriter
 
 ## Method
 
