@@ -1,11 +1,16 @@
 // Hand-drawn outlines for the page: every panel, field and button gets a rounded rectangle traced by the hand of the
 // site (`site/js/draw.js`), sized in real pixels and redrawn when the element changes size. A frame traces itself the
-// first time it shows, then stays still.
+// first time it shows, boiling as the site's lines do, then stays still. The boil moves the outline's own points: an
+// SVG noise filter over the page did the same and cost Safari a third of its frames.
 import { path, resample, rough, rrect } from '../../site/js/draw.js';
 
 const SVG = 'http://www.w3.org/2000/svg';
 /** How long a new frame takes to trace, in milliseconds; the boil runs while it does. */
 const TRACE_MS = 700;
+/** The boil's frame rate, as in the film. */
+const BOIL_FPS = 8;
+/** How far the boil moves the outline against the hand's wobble, as on the site (`site/js/scene.js`). */
+const BOIL_SHARE = 0.45;
 
 /** How a kind of frame is drawn: its corner radius and the wobble of the hand, in pixels. */
 interface FrameKind {
@@ -34,7 +39,10 @@ function seedOf(element: HTMLElement): number {
 /** Draws a frame on every element under `root` that needs one, now and whenever one is added. */
 export function drawFrames(root: HTMLElement): void {
   const sizes = new ResizeObserver((entries) => {
-    for (const entry of entries) outline(entry.target as HTMLElement);
+    for (const entry of entries) {
+      const element = entry.target as HTMLElement;
+      if (!element.classList.contains('frame-drawing')) outline(element);
+    }
   });
   const attach = (element: HTMLElement): void => {
     if (element.dataset.framed !== undefined) return;
@@ -46,7 +54,14 @@ export function drawFrames(root: HTMLElement): void {
     shape.setAttribute('pathLength', '1');
     element.prepend(svg);
     element.classList.add('frame-drawing');
-    window.setTimeout(() => element.classList.remove('frame-drawing'), TRACE_MS);
+    let frame = 0;
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const boil = still ? 0 : window.setInterval(() => outline(element, (frame += 1)), 1000 / BOIL_FPS);
+    window.setTimeout(() => {
+      window.clearInterval(boil);
+      element.classList.remove('frame-drawing');
+      outline(element);
+    }, TRACE_MS);
     sizes.observe(element);
   };
   const scan = (under: ParentNode): void => {
@@ -59,7 +74,8 @@ export function drawFrames(root: HTMLElement): void {
   }).observe(root, { childList: true, subtree: true });
 }
 
-function outline(element: HTMLElement): void {
+/** Draws the outline of `element` at its size; a boil `frame` other than 0 moves it as that frame of the boil. */
+function outline(element: HTMLElement, frame = 0): void {
   const svg = element.querySelector(':scope > .frame-art');
   const shape = svg?.firstElementChild;
   const width = element.offsetWidth;
@@ -70,5 +86,6 @@ function outline(element: HTMLElement): void {
   const radius = Math.min(kind.radius, height / 2 - inset);
   const points = rrect(inset, inset, width - 2 * inset, height - 2 * inset, radius);
   svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
-  shape.setAttribute('d', path(rough(resample(points, true), seedOf(element), kind.wobble, 0, 0), true));
+  const boil = frame === 0 ? 0 : kind.wobble * BOIL_SHARE;
+  shape.setAttribute('d', path(rough(resample(points, true), seedOf(element), kind.wobble, boil, frame), true));
 }

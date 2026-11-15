@@ -1,6 +1,5 @@
 import { arc, archPoints, path, resample, rough, rrect } from '../../site/js/draw.js';
 import type { AreaBoundsText } from './area-input.ts';
-import { BOIL_FILTER } from './boil.ts';
 import { drawnLogo } from './logo.ts';
 
 /** The parts of the page the app reads and writes. */
@@ -38,7 +37,6 @@ const field = (name: keyof AreaBoundsText, label: string, limit: number): string
 /** Writes the page: the area panel with the map and the coordinates, and the calendar panel. */
 export function renderShell(root: HTMLElement): AppShell {
   root.innerHTML = `
-    ${BOIL_FILTER}
     <header class="topbar">
       <a class="brand" href="/" aria-label="firecal, about the project">${drawnLogo()}<span>firecal</span></a>
       <p class="topbar-caption">Burning activity from MODIS and VIIRS, harmonized</p>

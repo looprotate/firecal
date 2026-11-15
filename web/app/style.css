@@ -25,8 +25,6 @@ h1, h2, p { margin: 0; }
 
 :focus-visible { outline: 2.5px solid var(--focus-ring); outline-offset: 3px; border-radius: var(--radius-row); }
 
-.boil-defs { position: absolute; }
-
 /* The bar, as the site's once its logo has landed. */
 .topbar {
   align-items: center;
@@ -141,8 +139,8 @@ button.primary:hover > .frame-art path { fill: var(--text); }
 .runtime-status { color: var(--text-secondary); display: block; font-size: var(--text-size-small); }
 .page-footer { color: var(--text-secondary); display: flex; flex-wrap: wrap; font-size: var(--text-size-small); gap: var(--margin); justify-content: space-between; padding: 28px 2px 0; }
 
-/* Drawing in: the intro rises, frames trace themselves, a marker fills after its outline. The boil (boil.ts) moves
-   whatever is drawing a pixel or two until it settles. */
+/* Drawing in: the intro rises, frames trace themselves while they boil (frames.ts), a marker fills after its
+   outline. No filter: an SVG noise filter over the page cost Safari a third of its frames. */
 @media (prefers-reduced-motion: no-preference) {
   .intro > * { animation: rise 400ms ease-out both; }
   .intro > :nth-child(2) { animation-delay: 80ms; }
@@ -151,7 +149,6 @@ button.primary:hover > .frame-art path { fill: var(--text); }
   .marker .marker-line, .drawn-logo .logo-line { stroke-dasharray: 1; animation: trace 600ms ease-in-out both 150ms; }
   .marker .marker-fill, .drawn-logo :is(.logo-fill, .logo-dot) { animation: pop 380ms cubic-bezier(0.2, 0.9, 0.3, 1.25) both 550ms; transform-box: fill-box; transform-origin: center; }
   .drawn-logo .logo-dot { animation-delay: 750ms; }
-  :is(.frame-drawing > .frame-art, .entering svg, .leaving svg) { filter: url(#boil); }
 }
 
 @keyframes trace { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
