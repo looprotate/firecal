@@ -12,4 +12,6 @@ export interface CalendarSeries {
   anomaly?: number[];
   unusual?: boolean[];
   provisional_from?: number | null;
+  /** The past years most like the season in progress, nearest first. */
+  analogs?: { year: number; distance: number }[];
 }

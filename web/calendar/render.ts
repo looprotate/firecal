@@ -7,13 +7,15 @@ import type { CalendarSeries } from './series.ts';
 
 const RING_OFFSET = 4;
 const RING_PAD = 6;
+/** How far the outline of an analog year's row stands off its cells. */
+const ANALOG_PAD = 3;
 const MONTH_LETTERS = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
 
 /** Where the focus ring sits relative to the cell it surrounds, in SVG units. */
 export const FOCUS_RING_OFFSET = RING_OFFSET;
 
 /** The SVG of the calendar as text. Colors come from CSS classes `ramp-0` to `ramp-7`, never from here. */
-export function renderCalendarSvg(grid: Grid, plane: CalendarSeries['plane']): string {
+export function renderCalendarSvg(grid: Grid, plane: CalendarSeries['plane'], analogYear: number | null = null): string {
   const width = GRID_WIDTH + RING_PAD;
   const height = TOP + grid.rows.length * (CELL + GAP) - GAP + RING_PAD;
   const entry = latestPosition(grid);
@@ -44,5 +46,10 @@ export function renderCalendarSvg(grid: Grid, plane: CalendarSeries['plane']): s
     })
     .join('');
 
-  return `<svg class="calendar-grid" role="grid" aria-label="Burning activity calendar, years down and months across" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}">${letters}${rows}<rect class="focus-ring" visibility="hidden" width="${CELL + 2 * RING_OFFSET}" height="${CELL + 2 * RING_OFFSET}" rx="10"/></svg>`;
+  const analogRow = analogYear === null ? -1 : grid.years.indexOf(analogYear);
+  const analogRing = analogRow < 0
+    ? ''
+    : `<rect class="analog-ring" aria-hidden="true" x="${columnX(0) - ANALOG_PAD}" y="${TOP + analogRow * (CELL + GAP) - ANALOG_PAD}" width="${GRID_WIDTH - LEFT + 2 * ANALOG_PAD}" height="${CELL + 2 * ANALOG_PAD}" rx="9"/>`;
+
+  return `<svg class="calendar-grid" role="grid" aria-label="Burning activity calendar, years down and months across" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}">${letters}${analogRing}${rows}<rect class="focus-ring" visibility="hidden" width="${CELL + 2 * RING_OFFSET}" height="${CELL + 2 * RING_OFFSET}" rx="10"/></svg>`;
 }

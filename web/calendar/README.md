@@ -22,6 +22,9 @@ Months across, years down, one cell per month of a Series. It draws; every numbe
 - **Controls**, above the grid, only when the page offers them (`CalendarActions`): Count and Energy as pressed
   buttons, which ask the page for the other plane, and `series.csv` and `cells.csv`, which save the core's text
   as files. A polygon has no `cells.csv`, and the toolbar says so instead of offering a button that fails.
+- **Analog years**, at the bottom: the past years the core ranks most like the season in progress, nearest first.
+  Pressing one outlines its row in the calendar; when the season is not a whole year, its words list the months that
+  came after it in that year. History, not a forecast, and the page says so.
 - **Legend** under the readout: the empty cell and the seven steps from none to most, then a cell with each mark and
   what it means in words. It is drawn from the same classes as the cells.
 

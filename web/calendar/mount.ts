@@ -1,3 +1,4 @@
+import { renderAnalogs } from './analogs.ts';
 import { buildGrid, type Grid } from './grid.ts';
 import { describeCell } from './labels.ts';
 import { latestPosition, nextPosition, type Position } from './keyboard.ts';
@@ -34,6 +35,7 @@ function cellAt(root: HTMLElement, at: Position): SVGElement | null {
 export function mountCalendar(container: HTMLElement, series: CalendarSeries, actions: CalendarActions = {}): Calendar {
   let current = series;
   let offered = actions;
+  let analogYear: number | null = null;
   const toolbar = document.createElement('div');
   let grid: Grid = buildGrid(series);
   const readout = document.createElement('p');
@@ -53,7 +55,9 @@ export function mountCalendar(container: HTMLElement, series: CalendarSeries, ac
   const seasonText = document.createElement('p');
   seasonText.className = 'calendar-season-current';
   season.append(seasonTitle, strip, seasonText);
-  container.replaceChildren(toolbar, host, readout, legend, season);
+  const analogs = document.createElement('section');
+  analogs.className = 'calendar-season';
+  container.replaceChildren(toolbar, host, readout, legend, season, analogs);
 
   const show = (at: Position | null): void => {
     const cell = at === null ? null : (grid.rows[at.row]?.[at.column] ?? null);
@@ -63,7 +67,10 @@ export function mountCalendar(container: HTMLElement, series: CalendarSeries, ac
   const draw = (): void => {
     grid = buildGrid(current);
     toolbar.innerHTML = renderToolbar(current.plane, toolbarParts(offered));
-    host.innerHTML = renderCalendarSvg(grid, current.plane);
+    if (!(current.analogs ?? []).some((analog) => analog.year === analogYear)) analogYear = null;
+    host.innerHTML = renderCalendarSvg(grid, current.plane, analogYear);
+    analogs.innerHTML = renderAnalogs(current.analogs ?? [], grid, current.plane, analogYear);
+    analogs.hidden = analogs.innerHTML === '';
     strip.innerHTML = renderStripSvg(grid, current.plane);
     const latest = latestPosition(grid);
     const newest = latest === null ? null : (grid.rows[latest.row]?.[latest.column] ?? null);
@@ -119,7 +126,17 @@ export function mountCalendar(container: HTMLElement, series: CalendarSeries, ac
     if (file === 'cells' && offered.csv?.cells) download('cells.csv', offered.csv.cells());
   };
 
+  const onAnalogClick = (event: Event): void => {
+    if (!(event.target instanceof Element)) return;
+    const year = Number(event.target.closest<HTMLButtonElement>('button[data-year]')?.dataset.year);
+    if (!Number.isInteger(year)) return;
+    analogYear = analogYear === year ? null : year;
+    draw();
+    analogs.querySelector<HTMLButtonElement>(`button[data-year="${year}"]`)?.focus();
+  };
+
   toolbar.addEventListener('click', onToolbarClick);
+  analogs.addEventListener('click', onAnalogClick);
   host.addEventListener('focusin', onFocusIn);
   host.addEventListener('focusout', onFocusOut);
   host.addEventListener('mouseover', onFocusOrHover);
@@ -140,6 +157,7 @@ export function mountCalendar(container: HTMLElement, series: CalendarSeries, ac
       host.removeEventListener('mouseleave', onLeave);
       host.removeEventListener('keydown', onKeyDown);
       toolbar.removeEventListener('click', onToolbarClick);
+      analogs.removeEventListener('click', onAnalogClick);
       container.replaceChildren();
     },
   };
